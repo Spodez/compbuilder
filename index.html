@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spades' Comp Builder</title>
+    <title>Albion Online ZvZ Comp Builder - Enhanced</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -15,7 +15,6 @@
         }
 
         #comp-container {
-            /* Transition for smooth background change */
             transition: background-image 0.3s ease-in-out;
         }
 
@@ -54,7 +53,7 @@
             left: 0;
             width: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            color: #4ade80; /* Green text color */
+            color: #4ade80; 
             font-size: 0.7rem;
             font-weight: bold;
             text-align: center;
@@ -67,7 +66,7 @@
             line-height: 1.1;
         }
         .ability-text-overlay:empty {
-            display: none; /* Hide background if ability text is empty */
+            display: none;
         }
 
         /* --- Alternative Item Overlay --- */
@@ -129,6 +128,29 @@
         .item-slot:hover .quantity-input { display: block; }
         .item-slot:hover .item-quantity { display: none; }
 
+        /* --- Build Party Quantity Input --- */
+        .build-quantity-input {
+            width: 40px;
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            border-radius: 0.375rem;
+            color: white;
+            text-align: center;
+            font-size: 0.875rem;
+            padding: 2px;
+            margin-right: 0.5rem;
+        }
+        .build-quantity-display {
+            display: none; /* Hidden in editor, shown on export */
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: #e2e8f0;
+            width: 40px;
+            text-align: center;
+            margin-right: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
         /* --- Custom Context Menu --- */
         #item-context-menu {
             position: fixed;
@@ -184,14 +206,14 @@
 
         /* --- Layout Styles --- */
         #roles-container { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 1rem; }
-        .role-section { display: flex; flex-direction: column; align-items: center; padding: 1rem; border-radius: 0.5rem; background-color: rgba(31, 41, 55, 0.8); min-width: 200px; } /* Made section background slightly transparent for BG image visibility */
-        .role-title { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .role-section { display: flex; flex-direction: column; align-items: center; padding: 1rem; border-radius: 0.5rem; min-width: 200px; border: 1px solid rgba(45, 55, 72, 0.5); }
+        .role-title { font-size: 1.5rem; margin-bottom: 0.25rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
         .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
         .build-row { display: flex; align-items: center; gap: 2px; }
         .build-items-wrapper { display: flex; gap: 2px; }
         .category-label { position: absolute; top: -1.5rem; left: 0; width: 100%; text-align: center; font-size: 0.75rem; color: #94a3b8; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
         .builds-container .build-row:first-child .item-slot-wrapper { margin-top: 1.5rem; position: relative; }
-        .builds-container .build-row:first-child .item-slot-wrapper[data-category="weapons"] .category-label::before { content: "weapon"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="weapons"] .category-label::before { content: "Weapon"; }
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="OffHands"] .category-label::before { content: "Off-Hand"; }
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="Head"] .category-label::before { content: "Head"; }
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="Chest"] .category-label::before { content: "Chest"; }
@@ -209,8 +231,10 @@
 
         /* --- EXPORT MODE STYLES --- */
         #temp-export-wrapper { padding: 1.5rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
-        .export-mode .drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #comp-title, .export-mode #logo-upload-section, .export-mode #comp-notes, .export-mode #action-buttons, .export-mode .save-build-btn { display: none !important; }
+        .export-mode .drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #comp-title, .export-mode #logo-upload-section, .export-mode #comp-notes, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input { display: none !important; }
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+        .export-mode .build-quantity-display { display: block; }
+        .export-mode .build-quantity-display:empty { display: none; }
         .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; }
         .export-mode .item-slot { padding: 1px; border-radius: 0 !important; cursor: default !important; overflow: visible; }
         .export-mode #comp-title-clone, .export-mode #comp-notes-clone { color: #e2e8f0 !important; text-align: center; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
@@ -218,7 +242,7 @@
         .export-mode #comp-notes-clone { font-size: 1rem; white-space: pre-wrap; color: #cbd5e0 !important; max-width: 800px; margin-left: auto; margin-right: auto; }
         .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
         .export-mode .export-roles-main-wrapper { display: flex; flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; }
-        .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem;} /* Added semi-transparent bg to columns for readability on busy backgrounds */
+        .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem;}
         .export-mode .alternative-item-overlay { border: 1px solid #718096; }
         .export-mode .ability-text-overlay { color: #4ade80; font-size: 0.7rem; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; }
         .export-mode .ability-text-overlay:empty { display: none; }
@@ -261,6 +285,7 @@
         <div id="roles-container"></div>
     </div>
 
+    <!-- Item Selection Modal -->
     <div id="item-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-4xl p-6 relative overflow-y-auto">
             <div class="flex items-center gap-4 mb-4">
@@ -277,6 +302,7 @@
         </div>
     </div>
 
+    <!-- Ability Input Modal -->
     <div id="ability-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-sm p-6 relative">
             <h2 class="text-xl font-bold mb-4">Edit Abilities</h2>
@@ -289,6 +315,7 @@
         </div>
     </div>
 
+    <!-- Save Build Modal -->
     <div id="save-build-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-lg p-6 relative">
             <h2 class="text-xl font-bold mb-4">Save Build to Library</h2>
@@ -313,6 +340,7 @@
         </div>
     </div>
 
+    <!-- Load Build Library Modal -->
     <div id="load-build-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-3xl p-6 relative">
             <div class="flex justify-between items-center mb-4">
@@ -323,8 +351,9 @@
         </div>
     </div>
 
+    <!-- Custom Context Menu for Item Slots -->
     <div id="item-context-menu" class="hidden">
-        <button data-action="edit-abilities">Edit Abilities</button>
+        <button data-action="edit-abilities">Edit Abilities</button>New_Feature
         <hr>
         <button data-action="add-alt">Add/Change Alternative</button>
         <button data-action="clear-alt" class="danger">Clear Alternative</button>
@@ -349,7 +378,7 @@
             };
 
             const CATEGORIES = [
-                { key: 'weapons', label: 'weapon' },
+                { key: 'weapons', label: 'Weapon' },
                 { key: 'OffHands', label: 'Off-Hand' },
                 { key: 'Head', label: 'Head' },
                 { key: 'Chest', label: 'Chest' },
@@ -376,7 +405,7 @@
             let copiedBuildData = null;
             let draggedElement = null;
             let logoImageSrc = null;
-            let backgroundImageSrc = null; // State variable for background image
+            let backgroundImageSrc = null; 
             let isSelectingAlternative = false;
             let activeBuildRowForSave = null; 
             let activeRoleForLoad = null; 
@@ -436,8 +465,9 @@
                 buildRow.draggable = true;
 
                 let buildSlots = buildData.slots;
+                // BUG FIX: Use Array.from to create unique objects for each slot, preventing shared references from Array.fill
                 if (!buildSlots || buildSlots.length === 0) {
-                    buildSlots = Array.from({ length: CATEGORIES.length }, () => ({ primary: null, alt: null, quantity: 1, abilities: '' }));
+                    buildSlots = Array.from({ length: CATEGORIES.length }, () => ({ primary: null, alt: null, quantity: 1, abilities: '', partyQuantity: '' }));
                 }
 
                 const slotsHTML = CATEGORIES.map((cat, index) => {
@@ -462,7 +492,12 @@
                     `;
                 }).join('');
 
+                const partyQuantity = buildData.partyQuantity || '';
                 buildRow.innerHTML = `
+                    <div class="flex flex-col items-center justify-center">
+                        <input type="text" class="build-quantity-input" placeholder="x?" value="${partyQuantity}">
+                        <span class="build-quantity-display">${partyQuantity}</span>
+                    </div>
                     <div class="drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
                     <div class="build-items-wrapper">${slotsHTML}</div>
                     <div class="flex flex-col space-y-1 ml-4 self-center">
@@ -485,6 +520,10 @@
                         itemSlot.dataset.quantity = val;
                         const displayQuantity = itemSlot.querySelector('.item-quantity');
                         if (displayQuantity) displayQuantity.textContent = `x${val}`;
+                    }
+                    if (e.target.classList.contains('build-quantity-input')) {
+                        const display = e.target.nextElementSibling;
+                        display.textContent = e.target.value;
                     }
                 });
                 return buildRow;
@@ -605,7 +644,8 @@
                         buildSlotsData.push({ primary: null, alt: null, quantity: 1, abilities: '' });
                     }
                 }
-                return { slots: buildSlotsData };
+                const partyQuantity = buildRowElement.querySelector('.build-quantity-input')?.value || '';
+                return { slots: buildSlotsData, partyQuantity: partyQuantity };
             }
             
             function copyBuild(buildRowElement) {
@@ -751,7 +791,7 @@
                     title: compTitleInput.value,
                     notes: document.getElementById('comp-notes').value,
                     logoSrc: logoImageSrc,
-                    backgroundImageSrc: backgroundImageSrc, // Add background image to save data
+                    backgroundImageSrc: backgroundImageSrc,
                     roles: {}
                 };
 
@@ -780,9 +820,9 @@
                         compTitleInput.value = loadedData.title || '';
                         document.getElementById('comp-notes').value = loadedData.notes || '';
                         logoImageSrc = loadedData.logoSrc || null;
-                        backgroundImageSrc = loadedData.backgroundImageSrc || null; // Load background image data
+                        backgroundImageSrc = loadedData.backgroundImageSrc || null; 
                         updateLogoTitleDisplay();
-                        applyBackground(); // Apply loaded background image
+                        applyBackground(); 
 
                         ROLES.forEach(role => {
                             const buildsContainer = document.querySelector(`#${role.id} .builds-container`);
@@ -840,12 +880,11 @@
             rolesContainer.addEventListener('contextmenu', e => {
                 const slot = e.target.closest('.item-slot');
                 if (slot) {
-                    e.preventDefault();
                     activeSlot = slot; 
-
                     const hasPrimary = !!slot.querySelector('.primary-item-img');
                     
                     if (hasPrimary) {
+                        e.preventDefault();
                         const hasAlt = !!slot.querySelector('.alternative-item-overlay img');
                         
                         contextMenu.querySelector('[data-action="edit-abilities"]').style.display = 'block';
@@ -875,8 +914,6 @@
 
                         contextMenu.style.top = `${top}px`;
                         contextMenu.style.left = `${left}px`;
-                    } else {
-                        contextMenu.classList.add('hidden'); 
                     }
                 }
             });
@@ -1014,7 +1051,6 @@
                 document.body.appendChild(tempExportContainer);
                 document.body.classList.add('export-mode');
 
-                // Apply background to export wrapper
                 if (backgroundImageSrc) {
                     tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`;
                     tempExportContainer.style.backgroundSize = 'cover';

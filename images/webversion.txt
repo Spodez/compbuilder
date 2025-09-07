@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Albion Online ZvZ Comp Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body { background-color:#1a202c; color:#e2e8f0; font-family:'Inter',sans-serif; }
+    .item-slot{ width:64px;height:64px;background:#2d3748;border:2px dashed #4a5568;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:.5rem;transition:background-color .2s;overflow:hidden; }
+    .item-slot:hover{ background:#4a5568; }
+    .item-slot img{ width:100%;height:100%;object-fit:cover;border-radius:.375rem; }
+    .modal{ background:rgba(0,0,0,.8); }
+    .modal-content{ background:#2d3748; max-height:80vh; }
+    ::-webkit-scrollbar{ width:8px; }
+    ::-webkit-scrollbar-track{ background:#2d3748; }
+    ::-webkit-scrollbar-thumb{ background:#4a5568; border-radius:4px; }
+    ::-webkit-scrollbar-thumb:hover{ background:#718096; }
+    .party-comp-input{ background:#4a5568; border:1px solid #718096; border-radius:.375rem; padding:.25rem; width:100%; text-align:center; }
+    #file-warning{ display:none; }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+
+  <!-- File protocol warning -->
+  <div id="file-warning" class="mb-4 p-3 rounded bg-yellow-900/40 text-yellow-200 text-sm">
+    You opened this file directly (file://). Image embedding for export may fail. Please run a local server (e.g. <code>npx serve .</code> or VS Code Live Server) and open via http://localhost.
+  </div>
+
+  <div id="comp-container" class="max-w-7xl mx-auto bg-gray-900 p-6 rounded-lg shadow-xl">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div class="flex-grow md:mr-8 mb-4 md:mb-0 space-y-6">
+        <input id="comp-title" type="text" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-3xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        <div>
+          <h3 class="text-xl font-semibold mb-2 text-gray-300">Notes</h3>
+          <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
+        </div>
+      </div>
+      <button id="export-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 w-full md:w-auto">
+        Export to PNG
+      </button>
+    </div>
+
+    <div id="roles-container" class="space-y-8"></div>
+
+    <!-- Party Comp Table -->
+    <div id="party-comp-builder" class="mt-8">
+      <h3 class="text-xl font-semibold mb-2 text-gray-300">Party Size Composition</h3>
+      <div class="max-w-4xl">
+        <table id="party-comp-table" class="w-full text-left">
+          <thead class="text-gray-400 text-xs">
+            <tr class="border-b border-gray-700">
+              <th class="p-1">Party Size</th>
+              <th class="p-1">Engages</th>
+              <th class="p-1">DTanks</th>
+              <th class="p-1">Supports</th>
+              <th class="p-1">Healers</th>
+              <th class="p-1">DPS</th>
+              <th class="p-1"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="add-party-row-btn" class="mt-2 bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- Item Selection Modal -->
+  <div id="item-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
+    <div class="modal fixed inset-0"></div>
+    <div class="modal-content w-11/12 max-w-4xl p-6 rounded-lg shadow-lg relative overflow-y-auto">
+      <div class="flex items-center gap-4 mb-4">
+        <h2 class="text-2xl font-bold">Select Item</h2>
+        <span id="modal-category-tag" class="text-base font-semibold text-blue-300 bg-blue-800/50 px-4 py-1 rounded-full"></span>
+      </div>
+      <div class="flex justify-between items-center mb-4 gap-4">
+        <input id="item-search" type="text" placeholder="Search from predefined list..." class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        <button id="upload-custom-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded whitespace-nowrap">Upload File</button>
+        <input id="custom-image-upload" type="file" class="hidden" accept="image/*"/>
+      </div>
+      <div id="modal-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4"></div>
+      <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl">&times;</button>
+    </div>
+  </div>
+
+  <script>
+    // Warn if opened via file://
+    if (location.protocol === 'file:') {
+      document.getElementById('file-warning').style.display = 'block';
+    }
+
+    /*
+     * IMAGES live under: /images/<Category>/<File>.png
+     */
+    const ITEMS = {
+      'Weapons': ['Arcane Staff.png','Arclight Blasters.png','Arctic Staff.png','Astral Staff.png','Battle Bracers.png','Battleaxe.png','Bear Paws.png','Bedrock Mace.png','Black Monk Stave.png','Blazing Staff.png','Blight Staff.png','Bloodletter.png','Bloodmoon Staff.png','Boltcasters.png','Bow of Badon.png','Bow.png','Brawler Gloves.png','Bridled Fury.png','Brimstone Staff.png','Broadsword.png','Camlann Mace.png','Carrioncaller.png','Carving Sword.png','Chillhowl.png','Clarent Blade.png','Claws.png','Claymore.png','Crossbow.png','Crystal Reaper.png','Cursed Skull.png','Cursed Staff.png','Dagger Pair.png','Dagger.png','Damnation Staff.png','Dawnsong.png','Daybreaker.png','Deathgivers.png','Demonfang.png','Demonic Staff.png','Divine Staff.png','Double Bladed Staff.png','Dreadstorm Monach.png','Druidic Staff.png','Dualswords.png','Earthrune Staff.png','Energy Shaper.png','Enigmatic Staff.png','Evensong.png','Exalted Staff.png','Fallen Staff.png','Fire Staff.png','Fists of Avalon.png','Flamewalker Staff.png','Forcepulse Bracers.png','Forge Hammers.png','Forgebark Staff.png','Frost Staff.png','Galatine Pair.png','Glacial Staff.png','Glaive.png','Grailseeker.png','Great Arcane Staff.png','Great Cursed Staff.png','Great Frost Staff.png','Great Hammer.png','Great Holy Staff.png','Great Nature Staff.png','Greataxe.png','Grovekeeper.png','Halberd.png','Hallowfall.png','Hammer.png','Hand of Justice.png','Heavy Crossbow.png','Heavy Mace.png','Hellfire Hands.png','Hellspawn Staff.png','Heron Spear.png','Hoarfrost Staff.png','Holy Staff.png','Icicle Staff.png','Incubus Mace.png','Infernal Scythe.png','Infernal Staff.png','Infinity Blade.png','Iron Clad Staff.png','Ironroof Staff.png','Kingmaker.png','Lifecurse Staff.png','Lifetouch Staff.png','Light Crossbow.png','Lightcaller.png','Longbow.png','Mace.png','Malevolent Locus.png','Mistpiercer.png','Morning Star.png','Nature Staff.png','Oathkeepers.png','Occult Staff.png','Permafrost Prism.png','Phantom Twinblade.png','Pike.png','Polehammer.png','Primal Staff.png','Prowling Staff.png','Quarterstaff.png','Rampant Staff.png','Ravenstrike Cestus.png','Realmbreaker.png','Redemption Staff.png','Riftglaive.png','Rootbound Staff.png','Rotcaller Staff.png','Shadowcaller.png','Siegebow.png','Skystrider Bow.png','Soulscythe.png','Spear.png','Spiked Gauntlets.png','Spirithunter.png','Staff of Balance.png','Stillgaze Staff.png','Tombhammer.png','Trinity Spear.png','Truebolt Hammer.png','Twin Slayers.png','Ursine Maulers.png','Wailing Bow.png','Warbow.png','Weeping Repeater.png','Whispering Bow.png','Wild Staff.png','Wildfire Staff.png','Witchwork Staff.png'],
+      'OffHands': ['Astral Aegis.png','Caitiff Shield.png','Celestial Censer.png','Cryptcandle.png','Eye of Secrets.png','Facebreaker.png','Leering Cane.png','Mistcaller.png','Muisak.png','Sacred Scepter.png','Sarcophagus.png','Shield.png','Taproot.png','Tome of Spells.png','Torch.png'],
+      'Head': ['Assassin Hood.png','Cleric Cowl.png','Cowl of Purity.png','Cultist Cowl.png','Demon Helmet.png','Druid Cowl.png','Duskweaver Helmet.png','Feyscale Hat.png','Fiend Cowl.png','Graveguard Helmet.png','Guardian Helmet.png','Hellion Hood.png','Helmet of Valor.png','Hood of Tenacity.png','Hunter Hood.png','Judicator Helmet.png','Knight Helmet.png','Mage Cowl.png','Mercenary Hood.png','Mistwalker Hood.png','Royal Cowl.png','Royal Helmet.png','Royal Hood.png','Scholar Cowl.png','Soldier Helmet.png','Specter Hood.png','Stalker Hood.png'],
+      'Chest': ['Armor of Valor.png','Assassin Jacket.png','Cleric Robe.png','Cultist Robe.png','Demon Armor.png','Druid Robe.png','Duskweaver Armor.png','Feyscale Robe.png','Fiend Robe.png','Graveguard Armor.png','Guardian Armor.png','Hellion Jacket.png','Hunter Jacket.png','Jacket of Tenacity.png','Judicator Armor.png','Knight Armor.png','Mage Robe.png','Mercenary Jacket.png','Mistwalker Jacket.png','Robe of Purity.png','Royal Armor.png','Royal Jacket.png','Royal Robe.png','Scholar Robe.png','Soldier Armor.png','Specter Jacket.png','Stalker Jacket.png'],
+      'Shoes': ['Assassin Shoes.png','Boots of Valor.png','Cleric Sandals.png','Cultist Sandals.png','Demon Boots.png','Druid Sandals.png','Duskweaver Boots.png','Feyscale Sandals.png','Fiend Sandals.png','Graveguard Boots.png','Guardian Boots.png','Hellion Shoes.png','Hunter Shoes.png','Judicator Boots.png','Knight Boots.png','Mage Sandals.png','Mercenary Shoes.png','Mistwalker Shoes.png','Royal Boots.png','Royal Sandals.png','Royals Shoes.png','Sandals of Purity.png','Scholar Sandals.png','Shoes of Tenacity.png','Soldier Boots.png','Specter Shoes.png','Stalker Shoes.png'],
+      'Capes': ['Avalonian Cape.png','Brecilien Cape.png','Bridgewatch Cape.png','Caerleon Cape.png','Cape.png','Demon Cape.png','Fort Stirling Cape.png','Heretic Cape.png','Keeper Cape.png','Lymhurst Cape.png','Martlock Cape.png','Morgana Cape.png','Smuggler Cape.png','Thetford Cape.png','Undead Cape.png'],
+      'Food': ['Avalonian Beef Sandwich.png','Avalonian Beef Stew.png','Avalonian Omelette.png','Beef Sandwich.png','Beef Stew.png','Deadwater Eel Stew.png','Dusthole Crab Omelette.png','Omelette.png','Roast Pork.png','Roasted Puremist Snapper.png','Thunderfall Lurcher Sandwich.png'],
+      'Potion': ['Berserk Potion.png','Gigantify Potion.png','Hellfire Potion.png','Poison Potion.png','Resistance Potion.png']
+    };
+
+    const CATEGORIES = [
+      { key:'Weapons', label:'Weapon' },
+      { key:'OffHands', label:'Off-Hand' },
+      { key:'Head', label:'Head' },
+      { key:'Chest', label:'Chest' },
+      { key:'Shoes', label:'Shoes' },
+      { key:'Capes', label:'Cape' },
+      { key:'Food', label:'Food' },
+      { key:'Potion', label:'Potion' }
+    ];
+
+    const ROLES = [
+      { id:'engage-tanks', name:'Engage Tanks', color:'bg-red-800' },
+      { id:'def-tanks', name:'Defensive Tanks', color:'bg-blue-800' },
+      { id:'supports', name:'Supports', color:'bg-purple-800' },
+      { id:'healers', name:'Healers', color:'bg-green-800' },
+      { id:'dps', name:'DPS', color:'bg-yellow-800' }
+    ];
+
+    const rolesContainer = document.getElementById('roles-container');
+    const modal = document.getElementById('item-modal');
+    const modalGrid = document.getElementById('modal-grid');
+    const closeModalBtn = document.getElementById('close-modal');
+    const itemSearch = document.getElementById('item-search');
+    const exportBtn = document.getElementById('export-btn');
+    const uploadCustomBtn = document.getElementById('upload-custom-btn');
+    const customImageUpload = document.getElementById('custom-image-upload');
+    const addPartyRowBtn = document.getElementById('add-party-row-btn');
+    const partyCompTableBody = document.querySelector('#party-comp-table tbody');
+
+    let activeSlot = null;
+    let activeCategory = null;
+
+    function createRoleSection(role){
+      const section = document.createElement('div');
+      section.id = role.id;
+      section.className = 'p-4 rounded-lg shadow-inner';
+      section.innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold ${role.color.replace('bg-','text-').replace('-800','-300')}">${role.name}</h2>
+          <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" data-role="${role.id}">+ Add Build</button>
+        </div>
+        <div class="builds-container space-y-3"></div>
+      `;
+      rolesContainer.appendChild(section);
+    }
+
+    function createBuildRow(){
+      const buildRow = document.createElement('div');
+      buildRow.className = 'build-row flex items-center justify-between bg-gray-800 p-2 rounded';
+      const slotsHTML = CATEGORIES.map(cat => `
+        <div class="flex flex-col items-center text-center space-y-1">
+          <label class="text-xs text-gray-400">${cat.label}</label>
+          <div class="item-slot" data-category="${cat.key}"></div>
+        </div>
+      `).join('');
+      buildRow.innerHTML = `
+        <div class="flex items-end space-x-2">${slotsHTML}</div>
+        <button class="remove-build-btn text-red-500 hover:text-red-400 font-bold text-2xl ml-2 self-center">&times;</button>
+      `;
+      return buildRow;
+    }
+
+    function encodePath(path){ return encodeURI(path); }
+
+    // Convert URL -> DataURL
+    function urlToDataURL(url){
+      return fetch(url)
+        .then(res => {
+          if(!res.ok) throw new Error('HTTP '+res.status);
+          return res.blob();
+        })
+        .then(blob => new Promise((resolve,reject)=>{
+          const reader = new FileReader();
+          reader.onload = ()=>resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        }));
+    }
+
+    function populateModal(category){
+      modalGrid.innerHTML = '';
+      const items = ITEMS[category] || [];
+      const searchTerm = itemSearch.value.toLowerCase();
+
+      items
+        .filter(item => item.toLowerCase().replace('.png','').includes(searchTerm))
+        .forEach(itemFilename => {
+          const imagePath = `images/${category}/${itemFilename}`;
+          const encodedPath = encodePath(imagePath);
+
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'cursor-pointer p-1 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center';
+          itemDiv.innerHTML = `<img src="${encodedPath}" alt="${itemFilename}" class="w-16 h-16 object-contain" onerror="this.src='https://placehold.co/64x64/2d3748/718096?text=?';">`;
+
+          // On click: try to inline as Base64. If it fails (e.g., file://), fall back to direct src.
+          itemDiv.addEventListener('click', async () => {
+            try{
+              const dataURL = await urlToDataURL(encodedPath);
+              selectItem(dataURL, itemFilename);
+            }catch(err){
+              console.warn('Inline failed; falling back to raw URL', err);
+              selectItem(encodedPath, itemFilename); // may still export if served over HTTP with proper CORS
+            }
+          });
+
+          modalGrid.appendChild(itemDiv);
+        });
+    }
+
+    function openModal(slotElement){
+      activeSlot = slotElement;
+      activeCategory = slotElement.dataset.category;
+      const categoryInfo = CATEGORIES.find(c => c.key === activeCategory);
+      document.getElementById('modal-category-tag').textContent = categoryInfo ? categoryInfo.label : activeCategory;
+      itemSearch.value = '';
+      populateModal(activeCategory);
+      modal.classList.remove('hidden'); modal.classList.add('flex');
+    }
+
+    function closeModal(){
+      modal.classList.add('hidden'); modal.classList.remove('flex');
+      activeSlot = null; activeCategory = null;
+    }
+
+    // Insert chosen image (Base64 or URL)
+    function selectItem(imageSrc, altText='custom-item'){
+      if(activeSlot){
+        activeSlot.innerHTML = `<img src="${imageSrc}" alt="${altText}">`;
+        activeSlot.style.borderColor = 'transparent';
+      }
+      closeModal();
+    }
+
+    function createPartyCompRow(values=[]){
+      const row = document.createElement('tr');
+      row.className = 'border-b border-gray-800';
+      row.innerHTML = `
+        <td><input type="number" class="party-comp-input" value="${values[0] || ''}"></td>
+        <td><input type="number" class="party-comp-input" value="${values[1] || ''}"></td>
+        <td><input type="number" class="party-comp-input" value="${values[2] || ''}"></td>
+        <td><input type="number" class="party-comp-input" value="${values[3] || ''}"></td>
+        <td><input type="number" class="party-comp-input" value="${values[4] || ''}"></td>
+        <td><input type="number" class="party-comp-input" value="${values[5] || ''}"></td>
+        <td class="text-center"><button class="remove-party-row-btn text-red-500 hover:text-red-400 font-bold text-xl px-2">&times;</button></td>
+      `;
+      partyCompTableBody.appendChild(row);
+    }
+
+    // Build UI
+    ROLES.forEach(createRoleSection);
+    createPartyCompRow([10]);
+    createPartyCompRow([20]);
+
+    rolesContainer.addEventListener('click', e=>{
+      if(e.target.classList.contains('add-build-btn')){
+        const roleId = e.target.dataset.role;
+        const buildsContainer = document.querySelector(`#${roleId} .builds-container`);
+        buildsContainer.appendChild(createBuildRow());
+      }else if(e.target.classList.contains('remove-build-btn')){
+        e.target.closest('.build-row').remove();
+      }else{
+        const slot = e.target.closest('.item-slot');
+        if(slot) openModal(slot);
+      }
+    });
+
+    addPartyRowBtn.addEventListener('click', ()=>createPartyCompRow());
+    partyCompTableBody.addEventListener('click', e=>{
+      if(e.target.classList.contains('remove-party-row-btn')){
+        e.target.closest('tr').remove();
+      }
+    });
+
+    closeModalBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e=>{ if(e.target === modal) closeModal(); });
+    itemSearch.addEventListener('input', ()=>{ if(activeCategory) populateModal(activeCategory); });
+
+    uploadCustomBtn.addEventListener('click', ()=> customImageUpload.click());
+    customImageUpload.addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(file && activeSlot){
+        const reader = new FileReader();
+        reader.onload = (evt)=> selectItem(evt.target.result, file.name);
+        reader.readAsDataURL(file);
+        customImageUpload.value = '';
+      }
+    });
+
+    // Ensure any remaining non-data images in slots are embedded before export
+    async function inlineAllSlots(){
+      const imgs = Array.from(document.querySelectorAll('.item-slot img'));
+      await Promise.all(imgs.map(async img=>{
+        const src = img.getAttribute('src') || '';
+        if(!src.startsWith('data:')){
+          try{
+            const dataURL = await urlToDataURL(src);
+            img.src = dataURL;
+          }catch(err){
+            console.warn('Could not inline for export:', src, err);
+            // leave as-is; if served over HTTP with CORS it will render; otherwise it may be skipped by html2canvas
+          }
+        }
+      }));
+    }
+
+    // Export
+    document.getElementById('export-btn').addEventListener('click', async ()=>{
+      // Try to inline everything currently selected
+      await inlineAllSlots();
+
+      const exportWrapper = document.createElement('div');
+      exportWrapper.style.position = 'absolute';
+      exportWrapper.style.left = '-9999px';
+      exportWrapper.style.top = '0';
+      exportWrapper.style.width = '1920px';
+
+      const exportContainer = document.createElement('div');
+      exportContainer.style.backgroundColor = '#111827';
+      exportContainer.style.color = '#e2e8f0';
+      exportContainer.style.padding = '2rem';
+      exportContainer.style.fontFamily = "'Inter', sans-serif";
+
+      const title = document.getElementById('comp-title').value || 'Untitled Composition';
+      const exportTitle = document.createElement('h1');
+      exportTitle.textContent = title;
+      exportTitle.className = 'text-5xl font-bold mb-8';
+      exportContainer.appendChild(exportTitle);
+
+      // Notes
+      const notesValue = document.getElementById('comp-notes').value;
+      if(notesValue.trim() !== ''){
+        const exportNotesTitle = document.createElement('h3');
+        exportNotesTitle.textContent = 'Notes';
+        exportNotesTitle.className = 'text-2xl font-bold mt-4 mb-2';
+        exportContainer.appendChild(exportNotesTitle);
+
+        const exportNotes = document.createElement('pre');
+        exportNotes.textContent = notesValue;
+        exportNotes.className = 'whitespace-pre-wrap font-sans bg-gray-900 p-4 rounded text-gray-300';
+        exportContainer.appendChild(exportNotes);
+      }
+
+      // Roles grid
+      const rolesGrid = document.createElement('div');
+      rolesGrid.style.display = 'grid';
+      rolesGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(600px, 1fr))';
+      rolesGrid.style.gap = '2rem';
+      rolesGrid.style.marginTop = '2rem';
+
+      document.querySelectorAll('#roles-container > div').forEach(roleSectionUI=>{
+        const clonedRoleSection = document.createElement('div');
+        const titleUI = roleSectionUI.querySelector('h2');
+        const clonedTitle = document.createElement('h2');
+        clonedTitle.textContent = titleUI.textContent;
+        clonedTitle.className = titleUI.className + ' mb-4';
+        clonedRoleSection.appendChild(clonedTitle);
+
+        const buildsContainer = document.createElement('div');
+        buildsContainer.style.display = 'flex';
+        buildsContainer.style.flexDirection = 'column';
+        buildsContainer.style.gap = '0.75rem';
+
+        roleSectionUI.querySelectorAll('.build-row').forEach(buildRowUI=>{
+          const clonedBuildRow = buildRowUI.cloneNode(true);
+          const removeBtn = clonedBuildRow.querySelector('.remove-build-btn');
+          if(removeBtn) removeBtn.remove();
+          clonedBuildRow.style.backgroundColor = 'transparent';
+          clonedBuildRow.querySelectorAll('.item-slot').forEach(slotUI=>{
+            slotUI.style.border = 'none';
+            slotUI.style.backgroundColor = 'transparent';
+          });
+          buildsContainer.appendChild(clonedBuildRow);
+        });
+
+        clonedRoleSection.appendChild(buildsContainer);
+        rolesGrid.appendChild(clonedRoleSection);
+      });
+
+      exportContainer.appendChild(rolesGrid);
+
+      // Party table
+      const partyTable = document.getElementById('party-comp-table');
+      const partyTableRows = partyTable.querySelectorAll('tbody tr');
+      if(partyTableRows.length > 0){
+        const exportPartyTitle = document.createElement('h3');
+        exportPartyTitle.textContent = 'Party Size Composition';
+        exportPartyTitle.className = 'text-2xl font-bold mt-8 mb-2';
+        exportContainer.appendChild(exportPartyTitle);
+
+        const clonedTable = document.createElement('table');
+        clonedTable.className = 'w-1/2 text-left border-collapse mb-8';
+        clonedTable.innerHTML = `
+          <thead class="border-b-2 border-gray-600 text-xs">
+            <tr>${Array.from(partyTable.querySelectorAll('thead th:not(:last-child)')).map(th=>`<th class="p-1">${th.textContent}</th>`).join('')}</tr>
+          </thead>
+          <tbody></tbody>`;
+
+        const clonedTbody = clonedTable.querySelector('tbody');
+        partyTableRows.forEach(row=>{
+          const clonedRow = document.createElement('tr');
+          clonedRow.className = 'border-b border-gray-700';
+          const inputs = row.querySelectorAll('input');
+          clonedRow.innerHTML = Array.from(inputs).map(input=>`<td class="p-1">${input.value || ''}</td>`).join('');
+          clonedTbody.appendChild(clonedRow);
+        });
+        exportContainer.appendChild(clonedTable);
+      }
+
+      exportWrapper.appendChild(exportContainer);
+      document.body.appendChild(exportWrapper);
+
+      try{
+        const canvas = await html2canvas(exportContainer, { width:1920, scale:1, useCORS:true, backgroundColor:'#111827' });
+        const link = document.createElement('a');
+        link.download = `${(document.getElementById('comp-title').value || 'untitled').replace(/\s+/g,'_').toLowerCase()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }catch(err){
+        console.error('Error exporting image:', err);
+        alert('Export failed. If you opened the file directly, please run a local web server and try again.');
+      }finally{
+        document.body.removeChild(exportWrapper);
+      }
+    });
+  </script>
+</body>
+</html>

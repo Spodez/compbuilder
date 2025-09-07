@@ -1,4 +1,4 @@
-<!DOCTYPE new-html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -245,13 +245,32 @@
         #load-build-library-content .delete-build-btn { color: #ef4444; margin-left: 0.5rem; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
 
         /* --- Style Controls --- */
-        .style-control-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
-        .style-control-group label { font-size: 0.875rem; color: #9ca3af; }
+        .style-control-group { display: flex; align-items: center; gap: 0.5rem; }
+        .style-control-group label { font-size: 0.875rem; color: #9ca3af; white-space: nowrap; }
         .style-control-group input[type="range"] { width: 100px; }
         .style-control-group input[type="color"] { background-color: transparent; border: none; width: 32px; height: 32px; cursor: pointer; border-radius: 0.25rem; padding: 0; }
-        /* Hides default color picker UI elements for a cleaner look */
         .style-control-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         .style-control-group input[type="color"]::-webkit-color-swatch { border: 1px solid #4a5568; border-radius: 0.25rem; }
+        .style-control-group .select-input { background-color: #4a5568; border: 1px solid #718096; border-radius: 0.375rem; color: white; padding: 4px 8px; font-size: 0.875rem; }
+        
+        /* NEW: Alignment Button Styles */
+        .align-btn-group button {
+            background-color: #4a5568;
+            padding: 4px 10px;
+            font-size: 0.875rem;
+            border: 1px solid #718096;
+            color: #cbd5e0;
+            transition: background-color 0.2s;
+        }
+        .align-btn-group button:first-child { border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem; }
+        .align-btn-group button:last-child { border-top-right-radius: 0.375rem; border-bottom-right-radius: 0.375rem; }
+        .align-btn-group button.active {
+            background-color: #3b82f6; /* blue-600 */
+            color: white;
+            font-weight: bold;
+        }
+        .align-btn-group button:hover:not(.active) { background-color: #5a6578; }
+
 
         /* --- EXPORT MODE STYLES --- */
         #temp-export-wrapper { padding: 1.5rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
@@ -261,9 +280,12 @@
         .export-mode .build-quantity-display:empty { display: none; }
         .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; }
         .export-mode .item-slot { padding: 1px; border-radius: 0 !important; cursor: default !important; overflow: visible; }
-        .export-mode #comp-title-clone, .export-mode #comp-notes-clone { text-align: center; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
-        .export-mode #comp-title-clone { font-weight: bold; }
-        .export-mode #comp-notes-clone { white-space: pre-wrap; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .export-mode #comp-title-clone { font-weight: bold; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
+        .export-mode #comp-notes-clone { white-space: pre-wrap; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
+        /* Margin rules for notes depending on placement */
+        .export-mode #temp-export-wrapper > #comp-notes-clone { margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto; } /* Full width placement */
+        .export-mode .export-column-1 > #comp-notes-clone, .export-mode .export-column-2 > #comp-notes-clone { margin-bottom: 1rem; } /* In-column placement */
+
         .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
         .export-mode .export-roles-main-wrapper { display: flex; flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; }
         .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem;}
@@ -293,9 +315,15 @@
                         </div>
                     </div>
                     <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center" style="display: block;">
-                    <div id="style-controls-container" class="space-y-2 mt-4 w-full max-w-lg mx-auto">
-                        <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center gap-x-6 gap-y-2">
-                            <span class="font-semibold text-gray-300 w-full text-center text-sm mb-1">Title Style</span>
+                    
+                    <div id="style-controls-container" class="space-y-3 mt-4 w-full max-w-2xl mx-auto">
+                        <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
+                            <span class="font-semibold text-gray-300 text-sm hidden sm:inline">Title:</span>
+                            <div class="style-control-group align-btn-group" id="title-align-group">
+                                <button data-align="left" class="align-btn" title="Align Left">L</button>
+                                <button data-align="center" class="align-btn active" title="Align Center">C</button>
+                                <button data-align="right" class="align-btn" title="Align Right">R</button>
+                            </div>
                             <div class="style-control-group">
                                 <label for="title-font-size">Size:</label>
                                 <input type="range" id="title-font-size" min="24" max="72" value="36" class="style-control-input">
@@ -306,19 +334,32 @@
                                 <input type="color" id="title-font-color" value="#E2E8F0" class="style-control-input">
                             </div>
                         </div>
-                        <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center gap-x-6 gap-y-2">
-                             <span class="font-semibold text-gray-300 w-full text-center text-sm mb-1">Notes Style & Position</span>
-                             <div class="style-control-group">
-                                <label for="notes-font-size">Size:</label>
-                                <input type="range" id="notes-font-size" min="12" max="32" value="16" class="style-control-input">
-                                <span id="notes-font-size-value" class="text-xs w-6 text-right">16px</span>
-                            </div>
-                            <div class="style-control-group">
-                                <label for="notes-font-color">Color:</label>
-                                <input type="color" id="notes-font-color" value="#CBD5E0" class="style-control-input">
-                            </div>
-                             <div class="style-control-group">
-                                 <button id="toggle-notes-position" class="bg-gray-600 hover:bg-gray-500 text-white text-xs font-bold py-1 px-2 rounded">Move Notes Below Roles</button>
+                        <div class="p-3 rounded bg-gray-800 border border-gray-700 space-y-3">
+                             <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
+                                <span class="font-semibold text-gray-300 text-sm hidden sm:inline">Notes:</span>
+                                <div class="style-control-group align-btn-group" id="notes-align-group">
+                                    <button data-align="left" class="align-btn active" title="Align Left">L</button>
+                                    <button data-align="center" class="align-btn" title="Align Center">C</button>
+                                    <button data-align="right" class="align-btn" title="Align Right">R</button>
+                                </div>
+                                <div class="style-control-group">
+                                    <label for="notes-font-size">Size:</label>
+                                    <input type="range" id="notes-font-size" min="12" max="32" value="16" class="style-control-input">
+                                    <span id="notes-font-size-value" class="text-xs w-6 text-right">16px</span>
+                                </div>
+                                <div class="style-control-group">
+                                    <label for="notes-font-color">Color:</label>
+                                    <input type="color" id="notes-font-color" value="#CBD5E0" class="style-control-input">
+                                </div>
+                             </div>
+                             <div class="style-control-group justify-center border-t border-gray-700 pt-3">
+                                 <label for="notes-position-select">Export Position:</label>
+                                 <select id="notes-position-select" class="select-input">
+                                     <option value="above_full">Above Roles (Full Width)</option>
+                                     <option value="below_full">Below Roles (Full Width)</option>
+                                     <option value="col1_top">Top of Column 1</option>
+                                     <option value="col2_top">Top of Column 2</option>
+                                 </select>
                              </div>
                         </div>
                     </div>
@@ -463,9 +504,11 @@
             // NEW: Style state variables
             let titleFontSize = '36';
             let titleColor = '#E2E8F0';
+            let titleAlign = 'center'; // 'left', 'center', 'right'
             let notesFontSize = '16';
             let notesColor = '#CBD5E0';
-            let notesPositionBelow = false;
+            let notesAlign = 'left'; // 'left', 'center', 'right'
+            let notesPosition = 'above_full'; // 'above_full', 'below_full', 'col1_top', 'col2_top'
 
             /* ----------------- DOM ELEMENTS ---------------- */
             const compContainer = document.getElementById('comp-container');
@@ -502,10 +545,12 @@
             const titleFontSizeSlider = document.getElementById('title-font-size');
             const titleFontSizeValue = document.getElementById('title-font-size-value');
             const titleColorPicker = document.getElementById('title-font-color');
+            const titleAlignGroup = document.getElementById('title-align-group');
             const notesFontSizeSlider = document.getElementById('notes-font-size');
             const notesFontSizeValue = document.getElementById('notes-font-size-value');
             const notesColorPicker = document.getElementById('notes-font-color');
-            const toggleNotesPosBtn = document.getElementById('toggle-notes-position');
+            const notesAlignGroup = document.getElementById('notes-align-group');
+            const notesPositionSelect = document.getElementById('notes-position-select');
 
             /* ----------------- ROLE & BUILD FUNCTIONS ---------------- */
             function createRoleSection(role) {
@@ -858,13 +903,14 @@
                     notes: compNotesInput.value,
                     logoSrc: logoImageSrc,
                     backgroundImageSrc: backgroundImageSrc,
-                    // NEW: Save style data
                     styles: {
                         titleFontSize: titleFontSize,
                         titleColor: titleColor,
+                        titleAlign: titleAlign,
                         notesFontSize: notesFontSize,
                         notesColor: notesColor,
-                        notesPositionBelow: notesPositionBelow
+                        notesAlign: notesAlign,
+                        notesPosition: notesPosition
                     },
                     roles: {}
                 };
@@ -896,23 +942,25 @@
                         logoImageSrc = loadedData.logoSrc || null;
                         backgroundImageSrc = loadedData.backgroundImageSrc || null;
 
-                        // NEW: Load style data
-                        if (loadedData.styles) {
-                            titleFontSize = loadedData.styles.titleFontSize || '36';
-                            titleColor = loadedData.styles.titleColor || '#E2E8F0';
-                            notesFontSize = loadedData.styles.notesFontSize || '16';
-                            notesColor = loadedData.styles.notesColor || '#CBD5E0';
-                            notesPositionBelow = loadedData.styles.notesPositionBelow || false;
+                        // Load style data with defaults and migration logic
+                        const styles = loadedData.styles || {};
+                        titleFontSize = styles.titleFontSize || '36';
+                        titleColor = styles.titleColor || '#E2E8F0';
+                        titleAlign = styles.titleAlign || 'center';
+                        notesFontSize = styles.notesFontSize || '16';
+                        notesColor = styles.notesColor || '#CBD5E0';
+                        notesAlign = styles.notesAlign || 'left';
+                        
+                        // Migration logic for old notesPositionBelow boolean
+                        if (styles.notesPosition) {
+                            notesPosition = styles.notesPosition;
+                        } else if (styles.notesPositionBelow === true) {
+                            notesPosition = 'below_full';
                         } else {
-                            // Reset to default if loading old save without style info
-                            titleFontSize = '36';
-                            titleColor = '#E2E8F0';
-                            notesFontSize = '16';
-                            notesColor = '#CBD5E0';
-                            notesPositionBelow = false;
+                            notesPosition = 'above_full';
                         }
+                        
                         applyCurrentStylesToEditor();
-
                         updateLogoTitleDisplay();
                         applyBackground();
 
@@ -935,24 +983,39 @@
                 reader.readAsText(file);
             }
             
-            // NEW: Helper function to apply styles from state variables to editor elements
+            // Helper function to apply styles from state variables to editor elements and controls
             function applyCurrentStylesToEditor() {
                 // Apply Title Styles
                 compTitleInput.style.fontSize = `${titleFontSize}px`;
                 compTitleInput.style.color = titleColor;
+                compTitleInput.style.textAlign = titleAlign;
                 titleFontSizeSlider.value = titleFontSize;
                 titleFontSizeValue.textContent = `${titleFontSize}px`;
                 titleColorPicker.value = titleColor;
+                updateAlignmentButtons(titleAlignGroup, titleAlign);
 
                 // Apply Notes Styles
                 compNotesInput.style.fontSize = `${notesFontSize}px`;
                 compNotesInput.style.color = notesColor;
+                compNotesInput.style.textAlign = notesAlign;
                 notesFontSizeSlider.value = notesFontSize;
                 notesFontSizeValue.textContent = `${notesFontSize}px`;
                 notesColorPicker.value = notesColor;
-                
-                // Apply Notes Position Button Text
-                toggleNotesPosBtn.textContent = notesPositionBelow ? 'Move Notes Above Roles' : 'Move Notes Below Roles';
+                updateAlignmentButtons(notesAlignGroup, notesAlign);
+
+                // Apply Notes Position Selection
+                notesPositionSelect.value = notesPosition;
+            }
+
+            // NEW: Helper function to update active state of alignment buttons
+            function updateAlignmentButtons(buttonGroup, activeAlignment) {
+                buttonGroup.querySelectorAll('button').forEach(btn => {
+                    if (btn.dataset.align === activeAlignment) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
             }
 
             /* ----------------- EVENT LISTENERS SETUP ---------------- */
@@ -1014,13 +1077,8 @@
                         let top = e.clientY;
                         let left = e.clientX;
 
-                        if (e.clientY + menuHeight > viewportHeight) {
-                            top = viewportHeight - menuHeight - 5;
-                        }
-                        if (e.clientX + menuWidth > viewportWidth) {
-                            left = viewportWidth - menuWidth - 5;
-                        }
-
+                        if (e.clientY + menuHeight > viewportHeight) { top = viewportHeight - menuHeight - 5; }
+                        if (e.clientX + menuWidth > viewportWidth) { left = viewportWidth - menuWidth - 5; }
                         if (top < 5) top = 5;
                         if (left < 5) left = 5;
 
@@ -1156,7 +1214,7 @@
                 }
             });
 
-            // --- NEW: Style Control Listeners ---
+            // --- Style Control Listeners ---
             titleFontSizeSlider.addEventListener('input', (e) => {
                 titleFontSize = e.target.value;
                 titleFontSizeValue.textContent = `${titleFontSize}px`;
@@ -1166,6 +1224,15 @@
                 titleColor = e.target.value;
                 compTitleInput.style.color = titleColor;
             });
+            titleAlignGroup.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button && button.dataset.align) {
+                    titleAlign = button.dataset.align;
+                    compTitleInput.style.textAlign = titleAlign;
+                    updateAlignmentButtons(titleAlignGroup, titleAlign);
+                }
+            });
+
             notesFontSizeSlider.addEventListener('input', (e) => {
                 notesFontSize = e.target.value;
                 notesFontSizeValue.textContent = `${notesFontSize}px`;
@@ -1175,10 +1242,16 @@
                 notesColor = e.target.value;
                 compNotesInput.style.color = notesColor;
             });
-            toggleNotesPosBtn.addEventListener('click', () => {
-                notesPositionBelow = !notesPositionBelow;
-                toggleNotesPosBtn.textContent = notesPositionBelow ? 'Move Notes Above Roles' : 'Move Notes Below Roles';
-                showToast(notesPositionBelow ? "Notes will export below roles." : "Notes will export above roles.");
+            notesAlignGroup.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button && button.dataset.align) {
+                    notesAlign = button.dataset.align;
+                    compNotesInput.style.textAlign = notesAlign;
+                    updateAlignmentButtons(notesAlignGroup, notesAlign);
+                }
+            });
+            notesPositionSelect.addEventListener('change', (e) => {
+                notesPosition = e.target.value;
             });
 
             // --- EXPORT FUNCTION ---
@@ -1194,7 +1267,7 @@
                     tempExportContainer.style.backgroundPosition = 'center';
                 }
 
-                // Create Title/Logo Clone
+                // --- Create Cloned Elements ---
                 let titleOrLogoClone;
                 if (logoImageSrc) {
                     const logoClone = document.createElement('img');
@@ -1206,30 +1279,38 @@
                     const titleClone = document.createElement('div');
                     titleClone.id = 'comp-title-clone';
                     titleClone.textContent = titleValue || compTitleInput.placeholder;
-                    // Apply custom styles
                     titleClone.style.fontSize = `${titleFontSize}px`;
                     titleClone.style.color = titleColor;
+                    titleClone.style.textAlign = titleAlign; // Apply alignment
                     titleOrLogoClone = titleClone;
                 }
 
-                // Create Notes Clone
                 const notesValue = compNotesInput.value;
                 let notesClone = null;
                 if (notesValue) {
                     notesClone = document.createElement('div');
                     notesClone.id = 'comp-notes-clone';
                     notesClone.textContent = notesValue;
-                    // Apply custom styles
                     notesClone.style.fontSize = `${notesFontSize}px`;
                     notesClone.style.color = notesColor;
+                    notesClone.style.textAlign = notesAlign; // Apply alignment
                 }
 
-                // Create Roles Wrapper and Columns
+                // --- Assemble Export Layout based on notesPosition ---
+                tempExportContainer.appendChild(titleOrLogoClone);
+
+                if (notesPosition === 'above_full' && notesClone) {
+                    tempExportContainer.appendChild(notesClone);
+                }
+
                 const rolesMainWrapper = document.createElement('div');
                 rolesMainWrapper.className = 'export-roles-main-wrapper';
 
                 const column1 = document.createElement('div');
                 column1.className = 'export-column-1';
+                if (notesPosition === 'col1_top' && notesClone) {
+                    column1.appendChild(notesClone); // Inject notes at top of column 1
+                }
                 EXPORT_COLUMN_1_ROLES.forEach(roleId => {
                     const roleElementClone = document.getElementById(roleId)?.cloneNode(true);
                     if (roleElementClone) column1.appendChild(roleElementClone);
@@ -1237,6 +1318,9 @@
 
                 const column2 = document.createElement('div');
                 column2.className = 'export-column-2';
+                if (notesPosition === 'col2_top' && notesClone) {
+                    column2.appendChild(notesClone); // Inject notes at top of column 2
+                }
                 EXPORT_COLUMN_2_ROLES.forEach(roleId => {
                     const roleElementClone = document.getElementById(roleId)?.cloneNode(true);
                     if (roleElementClone) column2.appendChild(roleElementClone);
@@ -1244,17 +1328,13 @@
 
                 rolesMainWrapper.appendChild(column1);
                 rolesMainWrapper.appendChild(column2);
-
-                // Assemble Final Export Layout based on position preference
-                tempExportContainer.appendChild(titleOrLogoClone);
-                if (!notesPositionBelow && notesClone) {
-                    tempExportContainer.appendChild(notesClone);
-                }
                 tempExportContainer.appendChild(rolesMainWrapper);
-                if (notesPositionBelow && notesClone) {
-                    tempExportContainer.appendChild(notesClone);
+
+                if (notesPosition === 'below_full' && notesClone) {
+                    tempExportContainer.appendChild(notesClone); // Inject notes at bottom of page
                 }
 
+                // --- Generate Canvas ---
                 html2canvas(tempExportContainer, {
                     scale: 2,
                     useCORS: true,

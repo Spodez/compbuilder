@@ -202,8 +202,8 @@
         .modal-input:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5); }
 
         /* --- Drag Handle & Toast --- */
-        .drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; }
-        .drag-handle:active { cursor: grabbing; }
+        .build-drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; }
+        .build-drag-handle:active { cursor: grabbing; }
         #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #38a169; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; z-index: 100; }
         #toast.show { opacity: 1; transform: translate(-50%, -10px); }
 
@@ -217,13 +217,23 @@
             border-radius: 0.5rem;
             min-width: 200px;
             border: 1px solid rgba(45, 55, 72, 0.5);
+            background-color: #2d3748; /* Added bg color for contrast when dragging */
+            transition: box-shadow 0.2s, transform 0.2s;
         }
-        .role-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        .role-section.dragging {
+            opacity: 0.5;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transform: scale(1.02);
         }
-        .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
+        .role-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+        .role-title { font-size: 1.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .role-collapse-toggle { background: none; border: none; color: #9ca3af; font-size: 1rem; cursor: pointer; transition: transform 0.2s; }
+        .role-section.collapsed .role-collapse-toggle { transform: rotate(-90deg); }
+        .role-drag-handle { cursor: move; color: #718096; font-size: 1.25rem; padding-left: 0.25rem; padding-right: 0.5rem; }
+
+        .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; transition: all 0.3s ease-out; overflow: hidden; }
+        .role-section.collapsed .builds-container { display: none; }
+        
         .build-row { display: flex; align-items: center; gap: 2px; }
         .build-items-wrapper { display: flex; gap: 2px; }
         .category-label { position: absolute; top: -1.5rem; left: 0; width: 100%; text-align: center; font-size: 0.75rem; color: #94a3b8; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
@@ -244,6 +254,25 @@
         #load-build-library-content .saved-build-name { font-weight: 500; }
         #load-build-library-content .delete-build-btn { color: #ef4444; margin-left: 0.5rem; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
 
+        /* --- Tab Controls --- */
+        .tab-buttons { display: flex; border-bottom: 2px solid #4a5568; margin-bottom: 1rem; }
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: transparent;
+            border: none;
+            color: #9ca3af;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s, border-bottom-color 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px; /* Overlap border-bottom of container */
+        }
+        .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+        .tab-btn:hover:not(.active) { color: #e2e8f0; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
         /* --- Style Controls --- */
         .style-control-group { display: flex; align-items: center; gap: 0.5rem; }
         .style-control-group label { font-size: 0.875rem; color: #9ca3af; white-space: nowrap; }
@@ -252,8 +281,8 @@
         .style-control-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         .style-control-group input[type="color"]::-webkit-color-swatch { border: 1px solid #4a5568; border-radius: 0.25rem; }
         .style-control-group .select-input { background-color: #4a5568; border: 1px solid #718096; border-radius: 0.375rem; color: white; padding: 4px 8px; font-size: 0.875rem; }
-        
-        /* NEW: Alignment Button Styles */
+
+        /* Alignment Button Styles */
         .align-btn-group button {
             background-color: #4a5568;
             padding: 4px 10px;
@@ -264,28 +293,22 @@
         }
         .align-btn-group button:first-child { border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem; }
         .align-btn-group button:last-child { border-top-right-radius: 0.375rem; border-bottom-right-radius: 0.375rem; }
-        .align-btn-group button.active {
-            background-color: #3b82f6; /* blue-600 */
-            color: white;
-            font-weight: bold;
-        }
+        .align-btn-group button.active { background-color: #3b82f6; color: white; font-weight: bold; }
         .align-btn-group button:hover:not(.active) { background-color: #5a6578; }
 
 
         /* --- EXPORT MODE STYLES --- */
         #temp-export-wrapper { padding: 1.5rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
-        .export-mode .drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #comp-title, .export-mode #logo-upload-section, .export-mode #comp-notes, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode #style-controls-container { display: none !important; }
+        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle { display: none !important; }
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
         .export-mode .build-quantity-display { display: block; }
         .export-mode .build-quantity-display:empty { display: none; }
-        .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; }
+        .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; display: flex !important; } /* Ensure collapsed sections are visible for export */
         .export-mode .item-slot { padding: 1px; border-radius: 0 !important; cursor: default !important; overflow: visible; }
         .export-mode #comp-title-clone { font-weight: bold; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
         .export-mode #comp-notes-clone { white-space: pre-wrap; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
-        /* Margin rules for notes depending on placement */
-        .export-mode #temp-export-wrapper > #comp-notes-clone { margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto; } /* Full width placement */
-        .export-mode .export-column-1 > #comp-notes-clone, .export-mode .export-column-2 > #comp-notes-clone { margin-bottom: 1rem; } /* In-column placement */
-
+        .export-mode #temp-export-wrapper > #comp-notes-clone { margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .export-mode .export-column-1 > #comp-notes-clone, .export-mode .export-column-2 > #comp-notes-clone { margin-bottom: 1rem; }
         .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
         .export-mode .export-roles-main-wrapper { display: flex; flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; }
         .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem;}
@@ -298,79 +321,92 @@
 <body class="p-4 md:p-8">
 
     <div id="comp-container" class="max-w-7xl mx-auto bg-gray-900 p-6 rounded-lg shadow-xl">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <div class="flex-grow md:mr-8 mb-4 md:mb-0 space-y-6">
-                <div id="logo-title-section" class="flex flex-col items-center">
-                    <div class="flex items-center justify-center gap-4 mb-4">
-                        <div id="logo-upload-section" class="flex flex-col items-center gap-2">
-                            <img id="logo-preview" src="" alt="Comp Logo" class="hidden max-h-24 object-contain">
-                            <input type="file" id="comp-logo-upload" class="hidden" accept="image/*">
-                            <button id="upload-logo-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm">Upload Logo</button>
-                            <button id="remove-logo-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden">Remove Logo</button>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div id="header-controls" class="flex-grow md:mr-8 mb-4 md:mb-0">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="tab-pane-content">Content</button>
+                    <button class="tab-btn" data-tab="tab-pane-appearance">Appearance & Layout</button>
+                </div>
+
+                <div class="tab-content-container space-y-6">
+                    <div id="tab-pane-content" class="tab-pane active space-y-6">
+                        <div>
+                            <label for="comp-title" class="text-xl font-semibold mb-2 text-gray-300 block">Composition Title</label>
+                            <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" style="text-align: center;">
                         </div>
-                        <div id="background-controls" class="flex flex-col items-center gap-2">
-                            <input type="file" id="background-upload-input" class="hidden" accept="image/*">
-                            <button id="upload-background-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm">Set Background</button>
-                            <button id="remove-background-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden">Remove BG</button>
+                        <div>
+                            <label for="comp-notes" class="text-xl font-semibold mb-2 text-gray-300 block">Notes</label>
+                            <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
                         </div>
                     </div>
-                    <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center" style="display: block;">
-                    
-                    <div id="style-controls-container" class="space-y-3 mt-4 w-full max-w-2xl mx-auto">
-                        <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
-                            <span class="font-semibold text-gray-300 text-sm hidden sm:inline">Title:</span>
-                            <div class="style-control-group align-btn-group" id="title-align-group">
-                                <button data-align="left" class="align-btn" title="Align Left">L</button>
-                                <button data-align="center" class="align-btn active" title="Align Center">C</button>
-                                <button data-align="right" class="align-btn" title="Align Right">R</button>
+
+                    <div id="tab-pane-appearance" class="tab-pane space-y-6">
+                        <div id="logo-title-section" class="flex flex-wrap items-center justify-around gap-6">
+                            <div id="logo-upload-section" class="flex flex-col items-center gap-2">
+                                <img id="logo-preview" src="" alt="Comp Logo" class="hidden max-h-24 object-contain mb-2">
+                                <input type="file" id="comp-logo-upload" class="hidden" accept="image/*">
+                                <button id="upload-logo-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm w-full">Upload Logo</button>
+                                <button id="remove-logo-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden w-full">Remove Logo</button>
                             </div>
-                            <div class="style-control-group">
-                                <label for="title-font-size">Size:</label>
-                                <input type="range" id="title-font-size" min="24" max="72" value="36" class="style-control-input">
-                                <span id="title-font-size-value" class="text-xs w-6 text-right">36px</span>
-                            </div>
-                            <div class="style-control-group">
-                                <label for="title-font-color">Color:</label>
-                                <input type="color" id="title-font-color" value="#E2E8F0" class="style-control-input">
+                            <div id="background-controls" class="flex flex-col items-center gap-2">
+                                <span class="text-gray-400 text-sm mb-2">Custom Background</span>
+                                <input type="file" id="background-upload-input" class="hidden" accept="image/*">
+                                <button id="upload-background-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm w-full">Set Background</button>
+                                <button id="remove-background-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden w-full">Remove BG</button>
                             </div>
                         </div>
-                        <div class="p-3 rounded bg-gray-800 border border-gray-700 space-y-3">
-                             <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
-                                <span class="font-semibold text-gray-300 text-sm hidden sm:inline">Notes:</span>
-                                <div class="style-control-group align-btn-group" id="notes-align-group">
-                                    <button data-align="left" class="align-btn active" title="Align Left">L</button>
-                                    <button data-align="center" class="align-btn" title="Align Center">C</button>
+                        <div id="style-controls-container" class="space-y-3 pt-4 border-t border-gray-700">
+                            <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
+                                <span class="font-semibold text-gray-300 text-sm hidden sm:inline">Title:</span>
+                                <div class="style-control-group align-btn-group" id="title-align-group">
+                                    <button data-align="left" class="align-btn" title="Align Left">L</button>
+                                    <button data-align="center" class="align-btn active" title="Align Center">C</button>
                                     <button data-align="right" class="align-btn" title="Align Right">R</button>
                                 </div>
                                 <div class="style-control-group">
-                                    <label for="notes-font-size">Size:</label>
-                                    <input type="range" id="notes-font-size" min="12" max="32" value="16" class="style-control-input">
-                                    <span id="notes-font-size-value" class="text-xs w-6 text-right">16px</span>
+                                    <label for="title-font-size">Size:</label>
+                                    <input type="range" id="title-font-size" min="24" max="72" value="36" class="style-control-input">
+                                    <span id="title-font-size-value" class="text-xs w-6 text-right">36px</span>
                                 </div>
                                 <div class="style-control-group">
-                                    <label for="notes-font-color">Color:</label>
-                                    <input type="color" id="notes-font-color" value="#CBD5E0" class="style-control-input">
+                                    <label for="title-font-color">Color:</label>
+                                    <input type="color" id="title-font-color" value="#E2E8F0" class="style-control-input">
                                 </div>
-                             </div>
-                             <div class="style-control-group justify-center border-t border-gray-700 pt-3">
-                                 <label for="notes-position-select">Export Position:</label>
-                                 <select id="notes-position-select" class="select-input">
-                                     <option value="above_full">Above Roles (Full Width)</option>
-                                     <option value="below_full">Below Roles (Full Width)</option>
-                                     <option value="col1_top">Top of Column 1</option>
-                                     <option value="col2_top">Top of Column 2</option>
-                                 </select>
-                             </div>
+                            </div>
+                            <div class="p-3 rounded bg-gray-800 border border-gray-700 space-y-3">
+                                <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
+                                    <span class="font-semibold text-gray-300 text-sm hidden sm:inline">Notes:</span>
+                                    <div class="style-control-group align-btn-group" id="notes-align-group">
+                                        <button data-align="left" class="align-btn active" title="Align Left">L</button>
+                                        <button data-align="center" class="align-btn" title="Align Center">C</button>
+                                        <button data-align="right" class="align-btn" title="Align Right">R</button>
+                                    </div>
+                                    <div class="style-control-group">
+                                        <label for="notes-font-size">Size:</label>
+                                        <input type="range" id="notes-font-size" min="12" max="32" value="16" class="style-control-input">
+                                        <span id="notes-font-size-value" class="text-xs w-6 text-right">16px</span>
+                                    </div>
+                                    <div class="style-control-group">
+                                        <label for="notes-font-color">Color:</label>
+                                        <input type="color" id="notes-font-color" value="#CBD5E0" class="style-control-input">
+                                    </div>
+                                </div>
+                                <div class="style-control-group justify-center border-t border-gray-700 pt-3">
+                                    <label for="notes-position-select">Export Position:</label>
+                                    <select id="notes-position-select" class="select-input">
+                                        <option value="above_full">Above Roles (Full Width)</option>
+                                        <option value="below_full">Below Roles (Full Width)</option>
+                                        <option value="col1_top">Top of Column 1</option>
+                                        <option value="col2_top">Top of Column 2</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-300">Notes</h3>
-                    <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
-                </div>
             </div>
-            <div id="action-buttons" class="flex flex-col space-y-2 w-full md:w-auto self-start md:mt-12">
+
+            <div id="action-buttons" class="flex flex-col space-y-2 w-full md:w-auto self-start md:mt-16">
                 <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Composition</button>
                 <button id="load-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Load Composition</button>
                 <input type="file" id="load-file-input" class="hidden" accept=".json">
@@ -457,7 +493,6 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             const ITEMS = {
-                // MODIFICATION: Changed 'Weapons' key to 'weapons' for case sensitivity
                 'weapons': ['Arcane Staff.png', 'Arclight Blasters.png', 'Arctic Staff.png', 'Astral Staff.png', 'Battle Bracers.png', 'Battleaxe.png', 'Bear Paws.png', 'Bedrock Mace.png', 'Black Monk Stave.png', 'Blazing Staff.png', 'Blight Staff.png', 'Bloodletter.png', 'Bloodmoon Staff.png', 'Boltcasters.png', 'Bow of Badon.png', 'Bow.png', 'Brawler Gloves.png', 'Bridled Fury.png', 'Brimstone Staff.png', 'Broadsword.png', 'Camlann Mace.png', 'Carrioncaller.png', 'Carving Sword.png', 'Chillhowl.png', 'Clarent Blade.png', 'Claws.png', 'Claymore.png', 'Crossbow.png', 'Crystal Reaper.png', 'Cursed Skull.png', 'Cursed Staff.png', 'Dagger Pair.png', 'Dagger.png', 'Damnation Staff.png', 'Dawnsong.png', 'Daybreaker.png', 'Deathgivers.png', 'Demonfang.png', 'Demonic Staff.png', 'Divine Staff.png', 'Double Bladed Staff.png', 'Dreadstorm Monach.png', 'Druidic Staff.png', 'Dualswords.png', 'Earthrune Staff.png', 'Energy Shaper.png', 'Enigmatic Staff.png', 'Evensong.png', 'Exalted Staff.png', 'Fallen Staff.png', 'Fire Staff.png', 'Fists of Avalon.png', 'Flamewalker Staff.png', 'Forcepulse Bracers.png', 'Forge Hammers.png', 'Forgebark Staff.png', 'Frost Staff.png', 'Galatine Pair.png', 'Glacial Staff.png', 'Glaive.png', 'Grailseeker.png', 'Great Arcane Staff.png', 'Great Cursed Staff.png', 'Great Frost Staff.png', 'Great Hammer.png', 'Great Holy Staff.png', 'Great Nature Staff.png', 'Greataxe.png', 'Grovekeeper.png', 'Halberd.png', 'Hallowfall.png', 'Hammer.png', 'Hand of Justice.png', 'Heavy Crossbow.png', 'Heavy Mace.png', 'Hellfire Hands.png', 'Hellspawn Staff.png', 'Heron Spear.png', 'Hoarfrost Staff.png', 'Holy Staff.png', 'Icicle Staff.png', 'Incubus Mace.png', 'Infernal Scythe.png', 'Infernal Staff.png', 'Infinity Blade.png', 'Iron Clad Staff.png', 'Ironroof Staff.png', 'Kingmaker.png', 'Lifecurse Staff.png', 'Lifetouch Staff.png', 'Light Crossbow.png', 'Lightcaller.png', 'Longbow.png', 'Mace.png', 'Malevolent Locus.png', 'Mistpiercer.png', 'Morning Star.png', 'Nature Staff.png', 'Oathkeepers.png', 'Occult Staff.png', 'Permafrost Prism.png', 'Phantom Twinblade.png', 'Pike.png', 'Polehammer.png', 'Primal Staff.png', 'Prowling Staff.png', 'Quarterstaff.png', 'Rampant Staff.png', 'Ravenstrike Cestus.png', 'Realmbreaker.png', 'Redemption Staff.png', 'Riftglaive.png', 'Rootbound Staff.png', 'Rotcaller Staff.png', 'Shadowcaller.png', 'Siegebow.png', 'Skystrider Bow.png', 'Soulscythe.png', 'Spear.png', 'Spiked Gauntlets.png', 'Spirithunter.png', 'Staff of Balance.png', 'Stillgaze Staff.png', 'Tombhammer.png', 'Trinity Spear.png', 'Truebolt Hammer.png', 'Twin Slayers.png', 'Ursine Maulers.png', 'Wailing Bow.png', 'Warbow.png', 'Weeping Repeater.png', 'Whispering Bow.png', 'Wild Staff.png', 'Wildfire Staff.png', 'Witchwork Staff.png'],
                 'OffHands': ['Astral Aegis.png', 'Caitiff Shield.png', 'Celestial Censer.png', 'Cryptcandle.png', 'Eye of Secrets.png', 'Facebreaker.png', 'Leering Cane.png', 'Mistcaller.png', 'Muisak.png', 'Sacred Scepter.png', 'Sarcophagus.png', 'Shield.png', 'Taproot.png', 'Tome of Spells.png', 'Torch.png'],
                 'Head': ['Assassin Hood.png', 'Cleric Cowl.png', 'Cowl of Purity.png', 'Cultist Cowl.png', 'Demon Helmet.png', 'Druid Cowl.png', 'Duskweaver Helmet.png', 'Feyscale Hat.png', 'Fiend Cowl.png', 'Graveguard Helmet.png', 'Guardian Helmet.png', 'Hellion Hood.png', 'Helmet of Valor.png', 'Hood of Tenacity.png', 'Hunter Hood.png', 'Judicator Helmet.png', 'Knight Helmet.png', 'Mage Cowl.png', 'Mercenary Hood.png', 'Mistwalker Hood.png', 'Royal Cowl.png', 'Royal Helmet.png', 'Royal Hood.png', 'Scholar Cowl.png', 'Soldier Helmet.png', 'Specter Hood.png', 'Stalker Hood.png'],
@@ -469,21 +504,14 @@
             };
 
             const CATEGORIES = [
-                { key: 'weapons', label: 'Weapon' },
-                { key: 'OffHands', label: 'Off-Hand' },
-                { key: 'Head', label: 'Head' },
-                { key: 'Chest', label: 'Chest' },
-                { key: 'Shoes', label: 'Shoes' },
-                { key: 'Capes', label: 'Cape' },
-                { key: 'Food', label: 'Food' },
-                { key: 'Potion', label: 'Potion' }
+                { key: 'weapons', label: 'Weapon' }, { key: 'OffHands', label: 'Off-Hand' }, { key: 'Head', label: 'Head' },
+                { key: 'Chest', label: 'Chest' }, { key: 'Shoes', label: 'Shoes' }, { key: 'Capes', label: 'Cape' },
+                { key: 'Food', label: 'Food' }, { key: 'Potion', label: 'Potion' }
             ];
 
             const ROLES = [
-                { id: 'engage', name: 'Engage', color: 'bg-purple-800' },
-                { id: 'tanks', name: 'Tanks', color: 'bg-blue-800' },
-                { id: 'support', name: 'Support', color: 'bg-yellow-800' },
-                { id: 'healer', name: 'Healer', color: 'bg-green-800' },
+                { id: 'engage', name: 'Engage', color: 'bg-purple-800' }, { id: 'tanks', name: 'Tanks', color: 'bg-blue-800' },
+                { id: 'support', name: 'Support', color: 'bg-yellow-800' }, { id: 'healer', name: 'Healer', color: 'bg-green-800' },
                 { id: 'dps', name: 'DPS', color: 'bg-red-800' }
             ];
             const EXPORT_COLUMN_1_ROLES = ['engage', 'tanks', 'support'];
@@ -494,21 +522,21 @@
             let activeSlot = null;
             let activeCategory = null;
             let copiedBuildData = null;
-            let draggedElement = null;
+            let draggedBuildRow = null;
+            let draggedRoleColumn = null;
             let logoImageSrc = null;
             let backgroundImageSrc = null;
             let isSelectingAlternative = false;
             let activeBuildRowForSave = null;
             let activeRoleForLoad = null;
 
-            // NEW: Style state variables
             let titleFontSize = '36';
             let titleColor = '#E2E8F0';
-            let titleAlign = 'center'; // 'left', 'center', 'right'
+            let titleAlign = 'center';
             let notesFontSize = '16';
             let notesColor = '#CBD5E0';
-            let notesAlign = 'left'; // 'left', 'center', 'right'
-            let notesPosition = 'above_full'; // 'above_full', 'below_full', 'col1_top', 'col2_top'
+            let notesAlign = 'left';
+            let notesPosition = 'above_full';
 
             /* ----------------- DOM ELEMENTS ---------------- */
             const compContainer = document.getElementById('comp-container');
@@ -541,7 +569,6 @@
             const abilitySaveBtn = document.getElementById('ability-save-btn');
             const abilityCancelBtn = document.getElementById('ability-cancel-btn');
 
-            // NEW: Style control DOM elements
             const titleFontSizeSlider = document.getElementById('title-font-size');
             const titleFontSizeValue = document.getElementById('title-font-size-value');
             const titleColorPicker = document.getElementById('title-font-color');
@@ -551,24 +578,33 @@
             const notesColorPicker = document.getElementById('notes-font-color');
             const notesAlignGroup = document.getElementById('notes-align-group');
             const notesPositionSelect = document.getElementById('notes-position-select');
+            const tabButtonsContainer = document.querySelector('.tab-buttons');
 
             /* ----------------- ROLE & BUILD FUNCTIONS ---------------- */
             function createRoleSection(role) {
                 const section = document.createElement('div');
                 section.id = role.id;
-                section.className = `role-section`;
+                section.className = 'role-section';
+                section.draggable = true; // Make role section draggable
+
                 section.innerHTML = `
-                    <div class="flex flex-col items-center mb-1 gap-2">
+                    <div class="role-header">
+                        <span class="role-drag-handle" title="Drag to reorder role">⠿</span>
+                        <button class="role-collapse-toggle" title="Collapse/Expand Role">▼</button>
                         <h2 class="role-title font-bold ${role.color.replace('bg-', 'text-').replace('-800', '-300')}">${role.name}</h2>
-                        <div class="flex space-x-2">
-                            <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-3 rounded text-sm" data-role="${role.id}">Load Build</button>
-                            <button class="paste-build-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded text-sm hidden" data-role="${role.id}">Paste</button>
-                            <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm" data-role="${role.id}">+ Add New</button>
+                        <div class="flex space-x-2 ml-auto pl-2">
+                            <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
+                            <button class="paste-build-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded text-xs hidden" data-role="${role.id}">Paste</button>
+                            <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">+ Add</button>
                         </div>
                     </div>
                     <div class="builds-container" data-role="${role.id}"></div>
                 `;
                 rolesContainer.appendChild(section);
+
+                // Add event listeners for new functionalities
+                section.addEventListener('dragstart', handleRoleDragStart);
+                section.addEventListener('dragend', handleRoleDragEnd);
             }
 
             function createBuildRow(buildData = { slots: [] }) {
@@ -609,7 +645,7 @@
                         <input type="text" class="build-quantity-input" placeholder="x?" value="${partyQuantity}">
                         <span class="build-quantity-display">${partyQuantity}</span>
                     </div>
-                    <div class="drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
+                    <div class="build-drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
                     <div class="build-items-wrapper">${slotsHTML}</div>
                     <div class="flex flex-col space-y-1 ml-4 self-center">
                         <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
@@ -618,9 +654,9 @@
                     </div>
                 `;
 
-                buildRow.addEventListener('dragstart', handleDragStart);
-                buildRow.addEventListener('dragend', handleDragEnd);
-                buildRow.addEventListener('dragover', handleDragOver);
+                buildRow.addEventListener('dragstart', handleBuildDragStart);
+                buildRow.addEventListener('dragend', handleBuildDragEnd);
+                buildRow.addEventListener('dragover', handleBuildDragOver);
 
                 buildRow.addEventListener('input', (e) => {
                     if (e.target.classList.contains('quantity-input')) {
@@ -641,28 +677,79 @@
             }
 
             /* ----------------- DRAG & DROP HANDLERS ---------------- */
-            function handleDragStart(e) {
-                draggedElement = e.currentTarget;
-                e.dataTransfer.effectAllowed = 'move';
-                setTimeout(() => { draggedElement.classList.add('opacity-50'); }, 0);
+            // --- Build Row Dragging ---
+            function handleBuildDragStart(e) {
+                // Check if the drag handle for the build row was used.
+                if (e.target.classList.contains('build-drag-handle')) {
+                    draggedBuildRow = e.currentTarget;
+                    e.dataTransfer.effectAllowed = 'move';
+                    setTimeout(() => { draggedBuildRow.classList.add('opacity-50'); }, 0);
+                } else {
+                    // Prevent drag start if not initiated by the specific handle
+                    e.preventDefault();
+                }
             }
 
-            function handleDragEnd(e) {
-                if (draggedElement) draggedElement.classList.remove('opacity-50');
-                draggedElement = null;
+            function handleBuildDragEnd(e) {
+                if (draggedBuildRow) {
+                    draggedBuildRow.classList.remove('opacity-50');
+                }
+                draggedBuildRow = null;
             }
 
-            function handleDragOver(e) {
+            function handleBuildDragOver(e) {
                 e.preventDefault();
                 const targetRow = e.currentTarget.closest('.build-row');
-                if (!draggedElement || draggedElement === targetRow || !targetRow) return;
+                if (!draggedBuildRow || draggedBuildRow === targetRow || !targetRow) return;
                 const container = targetRow.parentElement;
+                if (draggedBuildRow.parentElement !== container) return; // Ensure dragging within the same role container
+
                 const rect = targetRow.getBoundingClientRect();
                 const midpoint = rect.top + rect.height / 2;
                 if (e.clientY < midpoint) {
-                    container.insertBefore(draggedElement, targetRow);
+                    container.insertBefore(draggedBuildRow, targetRow);
                 } else {
-                    container.insertBefore(draggedElement, targetRow.nextSibling);
+                    container.insertBefore(draggedBuildRow, targetRow.nextSibling);
+                }
+            }
+
+            // --- Role Column Dragging ---
+            function handleRoleDragStart(e) {
+                // Check if the drag handle for the role section was used.
+                if (e.target.classList.contains('role-drag-handle')) {
+                    draggedRoleColumn = e.currentTarget;
+                    e.dataTransfer.effectAllowed = 'move';
+                    setTimeout(() => { draggedRoleColumn.classList.add('dragging'); }, 0);
+                } else {
+                    // Prevent drag start if not initiated by the specific handle for the role section
+                    // This avoids conflicts when trying to select text or drag build rows.
+                    const buildRowHandle = e.target.closest('.build-drag-handle');
+                    if (!buildRowHandle) {
+                         e.preventDefault();
+                    }
+                }
+            }
+
+            function handleRoleDragEnd(e) {
+                if (draggedRoleColumn) {
+                    draggedRoleColumn.classList.remove('dragging');
+                }
+                draggedRoleColumn = null;
+            }
+
+            function handleRoleDragOver(e) {
+                e.preventDefault();
+                const targetRole = e.target.closest('.role-section');
+                if (!draggedRoleColumn || draggedRoleColumn === targetRole || !targetRole) return;
+
+                const container = rolesContainer;
+                const rect = targetRole.getBoundingClientRect();
+                const midpoint = rect.left + rect.width / 2;
+
+                if (e.clientX < midpoint) {
+                    container.insertBefore(draggedRoleColumn, targetRole);
+                } else {
+                    container.insertBefore(draggedRoleColumn, targetRole.nextSibling);
                 }
             }
 
@@ -797,13 +884,9 @@
                 if (logoImageSrc) {
                     logoPreview.src = logoImageSrc;
                     logoPreview.classList.remove('hidden');
-                    compTitleInput.style.display = 'none';
-                    removeLogoBtn.classList.remove('hidden');
                 } else {
                     logoPreview.classList.add('hidden');
                     logoPreview.src = '';
-                    compTitleInput.style.display = 'block';
-                    removeLogoBtn.classList.add('hidden');
                 }
             }
 
@@ -826,9 +909,7 @@
 
             function saveBuildToLibrary(category, buildName, buildData) {
                 const library = getBuildLibrary();
-                if (!library[category]) {
-                    library[category] = [];
-                }
+                if (!library[category]) { library[category] = []; }
                 const existingBuildIndex = library[category].findIndex(build => build.name === buildName);
                 if (existingBuildIndex > -1) {
                     library[category][existingBuildIndex] = { name: buildName, data: buildData };
@@ -843,9 +924,7 @@
                  const library = getBuildLibrary();
                  if (library[category]) {
                      library[category] = library[category].filter(build => build.name !== buildName);
-                     if(library[category].length === 0) {
-                         delete library[category];
-                     }
+                     if(library[category].length === 0) { delete library[category]; }
                      localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library));
                      populateLoadBuildModal();
                      showToast(`Build "${buildName}" deleted.`);
@@ -869,17 +948,14 @@
                 const library = getBuildLibrary();
                 const container = document.getElementById('load-build-library-content');
                 container.innerHTML = '';
-
                 if (Object.keys(library).length === 0) {
                     container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty. Save some builds first!</p>';
                     return;
                 }
-
                 Object.keys(library).sort().forEach(category => {
                     const categoryGroup = document.createElement('div');
                     categoryGroup.className = 'category-group';
                     categoryGroup.innerHTML = `<h3 class="category-title">${category}</h3>`;
-
                     library[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(build => {
                         const buildEntry = document.createElement('div');
                         buildEntry.className = 'saved-build-entry';
@@ -904,21 +980,22 @@
                     logoSrc: logoImageSrc,
                     backgroundImageSrc: backgroundImageSrc,
                     styles: {
-                        titleFontSize: titleFontSize,
-                        titleColor: titleColor,
-                        titleAlign: titleAlign,
-                        notesFontSize: notesFontSize,
-                        notesColor: notesColor,
-                        notesAlign: notesAlign,
+                        titleFontSize: titleFontSize, titleColor: titleColor, titleAlign: titleAlign,
+                        notesFontSize: notesFontSize, notesColor: notesColor, notesAlign: notesAlign,
                         notesPosition: notesPosition
                     },
-                    roles: {}
+                    roles: {},
+                    roleOrder: Array.from(rolesContainer.children).map(role => role.id), // Save role order
+                    roleStates: {} // Save collapsed states
                 };
 
-                ROLES.forEach(role => {
-                    const roleContainer = document.getElementById(role.id);
-                    const buildRows = roleContainer.querySelectorAll('.build-row');
-                    compositionData.roles[role.id] = Array.from(buildRows).map(row => getBuildDataFromRow(row));
+                document.querySelectorAll('.role-section').forEach(roleSection => {
+                    const roleId = roleSection.id;
+                    const buildRows = roleSection.querySelectorAll('.build-row');
+                    compositionData.roles[roleId] = Array.from(buildRows).map(row => getBuildDataFromRow(row));
+                    compositionData.roleStates[roleId] = {
+                        isCollapsed: roleSection.classList.contains('collapsed')
+                    };
                 });
 
                 const dataStr = JSON.stringify(compositionData, null, 2);
@@ -942,7 +1019,6 @@
                         logoImageSrc = loadedData.logoSrc || null;
                         backgroundImageSrc = loadedData.backgroundImageSrc || null;
 
-                        // Load style data with defaults and migration logic
                         const styles = loadedData.styles || {};
                         titleFontSize = styles.titleFontSize || '36';
                         titleColor = styles.titleColor || '#E2E8F0';
@@ -950,30 +1026,55 @@
                         notesFontSize = styles.notesFontSize || '16';
                         notesColor = styles.notesColor || '#CBD5E0';
                         notesAlign = styles.notesAlign || 'left';
-                        
-                        // Migration logic for old notesPositionBelow boolean
-                        if (styles.notesPosition) {
-                            notesPosition = styles.notesPosition;
-                        } else if (styles.notesPositionBelow === true) {
-                            notesPosition = 'below_full';
-                        } else {
-                            notesPosition = 'above_full';
-                        }
-                        
+                        notesPosition = styles.notesPosition || 'above_full';
+
                         applyCurrentStylesToEditor();
                         updateLogoTitleDisplay();
                         applyBackground();
 
-                        ROLES.forEach(role => {
-                            const buildsContainer = document.querySelector(`#${role.id} .builds-container`);
-                            buildsContainer.innerHTML = '';
-                            const roleBuilds = loadedData.roles[role.id];
-                            if (roleBuilds && Array.isArray(roleBuilds)) {
-                                roleBuilds.forEach(buildData => {
-                                    buildsContainer.appendChild(createBuildRow(buildData));
-                                });
+                        // Clear existing roles before loading new ones or reordering
+                        rolesContainer.innerHTML = '';
+                        
+                        // Determine role order for creation
+                        const roleOrder = loadedData.roleOrder || ROLES.map(r => r.id);
+                        const loadedRoleIds = new Set(roleOrder);
+                        const missingRoles = ROLES.filter(r => !loadedRoleIds.has(r.id));
+                        
+                        // Create roles in saved order, then add any new/missing roles from constant
+                        roleOrder.forEach(roleId => {
+                            const roleConfig = ROLES.find(r => r.id === roleId);
+                            if (roleConfig) {
+                                createRoleSection(roleConfig);
                             }
                         });
+                        missingRoles.forEach(createRoleSection);
+
+                        // Populate builds and apply states for each role
+                        document.querySelectorAll('.role-section').forEach(roleSection => {
+                            const roleId = roleSection.id;
+                            const buildsContainer = roleSection.querySelector('.builds-container');
+                            buildsContainer.innerHTML = ''; // Clear default build row
+
+                            const roleBuilds = loadedData.roles[roleId];
+                            if (roleBuilds && Array.isArray(roleBuilds)) {
+                                if (roleBuilds.length > 0) {
+                                    roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData)));
+                                } else {
+                                    // Add a blank build row if saved role had no builds
+                                    buildsContainer.appendChild(createBuildRow());
+                                }
+                            } else {
+                                // Add a blank build row if role exists but no build data found in save
+                                buildsContainer.appendChild(createBuildRow());
+                            }
+                            
+                            // Apply collapsed state
+                            if (loadedData.roleStates && loadedData.roleStates[roleId] && loadedData.roleStates[roleId].isCollapsed) {
+                                roleSection.classList.add('collapsed');
+                                roleSection.querySelector('.role-collapse-toggle').textContent = '►';
+                            }
+                        });
+
                         showToast("Composition loaded successfully!");
                     } catch (error) {
                         console.error("Error parsing load file:", error);
@@ -983,9 +1084,7 @@
                 reader.readAsText(file);
             }
             
-            // Helper function to apply styles from state variables to editor elements and controls
             function applyCurrentStylesToEditor() {
-                // Apply Title Styles
                 compTitleInput.style.fontSize = `${titleFontSize}px`;
                 compTitleInput.style.color = titleColor;
                 compTitleInput.style.textAlign = titleAlign;
@@ -994,7 +1093,6 @@
                 titleColorPicker.value = titleColor;
                 updateAlignmentButtons(titleAlignGroup, titleAlign);
 
-                // Apply Notes Styles
                 compNotesInput.style.fontSize = `${notesFontSize}px`;
                 compNotesInput.style.color = notesColor;
                 compNotesInput.style.textAlign = notesAlign;
@@ -1003,11 +1101,9 @@
                 notesColorPicker.value = notesColor;
                 updateAlignmentButtons(notesAlignGroup, notesAlign);
 
-                // Apply Notes Position Selection
                 notesPositionSelect.value = notesPosition;
             }
 
-            // NEW: Helper function to update active state of alignment buttons
             function updateAlignmentButtons(buttonGroup, activeAlignment) {
                 buttonGroup.querySelectorAll('button').forEach(btn => {
                     if (btn.dataset.align === activeAlignment) {
@@ -1028,6 +1124,7 @@
                 const removeBuildButton = target.closest('.remove-build-btn');
                 const copyBuildButton = target.closest('.copy-build-btn');
                 const itemSlotElement = target.closest('.item-slot');
+                const collapseToggleButton = target.closest('.role-collapse-toggle');
 
                 if (addBuildButton) {
                     const roleId = addBuildButton.dataset.role;
@@ -1048,42 +1145,37 @@
                 } else if (itemSlotElement && !e.target.classList.contains('quantity-input')) {
                     isSelectingAlternative = false;
                     openModal(itemSlotElement);
+                } else if (collapseToggleButton) {
+                    const roleSection = collapseToggleButton.closest('.role-section');
+                    roleSection.classList.toggle('collapsed');
+                    collapseToggleButton.textContent = roleSection.classList.contains('collapsed') ? '►' : '▼';
                 }
             });
+            
+            // Role dragging listener (dragover) on the container itself
+            rolesContainer.addEventListener('dragover', handleRoleDragOver);
 
-            // Context Menu Logic with Viewport-Aware Positioning Fix
+            // Context Menu Logic
             rolesContainer.addEventListener('contextmenu', e => {
                 const slot = e.target.closest('.item-slot');
                 if (slot) {
                     activeSlot = slot;
                     const hasPrimary = !!slot.querySelector('.primary-item-img');
-
                     if (hasPrimary) {
                         e.preventDefault();
                         const hasAlt = !!slot.querySelector('.alternative-item-overlay img');
-
                         contextMenu.querySelector('[data-action="edit-abilities"]').style.display = 'block';
                         contextMenu.querySelector('[data-action="add-alt"]').style.display = 'block';
                         contextMenu.querySelector('[data-action="clear-alt"]').style.display = hasAlt ? 'block' : 'none';
                         contextMenu.querySelector('[data-action="clear-main"]').style.display = 'block';
-
-                        contextMenu.classList.remove('hidden');
-
-                        const menuWidth = contextMenu.offsetWidth;
-                        const menuHeight = contextMenu.offsetHeight;
-                        const viewportWidth = window.innerWidth;
-                        const viewportHeight = window.innerHeight;
-
-                        let top = e.clientY;
-                        let left = e.clientX;
-
+                        const menuWidth = contextMenu.offsetWidth; const menuHeight = contextMenu.offsetHeight;
+                        const viewportWidth = window.innerWidth; const viewportHeight = window.innerHeight;
+                        let top = e.clientY; let left = e.clientX;
                         if (e.clientY + menuHeight > viewportHeight) { top = viewportHeight - menuHeight - 5; }
                         if (e.clientX + menuWidth > viewportWidth) { left = viewportWidth - menuWidth - 5; }
-                        if (top < 5) top = 5;
-                        if (left < 5) left = 5;
-
-                        contextMenu.style.top = `${top}px`;
-                        contextMenu.style.left = `${left}px`;
+                        if (top < 5) top = 5; if (left < 5) left = 5;
+                        contextMenu.style.top = `${top}px`; contextMenu.style.left = `${left}px`;
+                        contextMenu.classList.remove('hidden');
                     }
                 }
             });
@@ -1108,9 +1200,7 @@
 
             // Ability Modal Listeners
             abilitySaveBtn.addEventListener('click', () => {
-                if(activeSlot) {
-                    activeSlot.querySelector('.ability-text-overlay').textContent = abilityInput.value;
-                }
+                if(activeSlot) { activeSlot.querySelector('.ability-text-overlay').textContent = abilityInput.value; }
                 closeAbilityModal();
             });
             abilityCancelBtn.addEventListener('click', closeAbilityModal);
@@ -1121,18 +1211,15 @@
             itemModal.addEventListener('click', e => { if (e.target === itemModal) closeModal(); });
             itemSearch.addEventListener('input', () => { if (activeCategory) populateModal(activeCategory); });
 
-            // --- Build Library Modal Listeners ---
+            // Build Library Modal Listeners
             document.getElementById('save-build-confirm-btn').addEventListener('click', () => {
                 const buildNameInput = document.getElementById('save-build-name');
                 const newCategoryInput = document.getElementById('save-build-new-category');
                 const existingCategorySelect = document.getElementById('save-build-category-select');
-
                 const buildName = buildNameInput.value.trim();
                 const category = newCategoryInput.value.trim() || existingCategorySelect.value;
-
                 if (!buildName) { showToast("Please enter a build name."); buildNameInput.focus(); return; }
                 if (!category) { showToast("Please select or create a category."); existingCategorySelect.focus(); return; }
-
                 const buildData = getBuildDataFromRow(activeBuildRowForSave);
                 saveBuildToLibrary(category, buildName, buildData);
                 saveBuildModal.classList.add('hidden');
@@ -1143,7 +1230,6 @@
             document.getElementById('load-build-library-content').addEventListener('click', e => {
                 const loadButton = e.target.closest('.load-saved-build-btn');
                 const deleteButton = e.target.closest('.delete-build-btn');
-
                 if (loadButton) {
                     const buildData = JSON.parse(loadButton.dataset.buildJson);
                     const buildsContainer = document.querySelector(`#${activeRoleForLoad} .builds-container`);
@@ -1181,25 +1267,17 @@
                 }
             });
             removeLogoBtn.addEventListener('click', () => {
-                logoImageSrc = null;
-                compLogoUpload.value = '';
-                updateLogoTitleDisplay();
+                logoImageSrc = null; compLogoUpload.value = ''; updateLogoTitleDisplay();
             });
 
             // Background Upload Listeners
             uploadBackgroundBtn.addEventListener('click', () => backgroundUploadInput.click());
-            removeBackgroundBtn.addEventListener('click', () => {
-                backgroundImageSrc = null;
-                applyBackground();
-            });
+            removeBackgroundBtn.addEventListener('click', () => { backgroundImageSrc = null; applyBackground(); });
             backgroundUploadInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = (event) => {
-                        backgroundImageSrc = event.target.result;
-                        applyBackground();
-                    };
+                    reader.onload = (event) => { backgroundImageSrc = event.target.result; applyBackground(); };
                     reader.readAsDataURL(file);
                 }
             });
@@ -1208,51 +1286,47 @@
             saveBtn.addEventListener('click', saveComposition);
             loadBtn.addEventListener('click', () => loadFileInput.click());
             loadFileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    loadComposition(e.target.files[0]);
-                    e.target.value = null;
-                }
+                if (e.target.files.length > 0) { loadComposition(e.target.files[0]); e.target.value = null; }
             });
 
-            // --- Style Control Listeners ---
+            // Tab Controls Listener
+            tabButtonsContainer.addEventListener('click', e => {
+                const clickedTabButton = e.target.closest('.tab-btn');
+                if (!clickedTabButton) return;
+
+                tabButtonsContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                clickedTabButton.classList.add('active');
+
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                document.getElementById(clickedTabButton.dataset.tab).classList.add('active');
+            });
+
+            // Style Control Listeners
             titleFontSizeSlider.addEventListener('input', (e) => {
-                titleFontSize = e.target.value;
-                titleFontSizeValue.textContent = `${titleFontSize}px`;
-                compTitleInput.style.fontSize = `${titleFontSize}px`;
+                titleFontSize = e.target.value; titleFontSizeValue.textContent = `${titleFontSize}px`; compTitleInput.style.fontSize = `${titleFontSize}px`;
             });
             titleColorPicker.addEventListener('input', (e) => {
-                titleColor = e.target.value;
-                compTitleInput.style.color = titleColor;
+                titleColor = e.target.value; compTitleInput.style.color = titleColor;
             });
             titleAlignGroup.addEventListener('click', (e) => {
                 const button = e.target.closest('button');
                 if (button && button.dataset.align) {
-                    titleAlign = button.dataset.align;
-                    compTitleInput.style.textAlign = titleAlign;
-                    updateAlignmentButtons(titleAlignGroup, titleAlign);
+                    titleAlign = button.dataset.align; compTitleInput.style.textAlign = titleAlign; updateAlignmentButtons(titleAlignGroup, titleAlign);
                 }
             });
-
             notesFontSizeSlider.addEventListener('input', (e) => {
-                notesFontSize = e.target.value;
-                notesFontSizeValue.textContent = `${notesFontSize}px`;
-                compNotesInput.style.fontSize = `${notesFontSize}px`;
+                notesFontSize = e.target.value; notesFontSizeValue.textContent = `${notesFontSize}px`; compNotesInput.style.fontSize = `${notesFontSize}px`;
             });
             notesColorPicker.addEventListener('input', (e) => {
-                notesColor = e.target.value;
-                compNotesInput.style.color = notesColor;
+                notesColor = e.target.value; compNotesInput.style.color = notesColor;
             });
             notesAlignGroup.addEventListener('click', (e) => {
                 const button = e.target.closest('button');
                 if (button && button.dataset.align) {
-                    notesAlign = button.dataset.align;
-                    compNotesInput.style.textAlign = notesAlign;
-                    updateAlignmentButtons(notesAlignGroup, notesAlign);
+                    notesAlign = button.dataset.align; compNotesInput.style.textAlign = notesAlign; updateAlignmentButtons(notesAlignGroup, notesAlign);
                 }
             });
-            notesPositionSelect.addEventListener('change', (e) => {
-                notesPosition = e.target.value;
-            });
+            notesPositionSelect.addEventListener('change', (e) => { notesPosition = e.target.value; });
 
             // --- EXPORT FUNCTION ---
             exportBtn.addEventListener('click', () => {
@@ -1261,106 +1335,69 @@
                 document.body.appendChild(tempExportContainer);
                 document.body.classList.add('export-mode');
 
-                if (backgroundImageSrc) {
-                    tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`;
-                    tempExportContainer.style.backgroundSize = 'cover';
-                    tempExportContainer.style.backgroundPosition = 'center';
-                }
+                if (backgroundImageSrc) { tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`; }
 
-                // --- Create Cloned Elements ---
                 let titleOrLogoClone;
                 if (logoImageSrc) {
-                    const logoClone = document.createElement('img');
-                    logoClone.id = 'logo-image-clone';
-                    logoClone.src = logoImageSrc;
-                    titleOrLogoClone = logoClone;
+                    titleOrLogoClone = document.createElement('img'); titleOrLogoClone.id = 'logo-image-clone'; titleOrLogoClone.src = logoImageSrc;
                 } else {
-                    const titleValue = compTitleInput.value;
-                    const titleClone = document.createElement('div');
-                    titleClone.id = 'comp-title-clone';
-                    titleClone.textContent = titleValue || compTitleInput.placeholder;
-                    titleClone.style.fontSize = `${titleFontSize}px`;
-                    titleClone.style.color = titleColor;
-                    titleClone.style.textAlign = titleAlign; // Apply alignment
-                    titleOrLogoClone = titleClone;
+                    titleOrLogoClone = document.createElement('div'); titleOrLogoClone.id = 'comp-title-clone';
+                    titleOrLogoClone.textContent = compTitleInput.value || compTitleInput.placeholder;
+                    titleOrLogoClone.style.fontSize = `${titleFontSize}px`; titleOrLogoClone.style.color = titleColor; titleOrLogoClone.style.textAlign = titleAlign;
                 }
 
-                const notesValue = compNotesInput.value;
                 let notesClone = null;
-                if (notesValue) {
-                    notesClone = document.createElement('div');
-                    notesClone.id = 'comp-notes-clone';
-                    notesClone.textContent = notesValue;
-                    notesClone.style.fontSize = `${notesFontSize}px`;
-                    notesClone.style.color = notesColor;
-                    notesClone.style.textAlign = notesAlign; // Apply alignment
+                if (compNotesInput.value) {
+                    notesClone = document.createElement('div'); notesClone.id = 'comp-notes-clone';
+                    notesClone.textContent = compNotesInput.value;
+                    notesClone.style.fontSize = `${notesFontSize}px`; notesClone.style.color = notesColor; notesClone.style.textAlign = notesAlign;
                 }
 
-                // --- Assemble Export Layout based on notesPosition ---
                 tempExportContainer.appendChild(titleOrLogoClone);
+                if (notesPosition === 'above_full' && notesClone) { tempExportContainer.appendChild(notesClone); }
 
-                if (notesPosition === 'above_full' && notesClone) {
-                    tempExportContainer.appendChild(notesClone);
-                }
+                const rolesMainWrapper = document.createElement('div'); rolesMainWrapper.className = 'export-roles-main-wrapper';
+                const column1 = document.createElement('div'); column1.className = 'export-column-1';
+                const column2 = document.createElement('div'); column2.className = 'export-column-2';
 
-                const rolesMainWrapper = document.createElement('div');
-                rolesMainWrapper.className = 'export-roles-main-wrapper';
+                if (notesPosition === 'col1_top' && notesClone) { column1.appendChild(notesClone); }
+                if (notesPosition === 'col2_top' && notesClone) { column2.appendChild(notesClone); }
 
-                const column1 = document.createElement('div');
-                column1.className = 'export-column-1';
-                if (notesPosition === 'col1_top' && notesClone) {
-                    column1.appendChild(notesClone); // Inject notes at top of column 1
-                }
-                EXPORT_COLUMN_1_ROLES.forEach(roleId => {
-                    const roleElementClone = document.getElementById(roleId)?.cloneNode(true);
-                    if (roleElementClone) column1.appendChild(roleElementClone);
+                // Use visual order of roles for export, but maintain column separation logic.
+                const allRoleElements = Array.from(rolesContainer.querySelectorAll('.role-section'));
+                allRoleElements.forEach(roleElement => {
+                    const roleId = roleElement.id;
+                    const roleElementClone = roleElement.cloneNode(true);
+                    if (EXPORT_COLUMN_1_ROLES.includes(roleId)) {
+                        column1.appendChild(roleElementClone);
+                    } else if (EXPORT_COLUMN_2_ROLES.includes(roleId)) {
+                        column2.appendChild(roleElementClone);
+                    }
                 });
 
-                const column2 = document.createElement('div');
-                column2.className = 'export-column-2';
-                if (notesPosition === 'col2_top' && notesClone) {
-                    column2.appendChild(notesClone); // Inject notes at top of column 2
-                }
-                EXPORT_COLUMN_2_ROLES.forEach(roleId => {
-                    const roleElementClone = document.getElementById(roleId)?.cloneNode(true);
-                    if (roleElementClone) column2.appendChild(roleElementClone);
-                });
-
-                rolesMainWrapper.appendChild(column1);
-                rolesMainWrapper.appendChild(column2);
+                rolesMainWrapper.appendChild(column1); rolesMainWrapper.appendChild(column2);
                 tempExportContainer.appendChild(rolesMainWrapper);
+                if (notesPosition === 'below_full' && notesClone) { tempExportContainer.appendChild(notesClone); }
 
-                if (notesPosition === 'below_full' && notesClone) {
-                    tempExportContainer.appendChild(notesClone); // Inject notes at bottom of page
-                }
-
-                // --- Generate Canvas ---
-                html2canvas(tempExportContainer, {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: '#1a202c'
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    const title = compTitleInput.value || compTitleInput.placeholder || 'composition';
-                    link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                }).finally(() => {
-                    tempExportContainer.remove();
-                    document.body.classList.remove('export-mode');
-                });
+                html2canvas(tempExportContainer, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#1a202c' })
+                    .then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = `${(compTitleInput.value || 'composition').replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                        link.href = canvas.toDataURL(); link.click();
+                    }).finally(() => {
+                        tempExportContainer.remove(); document.body.classList.remove('export-mode');
+                    });
             });
 
             /* ----------------- INITIALIZATION ---------------- */
             function initializeApp() {
+                // Create roles based on the default constant order initially. Load will reorder them.
                 ROLES.forEach(createRoleSection);
-                ROLES.forEach(role => {
-                    const buildsContainer = document.querySelector(`#${role.id} .builds-container`);
-                    buildsContainer.appendChild(createBuildRow());
+                document.querySelectorAll('.role-section').forEach(roleSection => {
+                    roleSection.querySelector('.builds-container').appendChild(createBuildRow());
                 });
                 updateLogoTitleDisplay();
-                applyCurrentStylesToEditor(); // Apply default styles on initial load
+                applyCurrentStylesToEditor();
             }
 
             initializeApp();

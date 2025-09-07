@@ -129,6 +129,12 @@
         .item-slot:hover .item-quantity { display: none; }
 
         /* --- Build Party Quantity Input --- */
+        .build-quantity-container {
+            width: 50px; /* Set fixed width to ensure alignment */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         .build-quantity-input {
             width: 40px;
             background-color: #4a5568;
@@ -138,7 +144,6 @@
             text-align: center;
             font-size: 0.875rem;
             padding: 2px;
-            margin-right: 0.5rem;
         }
         .build-quantity-display {
             display: none; /* Hidden in editor, shown on export */
@@ -206,21 +211,26 @@
 
         /* --- Layout Styles --- */
         #roles-container { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 1rem; }
-        .role-section { display: flex; flex-direction: column; align-items: center; padding: 1rem; border-radius: 0.5rem; min-width: 200px; border: 1px solid rgba(45, 55, 72, 0.5); }
-        .role-title { font-size: 1.5rem; margin-bottom: 0.25rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background-color: #2d3748; /* Dark background color */
-            padding-left: 1rem;     /* Horizontal padding */
-            padding-right: 1rem;    /* Horizontal padding */
-            padding-top: 0.25rem;   /* Vertical padding */
-            padding-bottom: 0.25rem;  /* Vertical padding */
-            border-radius: 9999px;  /* Pill shape */
-            border: 1px solid #4a5568; /* Subtle border */
+        .role-section { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            min-width: 200px; 
+            border: 1px solid rgba(45, 55, 72, 0.5);
+        }
+        .role-title { 
+            font-size: 1.5rem; 
+            margin-bottom: 0.25rem; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5); 
         }
         .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
         .build-row { display: flex; align-items: center; gap: 2px; }
         .build-items-wrapper { display: flex; gap: 2px; }
         .category-label { position: absolute; top: -1.5rem; left: 0; width: 100%; text-align: center; font-size: 0.75rem; color: #94a3b8; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
         .builds-container .build-row:first-child .item-slot-wrapper { margin-top: 1.5rem; position: relative; }
-        .builds-container .build-row:first-child .item-slot-wrapper[data-category="weapons"] .category-label::before { content: "Weapon"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="weapons"] .category-label::before { content: "Weapon"; } /* Lowercase key */
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="OffHands"] .category-label::before { content: "Off-Hand"; }
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="Head"] .category-label::before { content: "Head"; }
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="Chest"] .category-label::before { content: "Chest"; }
@@ -360,7 +370,7 @@
 
     <!-- Custom Context Menu for Item Slots -->
     <div id="item-context-menu" class="hidden">
-        <button data-action="edit-abilities">Edit Abilities</button>New_Feature
+        <button data-action="edit-abilities">Edit Abilities</button>
         <hr>
         <button data-action="add-alt">Add/Change Alternative</button>
         <button data-action="clear-alt" class="danger">Clear Alternative</button>
@@ -374,6 +384,7 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             const ITEMS = {
+                // MODIFICATION: Changed 'Weapons' key to 'weapons' for case sensitivity
                 'weapons': ['Arcane Staff.png', 'Arclight Blasters.png', 'Arctic Staff.png', 'Astral Staff.png', 'Battle Bracers.png', 'Battleaxe.png', 'Bear Paws.png', 'Bedrock Mace.png', 'Black Monk Stave.png', 'Blazing Staff.png', 'Blight Staff.png', 'Bloodletter.png', 'Bloodmoon Staff.png', 'Boltcasters.png', 'Bow of Badon.png', 'Bow.png', 'Brawler Gloves.png', 'Bridled Fury.png', 'Brimstone Staff.png', 'Broadsword.png', 'Camlann Mace.png', 'Carrioncaller.png', 'Carving Sword.png', 'Chillhowl.png', 'Clarent Blade.png', 'Claws.png', 'Claymore.png', 'Crossbow.png', 'Crystal Reaper.png', 'Cursed Skull.png', 'Cursed Staff.png', 'Dagger Pair.png', 'Dagger.png', 'Damnation Staff.png', 'Dawnsong.png', 'Daybreaker.png', 'Deathgivers.png', 'Demonfang.png', 'Demonic Staff.png', 'Divine Staff.png', 'Double Bladed Staff.png', 'Dreadstorm Monach.png', 'Druidic Staff.png', 'Dualswords.png', 'Earthrune Staff.png', 'Energy Shaper.png', 'Enigmatic Staff.png', 'Evensong.png', 'Exalted Staff.png', 'Fallen Staff.png', 'Fire Staff.png', 'Fists of Avalon.png', 'Flamewalker Staff.png', 'Forcepulse Bracers.png', 'Forge Hammers.png', 'Forgebark Staff.png', 'Frost Staff.png', 'Galatine Pair.png', 'Glacial Staff.png', 'Glaive.png', 'Grailseeker.png', 'Great Arcane Staff.png', 'Great Cursed Staff.png', 'Great Frost Staff.png', 'Great Hammer.png', 'Great Holy Staff.png', 'Great Nature Staff.png', 'Greataxe.png', 'Grovekeeper.png', 'Halberd.png', 'Hallowfall.png', 'Hammer.png', 'Hand of Justice.png', 'Heavy Crossbow.png', 'Heavy Mace.png', 'Hellfire Hands.png', 'Hellspawn Staff.png', 'Heron Spear.png', 'Hoarfrost Staff.png', 'Holy Staff.png', 'Icicle Staff.png', 'Incubus Mace.png', 'Infernal Scythe.png', 'Infernal Staff.png', 'Infinity Blade.png', 'Iron Clad Staff.png', 'Ironroof Staff.png', 'Kingmaker.png', 'Lifecurse Staff.png', 'Lifetouch Staff.png', 'Light Crossbow.png', 'Lightcaller.png', 'Longbow.png', 'Mace.png', 'Malevolent Locus.png', 'Mistpiercer.png', 'Morning Star.png', 'Nature Staff.png', 'Oathkeepers.png', 'Occult Staff.png', 'Permafrost Prism.png', 'Phantom Twinblade.png', 'Pike.png', 'Polehammer.png', 'Primal Staff.png', 'Prowling Staff.png', 'Quarterstaff.png', 'Rampant Staff.png', 'Ravenstrike Cestus.png', 'Realmbreaker.png', 'Redemption Staff.png', 'Riftglaive.png', 'Rootbound Staff.png', 'Rotcaller Staff.png', 'Shadowcaller.png', 'Siegebow.png', 'Skystrider Bow.png', 'Soulscythe.png', 'Spear.png', 'Spiked Gauntlets.png', 'Spirithunter.png', 'Staff of Balance.png', 'Stillgaze Staff.png', 'Tombhammer.png', 'Trinity Spear.png', 'Truebolt Hammer.png', 'Twin Slayers.png', 'Ursine Maulers.png', 'Wailing Bow.png', 'Warbow.png', 'Weeping Repeater.png', 'Whispering Bow.png', 'Wild Staff.png', 'Wildfire Staff.png', 'Witchwork Staff.png'],
                 'OffHands': ['Astral Aegis.png', 'Caitiff Shield.png', 'Celestial Censer.png', 'Cryptcandle.png', 'Eye of Secrets.png', 'Facebreaker.png', 'Leering Cane.png', 'Mistcaller.png', 'Muisak.png', 'Sacred Scepter.png', 'Sarcophagus.png', 'Shield.png', 'Taproot.png', 'Tome of Spells.png', 'Torch.png'],
                 'Head': ['Assassin Hood.png', 'Cleric Cowl.png', 'Cowl of Purity.png', 'Cultist Cowl.png', 'Demon Helmet.png', 'Druid Cowl.png', 'Duskweaver Helmet.png', 'Feyscale Hat.png', 'Fiend Cowl.png', 'Graveguard Helmet.png', 'Guardian Helmet.png', 'Hellion Hood.png', 'Helmet of Valor.png', 'Hood of Tenacity.png', 'Hunter Hood.png', 'Judicator Helmet.png', 'Knight Helmet.png', 'Mage Cowl.png', 'Mercenary Hood.png', 'Mistwalker Hood.png', 'Royal Cowl.png', 'Royal Helmet.png', 'Royal Hood.png', 'Scholar Cowl.png', 'Soldier Helmet.png', 'Specter Hood.png', 'Stalker Hood.png'],
@@ -412,10 +423,10 @@
             let copiedBuildData = null;
             let draggedElement = null;
             let logoImageSrc = null;
-            let backgroundImageSrc = null; 
+            let backgroundImageSrc = null;
             let isSelectingAlternative = false;
-            let activeBuildRowForSave = null; 
-            let activeRoleForLoad = null; 
+            let activeBuildRowForSave = null;
+            let activeRoleForLoad = null;
 
             /* ----------------- DOM ELEMENTS ---------------- */
             const compContainer = document.getElementById('comp-container');
@@ -472,7 +483,6 @@
                 buildRow.draggable = true;
 
                 let buildSlots = buildData.slots;
-                // BUG FIX: Use Array.from to create unique objects for each slot, preventing shared references from Array.fill
                 if (!buildSlots || buildSlots.length === 0) {
                     buildSlots = Array.from({ length: CATEGORIES.length }, () => ({ primary: null, alt: null, quantity: 1, abilities: '', partyQuantity: '' }));
                 }
@@ -501,7 +511,7 @@
 
                 const partyQuantity = buildData.partyQuantity || '';
                 buildRow.innerHTML = `
-                    <div class="flex flex-col items-center justify-center">
+                    <div class="build-quantity-container flex flex-col items-center justify-center">
                         <input type="text" class="build-quantity-input" placeholder="x?" value="${partyQuantity}">
                         <span class="build-quantity-display">${partyQuantity}</span>
                     </div>

@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albion Online ZvZ Comp Builder - Enhanced</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #comp-container {
+            /* Transition for smooth background change */
+            transition: background-image 0.3s ease-in-out;
+        }
+
+        /* --- Item Slot Styles --- */
+        .item-slot {
+            width: 64px;
+            height: 64px;
+            background-color: #2d3748;
+            border: 2px dashed #4a5568;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .item-slot:hover {
+            background-color: #4a5568;
+        }
+
+        .item-slot .primary-item-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.375rem;
+            z-index: 1;
+        }
+
+        /* --- Ability Text Overlay --- */
+        .ability-text-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #4ade80; /* Green text color */
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 1px 0;
+            z-index: 3;
+            pointer-events: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.1;
+        }
+        .ability-text-overlay:empty {
+            display: none; /* Hide background if ability text is empty */
+        }
+
+        /* --- Alternative Item Overlay --- */
+        .alternative-item-overlay {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 45%;
+            height: 45%;
+            background-color: rgba(45, 55, 72, 0.8);
+            border: 1px solid #4a5568;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4;
+            transition: opacity 0.2s;
+            opacity: 0;
+        }
+        .item-slot:hover .alternative-item-overlay { opacity: 1; }
+        .alternative-item-overlay img { width: 100%; height: 100%; object-fit: contain; border-radius: 0.125rem; }
+        .alternative-item-overlay:has(img) { opacity: 1; }
+        .item-slot:not(:has(.primary-item-img)) .alternative-item-overlay { display: none; }
+
+        /* Quantity display on items */
+        .item-quantity {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 0.375rem;
+            min-width: 1.5rem;
+            text-align: center;
+            z-index: 2;
+            display: none;
+        }
+        .item-slot[data-quantity]:not([data-quantity="1"]) .item-quantity { display: block; }
+
+        .item-slot .quantity-input {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 30px;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.75rem;
+            padding: 0;
+            z-index: 5;
+            display: none;
+        }
+        .item-slot:hover .quantity-input { display: block; }
+        .item-slot:hover .item-quantity { display: none; }
+
+        /* --- Custom Context Menu --- */
+        #item-context-menu {
+            position: fixed;
+            z-index: 1000;
+            width: 200px;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        #item-context-menu button { display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; color: #e2e8f0; font-size: 0.875rem; }
+        #item-context-menu button:hover { background-color: #4a5568; }
+        #item-context-menu button.danger { color: #f87171; }
+        #item-context-menu hr { border-color: #4a5568; margin: 0.25rem 0; }
+
+        /* --- Modals and Scrollbar --- */
+        .modal-wrapper {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .modal-content { 
+            background-color: #2d3748; 
+            max-height: 80vh; 
+            margin: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #718096; }
+        
+        .modal-input {
+            width: 100%; 
+            padding: 0.5rem;
+            background-color: #4a5568;
+            border-radius: 0.375rem;
+            border: 1px solid #718096;
+            color: white;
+        }
+        .modal-input:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5); }
+
+        /* --- Drag Handle & Toast --- */
+        .drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; }
+        .drag-handle:active { cursor: grabbing; }
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #38a169; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; z-index: 100; }
+        #toast.show { opacity: 1; transform: translate(-50%, -10px); }
+
+        /* --- Layout Styles --- */
+        #roles-container { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 1rem; }
+        .role-section { display: flex; flex-direction: column; align-items: center; padding: 1rem; border-radius: 0.5rem; background-color: rgba(31, 41, 55, 0.8); min-width: 200px; } /* Made section background slightly transparent for BG image visibility */
+        .role-title { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
+        .build-row { display: flex; align-items: center; gap: 2px; }
+        .build-items-wrapper { display: flex; gap: 2px; }
+        .category-label { position: absolute; top: -1.5rem; left: 0; width: 100%; text-align: center; font-size: 0.75rem; color: #94a3b8; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .builds-container .build-row:first-child .item-slot-wrapper { margin-top: 1.5rem; position: relative; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Weapons"] .category-label::before { content: "Weapon"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="OffHands"] .category-label::before { content: "Off-Hand"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Head"] .category-label::before { content: "Head"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Chest"] .category-label::before { content: "Chest"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Shoes"] .category-label::before { content: "Shoes"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Capes"] .category-label::before { content: "Cape"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Food"] .category-label::before { content: "Food"; }
+        .builds-container .build-row:first-child .item-slot-wrapper[data-category="Potion"] .category-label::before { content: "Potion"; }
+
+        /* --- Build Library Styles --- */
+        #load-build-library-content .category-group { margin-bottom: 1rem; }
+        #load-build-library-content .category-title { font-size: 1.25rem; font-weight: bold; color: #9ca3af; border-bottom: 1px solid #4a5568; padding-bottom: 0.25rem; margin-bottom: 0.5rem; }
+        #load-build-library-content .saved-build-entry { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background-color: #4a5568; border-radius: 0.375rem; margin-bottom: 0.5rem; }
+        #load-build-library-content .saved-build-name { font-weight: 500; }
+        #load-build-library-content .delete-build-btn { color: #ef4444; margin-left: 0.5rem; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
+
+        /* --- EXPORT MODE STYLES --- */
+        #temp-export-wrapper { padding: 1.5rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
+        .export-mode .drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #comp-title, .export-mode #logo-upload-section, .export-mode #comp-notes, .export-mode #action-buttons, .export-mode .save-build-btn { display: none !important; }
+        .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+        .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; }
+        .export-mode .item-slot { padding: 1px; border-radius: 0 !important; cursor: default !important; overflow: visible; }
+        .export-mode #comp-title-clone, .export-mode #comp-notes-clone { color: #e2e8f0 !important; text-align: center; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
+        .export-mode #comp-title-clone { font-size: 2.25rem; font-weight: bold; }
+        .export-mode #comp-notes-clone { font-size: 1rem; white-space: pre-wrap; color: #cbd5e0 !important; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
+        .export-mode .export-roles-main-wrapper { display: flex; flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; }
+        .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem;} /* Added semi-transparent bg to columns for readability on busy backgrounds */
+        .export-mode .alternative-item-overlay { border: 1px solid #718096; }
+        .export-mode .ability-text-overlay { color: #4ade80; font-size: 0.7rem; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; }
+        .export-mode .ability-text-overlay:empty { display: none; }
+    </style>
+</head>
+
+<body class="p-4 md:p-8">
+
+    <div id="comp-container" class="max-w-7xl mx-auto bg-gray-900 p-6 rounded-lg shadow-xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div class="flex-grow md:mr-8 mb-4 md:mb-0 space-y-6">
+                <div id="logo-title-section" class="flex flex-col items-center">
+                    <div class="flex items-center justify-center gap-4 mb-4">
+                        <div id="logo-upload-section" class="flex flex-col items-center gap-2">
+                            <img id="logo-preview" src="" alt="Comp Logo" class="hidden max-h-24 object-contain">
+                            <input type="file" id="comp-logo-upload" class="hidden" accept="image/*">
+                            <button id="upload-logo-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm">Upload Logo</button>
+                            <button id="remove-logo-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden">Remove Logo</button>
+                        </div>
+                        <div id="background-controls" class="flex flex-col items-center gap-2">
+                            <input type="file" id="background-upload-input" class="hidden" accept="image/*">
+                            <button id="upload-background-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm">Set Background</button>
+                            <button id="remove-background-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden">Remove BG</button>
+                        </div>
+                    </div>
+                    <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center" style="display: block;">
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-300">Notes</h3>
+                    <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
+                </div>
+            </div>
+            <div id="action-buttons" class="flex flex-col space-y-2 w-full md:w-auto self-start md:mt-12">
+                <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Composition</button>
+                <button id="load-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Load Composition</button>
+                <input type="file" id="load-file-input" class="hidden" accept=".json">
+                <button id="export-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Export to PNG</button>
+            </div>
+        </div>
+        <div id="roles-container"></div>
+    </div>
+
+    <div id="item-modal" class="modal-wrapper hidden">
+        <div class="modal-content w-11/12 max-w-4xl p-6 relative overflow-y-auto">
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="text-2xl font-bold">Select Item</h2>
+                <span id="modal-category-tag" class="text-base font-semibold text-blue-300 bg-blue-800/50 px-4 py-1 rounded-full"></span>
+            </div>
+            <div class="flex justify-between items-center mb-4 gap-4">
+                <input type="text" id="item-search" placeholder="Search from predefined list..." class="modal-input flex-grow">
+                <button id="upload-custom-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded whitespace-nowrap">Upload File</button>
+                <input type="file" id="custom-image-upload" class="hidden" accept="image/*">
+            </div>
+            <div id="modal-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4"></div>
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl">&times;</button>
+        </div>
+    </div>
+
+    <div id="ability-modal" class="modal-wrapper hidden">
+        <div class="modal-content w-11/12 max-w-sm p-6 relative">
+            <h2 class="text-xl font-bold mb-4">Edit Abilities</h2>
+            <p class="text-sm text-gray-400 mb-2">Enter ability codes (e.g., Q1 W2 E1)</p>
+            <input type="text" id="ability-input" class="modal-input">
+            <div class="mt-4 flex justify-end gap-2">
+                <button id="ability-cancel-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                <button id="ability-save-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="save-build-modal" class="modal-wrapper hidden">
+        <div class="modal-content w-11/12 max-w-lg p-6 relative">
+            <h2 class="text-xl font-bold mb-4">Save Build to Library</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="save-build-name" class="block text-sm font-medium text-gray-300 mb-1">Build Name</label>
+                    <input type="text" id="save-build-name" class="modal-input" placeholder="e.g., Main Tank Build">
+                </div>
+                <div>
+                    <label for="save-build-category-select" class="block text-sm font-medium text-gray-300 mb-1">Select Existing Category</label>
+                    <select id="save-build-category-select" class="modal-input"></select>
+                </div>
+                <div>
+                    <label for="save-build-new-category" class="block text-sm font-medium text-gray-300 mb-1">Or Create New Category</label>
+                    <input type="text" id="save-build-new-category" class="modal-input" placeholder="e.g., Tank Presets">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button id="save-build-cancel-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                <button id="save-build-confirm-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded">Save Build</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="load-build-modal" class="modal-wrapper hidden">
+        <div class="modal-content w-11/12 max-w-3xl p-6 relative">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Load Build from Library</h2>
+                <button id="load-build-close-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button>
+            </div>
+            <div id="load-build-library-content" class="overflow-y-auto max-h-[60vh]"></div>
+        </div>
+    </div>
+
+    <div id="item-context-menu" class="hidden">
+        <button data-action="edit-abilities">Edit Abilities</button>
+        <hr>
+        <button data-action="add-alt">Add/Change Alternative</button>
+        <button data-action="clear-alt" class="danger">Clear Alternative</button>
+        <hr>
+        <button data-action="clear-main" class="danger">Clear Main Item</button>
+    </div>
+
+    <div id="toast">Build copied!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const ITEMS = {
+                'Weapons': ['Arcane Staff.png', 'Arclight Blasters.png', 'Arctic Staff.png', 'Astral Staff.png', 'Battle Bracers.png', 'Battleaxe.png', 'Bear Paws.png', 'Bedrock Mace.png', 'Black Monk Stave.png', 'Blazing Staff.png', 'Blight Staff.png', 'Bloodletter.png', 'Bloodmoon Staff.png', 'Boltcasters.png', 'Bow of Badon.png', 'Bow.png', 'Brawler Gloves.png', 'Bridled Fury.png', 'Brimstone Staff.png', 'Broadsword.png', 'Camlann Mace.png', 'Carrioncaller.png', 'Carving Sword.png', 'Chillhowl.png', 'Clarent Blade.png', 'Claws.png', 'Claymore.png', 'Crossbow.png', 'Crystal Reaper.png', 'Cursed Skull.png', 'Cursed Staff.png', 'Dagger Pair.png', 'Dagger.png', 'Damnation Staff.png', 'Dawnsong.png', 'Daybreaker.png', 'Deathgivers.png', 'Demonfang.png', 'Demonic Staff.png', 'Divine Staff.png', 'Double Bladed Staff.png', 'Dreadstorm Monach.png', 'Druidic Staff.png', 'Dualswords.png', 'Earthrune Staff.png', 'Energy Shaper.png', 'Enigmatic Staff.png', 'Evensong.png', 'Exalted Staff.png', 'Fallen Staff.png', 'Fire Staff.png', 'Fists of Avalon.png', 'Flamewalker Staff.png', 'Forcepulse Bracers.png', 'Forge Hammers.png', 'Forgebark Staff.png', 'Frost Staff.png', 'Galatine Pair.png', 'Glacial Staff.png', 'Glaive.png', 'Grailseeker.png', 'Great Arcane Staff.png', 'Great Cursed Staff.png', 'Great Frost Staff.png', 'Great Hammer.png', 'Great Holy Staff.png', 'Great Nature Staff.png', 'Greataxe.png', 'Grovekeeper.png', 'Halberd.png', 'Hallowfall.png', 'Hammer.png', 'Hand of Justice.png', 'Heavy Crossbow.png', 'Heavy Mace.png', 'Hellfire Hands.png', 'Hellspawn Staff.png', 'Heron Spear.png', 'Hoarfrost Staff.png', 'Holy Staff.png', 'Icicle Staff.png', 'Incubus Mace.png', 'Infernal Scythe.png', 'Infernal Staff.png', 'Infinity Blade.png', 'Iron Clad Staff.png', 'Ironroof Staff.png', 'Kingmaker.png', 'Lifecurse Staff.png', 'Lifetouch Staff.png', 'Light Crossbow.png', 'Lightcaller.png', 'Longbow.png', 'Mace.png', 'Malevolent Locus.png', 'Mistpiercer.png', 'Morning Star.png', 'Nature Staff.png', 'Oathkeepers.png', 'Occult Staff.png', 'Permafrost Prism.png', 'Phantom Twinblade.png', 'Pike.png', 'Polehammer.png', 'Primal Staff.png', 'Prowling Staff.png', 'Quarterstaff.png', 'Rampant Staff.png', 'Ravenstrike Cestus.png', 'Realmbreaker.png', 'Redemption Staff.png', 'Riftglaive.png', 'Rootbound Staff.png', 'Rotcaller Staff.png', 'Shadowcaller.png', 'Siegebow.png', 'Skystrider Bow.png', 'Soulscythe.png', 'Spear.png', 'Spiked Gauntlets.png', 'Spirithunter.png', 'Staff of Balance.png', 'Stillgaze Staff.png', 'Tombhammer.png', 'Trinity Spear.png', 'Truebolt Hammer.png', 'Twin Slayers.png', 'Ursine Maulers.png', 'Wailing Bow.png', 'Warbow.png', 'Weeping Repeater.png', 'Whispering Bow.png', 'Wild Staff.png', 'Wildfire Staff.png', 'Witchwork Staff.png'],
+                'OffHands': ['Astral Aegis.png', 'Caitiff Shield.png', 'Celestial Censer.png', 'Cryptcandle.png', 'Eye of Secrets.png', 'Facebreaker.png', 'Leering Cane.png', 'Mistcaller.png', 'Muisak.png', 'Sacred Scepter.png', 'Sarcophagus.png', 'Shield.png', 'Taproot.png', 'Tome of Spells.png', 'Torch.png'],
+                'Head': ['Assassin Hood.png', 'Cleric Cowl.png', 'Cowl of Purity.png', 'Cultist Cowl.png', 'Demon Helmet.png', 'Druid Cowl.png', 'Duskweaver Helmet.png', 'Feyscale Hat.png', 'Fiend Cowl.png', 'Graveguard Helmet.png', 'Guardian Helmet.png', 'Hellion Hood.png', 'Helmet of Valor.png', 'Hood of Tenacity.png', 'Hunter Hood.png', 'Judicator Helmet.png', 'Knight Helmet.png', 'Mage Cowl.png', 'Mercenary Hood.png', 'Mistwalker Hood.png', 'Royal Cowl.png', 'Royal Helmet.png', 'Royal Hood.png', 'Scholar Cowl.png', 'Soldier Helmet.png', 'Specter Hood.png', 'Stalker Hood.png'],
+                'Chest': ['Armor of Valor.png', 'Assassin Jacket.png', 'Cleric Robe.png', 'Cultist Robe.png', 'Demon Armor.png', 'Druid Robe.png', 'Duskweaver Armor.png', 'Feyscale Robe.png', 'Fiend Robe.png', 'Graveguard Armor.png', 'Guardian Armor.png', 'Hellion Jacket.png', 'Hunter Jacket.png', 'Jacket of Tenacity.png', 'Judicator Armor.png', 'Knight Armor.png', 'Mage Robe.png', 'Mercenary Jacket.png', 'Mistwalker Jacket.png', 'Robe of Purity.png', 'Royal Armor.png', 'Royal Jacket.png', 'Royal Robe.png', 'Scholar Robe.png', 'Soldier Armor.png', 'Specter Jacket.png', 'Stalker Jacket.png'],
+                'Shoes': ['Assassin Shoes.png', 'Boots of Valor.png', 'Cleric Sandals.png', 'Cultist Sandals.png', 'Demon Boots.png', 'Druid Sandals.png', 'Duskweaver Boots.png', 'Feyscale Sandals.png', 'Fiend Sandals.png', 'Graveguard Boots.png', 'Guardian Boots.png', 'Hellion Shoes.png', 'Hunter Shoes.png', 'Judicator Boots.png', 'Knight Boots.png', 'Mage Sandals.png', 'Mercenary Shoes.png', 'Mistwalker Shoes.png', 'Royal Boots.png', 'Royal Sandals.png', 'Royals Shoes.png', 'Sandals of Purity.png', 'Scholar Sandals.png', 'Shoes of Tenacity.png', 'Soldier Boots.png', 'Specter Shoes.png', 'Stalker Shoes.png'],
+                'Capes': ['Avalonian Cape.png', 'Brecilien Cape.png', 'Bridgewatch Cape.png', 'Caerleon Cape.png', 'Cape.png', 'Demon Cape.png', 'Fort Stirling Cape.png', 'Heretic Cape.png', 'Keeper Cape.png', 'Lymhurst Cape.png', 'Martlock Cape.png', 'Morgana Cape.png', 'Smuggler Cape.png', 'Thetford Cape.png', 'Undead Cape.png'],
+                'Food': ['Avalonian Beef Sandwich.png', 'Avalonian Beef Stew.png', 'Avalonian Omelette.png', 'Beef Sandwich.png', 'Beef Stew.png', 'Deadwater Eel Stew.png', 'Dusthole Crab Omelette.png', 'Omelette.png', 'Roast Pork.png', 'Roasted Puremist Snapper.png', 'Thunderfall Lurcher Sandwich.png'],
+                'Potion': ['Berserk Potion.png', 'Gigantify Potion.png', 'Hellfire Potion.png', 'Poison Potion.png', 'Resistance Potion.png']
+            };
+
+            const CATEGORIES = [
+                { key: 'Weapons', label: 'Weapon' },
+                { key: 'OffHands', label: 'Off-Hand' },
+                { key: 'Head', label: 'Head' },
+                { key: 'Chest', label: 'Chest' },
+                { key: 'Shoes', label: 'Shoes' },
+                { key: 'Capes', label: 'Cape' },
+                { key: 'Food', label: 'Food' },
+                { key: 'Potion', label: 'Potion' }
+            ];
+
+            const ROLES = [
+                { id: 'engage', name: 'Engage', color: 'bg-blue-800' },
+                { id: 'tanks', name: 'Tanks', color: 'bg-red-800' },
+                { id: 'support', name: 'Support', color: 'bg-purple-800' },
+                { id: 'healer', name: 'Healer', color: 'bg-green-800' },
+                { id: 'dps', name: 'DPS', color: 'bg-yellow-800' }
+            ];
+            const EXPORT_COLUMN_1_ROLES = ['engage', 'tanks', 'support'];
+            const EXPORT_COLUMN_2_ROLES = ['healer', 'dps'];
+            const BUILD_LIBRARY_STORAGE_KEY = 'albionBuildLibrary';
+
+            /* ----------------- STATE VARIABLES ---------------- */
+            let activeSlot = null;
+            let activeCategory = null;
+            let copiedBuildData = null;
+            let draggedElement = null;
+            let logoImageSrc = null;
+            let backgroundImageSrc = null; // State variable for background image
+            let isSelectingAlternative = false;
+            let activeBuildRowForSave = null; 
+            let activeRoleForLoad = null; 
+
+            /* ----------------- DOM ELEMENTS ---------------- */
+            const compContainer = document.getElementById('comp-container');
+            const rolesContainer = document.getElementById('roles-container');
+            const itemModal = document.getElementById('item-modal');
+            const abilityModal = document.getElementById('ability-modal');
+            const saveBuildModal = document.getElementById('save-build-modal');
+            const loadBuildModal = document.getElementById('load-build-modal');
+            const modalGrid = document.getElementById('modal-grid');
+            const closeModalBtn = document.getElementById('close-modal');
+            const itemSearch = document.getElementById('item-search');
+            const exportBtn = document.getElementById('export-btn');
+            const uploadCustomBtn = document.getElementById('upload-custom-btn');
+            const customImageUpload = document.getElementById('custom-image-upload');
+            const compTitleInput = document.getElementById('comp-title');
+            const logoPreview = document.getElementById('logo-preview');
+            const compLogoUpload = document.getElementById('comp-logo-upload');
+            const uploadLogoBtn = document.getElementById('upload-logo-btn');
+            const removeLogoBtn = document.getElementById('remove-logo-btn');
+            const backgroundUploadInput = document.getElementById('background-upload-input');
+            const uploadBackgroundBtn = document.getElementById('upload-background-btn');
+            const removeBackgroundBtn = document.getElementById('remove-background-btn');
+            const contextMenu = document.getElementById('item-context-menu');
+            const toast = document.getElementById('toast');
+            const saveBtn = document.getElementById('save-btn');
+            const loadBtn = document.getElementById('load-btn');
+            const loadFileInput = document.getElementById('load-file-input');
+            const abilityInput = document.getElementById('ability-input');
+            const abilitySaveBtn = document.getElementById('ability-save-btn');
+            const abilityCancelBtn = document.getElementById('ability-cancel-btn');
+
+            /* ----------------- ROLE & BUILD FUNCTIONS ---------------- */
+            function createRoleSection(role) {
+                const section = document.createElement('div');
+                section.id = role.id;
+                section.className = `role-section`;
+                section.innerHTML = `
+                    <div class="flex flex-col items-center mb-1 gap-2">
+                        <h2 class="role-title font-bold ${role.color.replace('bg-', 'text-').replace('-800', '-300')}">${role.name}</h2>
+                        <div class="flex space-x-2">
+                            <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-3 rounded text-sm" data-role="${role.id}">Load Build</button>
+                            <button class="paste-build-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded text-sm hidden" data-role="${role.id}">Paste</button>
+                            <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm" data-role="${role.id}">+ Add New</button>
+                        </div>
+                    </div>
+                    <div class="builds-container" data-role="${role.id}"></div>
+                `;
+                rolesContainer.appendChild(section);
+            }
+
+            function createBuildRow(buildData = { slots: [] }) {
+                const buildRow = document.createElement('div');
+                buildRow.className = 'build-row';
+                buildRow.draggable = true;
+
+                let buildSlots = buildData.slots;
+                if (!buildSlots || buildSlots.length === 0) {
+                    buildSlots = Array.from({ length: CATEGORIES.length }, () => ({ primary: null, alt: null, quantity: 1, abilities: '' }));
+                }
+
+                const slotsHTML = CATEGORIES.map((cat, index) => {
+                    const slotData = buildSlots[index] || { primary: null, alt: null, quantity: 1, abilities: '' };
+                    const quantity = slotData.quantity || 1;
+                    const abilitiesText = slotData.abilities || '';
+                    const primaryImgHTML = slotData.primary ? `<img src="${slotData.primary}" alt="item" class="primary-item-img">` : '';
+                    const altImgHTML = slotData.alt ? `<img src="${slotData.alt}" alt="alternative item">` : '';
+                    const borderColorStyle = slotData.primary ? 'border-color: transparent;' : '';
+
+                    return `
+                        <div class="item-slot-wrapper" data-category="${cat.key}">
+                            <div class="item-slot" style="${borderColorStyle}" data-quantity="${quantity}">
+                                <div class="ability-text-overlay">${abilitiesText}</div>
+                                ${primaryImgHTML}
+                                <div class="alternative-item-overlay">${altImgHTML}</div>
+                                <input type="number" class="quantity-input" min="1" value="${quantity}">
+                                <span class="item-quantity">x${quantity}</span>
+                            </div>
+                            <span class="category-label"></span>
+                        </div>
+                    `;
+                }).join('');
+
+                buildRow.innerHTML = `
+                    <div class="drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
+                    <div class="build-items-wrapper">${slotsHTML}</div>
+                    <div class="flex flex-col space-y-1 ml-4 self-center">
+                        <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
+                        <button class="copy-build-btn text-blue-400 hover:text-blue-300 font-bold text-lg" title="Copy Build">⧉</button>
+                        <button class="remove-build-btn text-red-500 hover:text-red-400 font-bold text-2xl" title="Remove Build">&times;</button>
+                    </div>
+                `;
+
+                buildRow.addEventListener('dragstart', handleDragStart);
+                buildRow.addEventListener('dragend', handleDragEnd);
+                buildRow.addEventListener('dragover', handleDragOver);
+
+                buildRow.addEventListener('input', (e) => {
+                    if (e.target.classList.contains('quantity-input')) {
+                        let val = parseInt(e.target.value);
+                        if (isNaN(val) || val < 1) val = 1;
+                        e.target.value = val;
+                        const itemSlot = e.target.closest('.item-slot');
+                        itemSlot.dataset.quantity = val;
+                        const displayQuantity = itemSlot.querySelector('.item-quantity');
+                        if (displayQuantity) displayQuantity.textContent = `x${val}`;
+                    }
+                });
+                return buildRow;
+            }
+
+            /* ----------------- DRAG & DROP HANDLERS ---------------- */
+            function handleDragStart(e) {
+                draggedElement = e.currentTarget;
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => { draggedElement.classList.add('opacity-50'); }, 0);
+            }
+
+            function handleDragEnd(e) {
+                if (draggedElement) draggedElement.classList.remove('opacity-50');
+                draggedElement = null;
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                const targetRow = e.currentTarget.closest('.build-row');
+                if (!draggedElement || draggedElement === targetRow || !targetRow) return;
+                const container = targetRow.parentElement;
+                const rect = targetRow.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
+                if (e.clientY < midpoint) {
+                    container.insertBefore(draggedElement, targetRow);
+                } else {
+                    container.insertBefore(draggedElement, targetRow.nextSibling);
+                }
+            }
+
+            /* ----------------- MODAL FUNCTIONS ---------------- */
+            function populateModal(category) {
+                modalGrid.innerHTML = '';
+                const items = ITEMS[category] || [];
+                const searchTerm = itemSearch.value.toLowerCase();
+                items.filter(item => item.toLowerCase().includes(searchTerm)).forEach(itemFilename => {
+                    const itemDiv = document.createElement('div');
+                    const imagePath = `./images/${category}/${itemFilename}`;
+                    itemDiv.className = 'cursor-pointer p-1 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center flex-col';
+                    itemDiv.innerHTML = `
+                        <img src="${imagePath}" alt="${itemFilename}" class="w-16 h-16 object-contain">
+                        <span class="text-xs text-center mt-1 text-gray-300">${itemFilename.replace('.png', '')}</span>`;
+                    itemDiv.addEventListener('click', () => {
+                        selectItem(itemDiv.querySelector('img').src, itemFilename);
+                    });
+                    modalGrid.appendChild(itemDiv);
+                });
+            }
+
+            function openModal(slotElement) {
+                activeSlot = slotElement;
+                activeCategory = slotElement.closest('.item-slot-wrapper').dataset.category;
+                const categoryInfo = CATEGORIES.find(c => c.key === activeCategory);
+                document.getElementById('modal-category-tag').textContent = categoryInfo ? categoryInfo.label : activeCategory;
+                itemSearch.value = '';
+                populateModal(activeCategory);
+                itemModal.classList.remove('hidden');
+            }
+
+            function closeModal() {
+                itemModal.classList.add('hidden');
+                activeSlot = null;
+                activeCategory = null;
+                isSelectingAlternative = false;
+            }
+            
+            function openAbilityModal() {
+                if (!activeSlot) return;
+                const abilityOverlay = activeSlot.querySelector('.ability-text-overlay');
+                abilityInput.value = abilityOverlay.textContent || '';
+                abilityModal.classList.remove('hidden');
+                abilityInput.focus();
+            }
+
+            function closeAbilityModal() {
+                abilityModal.classList.add('hidden');
+            }
+
+            function selectItem(imageSrc, altText = 'custom-item') {
+                if (!activeSlot) return;
+
+                if (isSelectingAlternative) {
+                    const overlay = activeSlot.querySelector('.alternative-item-overlay');
+                    overlay.innerHTML = `<img src="${imageSrc}" alt="alternative item">`;
+                } else {
+                    const currentQuantity = parseInt(activeSlot.dataset.quantity || 1);
+                    const altContent = activeSlot.querySelector('.alternative-item-overlay')?.innerHTML || '';
+                    const abilityContent = activeSlot.querySelector('.ability-text-overlay')?.textContent || '';
+                    
+                    activeSlot.innerHTML = `<div class="ability-text-overlay">${abilityContent}</div>
+                                            <img src="${imageSrc}" alt="${altText}" class="primary-item-img">
+                                            <div class="alternative-item-overlay">${altContent}</div>
+                                            <input type="number" class="quantity-input" min="1" value="${currentQuantity}">
+                                            <span class="item-quantity">x${currentQuantity}</span>`;
+                    activeSlot.style.borderColor = 'transparent';
+                }
+                closeModal();
+            }
+
+            /* ----------------- ACTION HANDLERS ---------------- */
+            function getBuildDataFromRow(buildRowElement) {
+                const allSlots = buildRowElement.querySelectorAll('.item-slot');
+                let buildSlotsData = [];
+                for (let i = 0; i < CATEGORIES.length; i++) {
+                    const slot = allSlots[i];
+                    if (slot) {
+                        const primaryImg = slot.querySelector('.primary-item-img');
+                        const altImg = slot.querySelector('.alternative-item-overlay img');
+                        const abilityText = slot.querySelector('.ability-text-overlay')?.textContent || '';
+                        buildSlotsData.push({
+                            primary: primaryImg ? primaryImg.src : null,
+                            alt: altImg ? altImg.src : null,
+                            quantity: parseInt(slot.dataset.quantity || 1),
+                            abilities: abilityText
+                        });
+                    } else {
+                        buildSlotsData.push({ primary: null, alt: null, quantity: 1, abilities: '' });
+                    }
+                }
+                return { slots: buildSlotsData };
+            }
+            
+            function copyBuild(buildRowElement) {
+                copiedBuildData = getBuildDataFromRow(buildRowElement);
+                document.querySelectorAll('.paste-build-btn').forEach(btn => btn.classList.remove('hidden'));
+                showToast("Build copied!");
+            }
+
+            function pasteBuild(roleId) {
+                if (copiedBuildData) {
+                    const buildsContainer = document.querySelector(`#${roleId} .builds-container`);
+                    buildsContainer.appendChild(createBuildRow(copiedBuildData));
+                }
+            }
+
+            function clearSlot(slotElement, partToClear = 'main') {
+                if (partToClear === 'main') {
+                    const currentQuantity = parseInt(slotElement.dataset.quantity || 1);
+                    const abilityContent = slotElement.querySelector('.ability-text-overlay')?.textContent || '';
+                    slotElement.innerHTML = `<div class="ability-text-overlay">${abilityContent}</div>
+                                             <div class="alternative-item-overlay"></div>
+                                             <input type="number" class="quantity-input" min="1" value="${currentQuantity}">
+                                             <span class="item-quantity">x${currentQuantity}</span>`;
+                    slotElement.style.borderColor = '';
+                } else if (partToClear === 'alt') {
+                    const overlay = slotElement.querySelector('.alternative-item-overlay');
+                    if (overlay) overlay.innerHTML = '';
+                }
+            }
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 2000);
+            }
+
+            function updateLogoTitleDisplay() {
+                if (logoImageSrc) {
+                    logoPreview.src = logoImageSrc;
+                    logoPreview.classList.remove('hidden');
+                    compTitleInput.style.display = 'none';
+                    removeLogoBtn.classList.remove('hidden');
+                } else {
+                    logoPreview.classList.add('hidden');
+                    logoPreview.src = '';
+                    compTitleInput.style.display = 'block';
+                    removeLogoBtn.classList.add('hidden');
+                }
+            }
+            
+            function applyBackground() {
+                if (backgroundImageSrc) {
+                    compContainer.style.backgroundImage = `url(${backgroundImageSrc})`;
+                    compContainer.style.backgroundSize = 'cover';
+                    compContainer.style.backgroundPosition = 'center';
+                    removeBackgroundBtn.classList.remove('hidden');
+                } else {
+                    compContainer.style.backgroundImage = 'none';
+                    removeBackgroundBtn.classList.add('hidden');
+                }
+            }
+
+            /* ----------------- BUILD LIBRARY (localStorage) FUNCTIONS ---------------- */
+            function getBuildLibrary() {
+                return JSON.parse(localStorage.getItem(BUILD_LIBRARY_STORAGE_KEY) || '{}');
+            }
+
+            function saveBuildToLibrary(category, buildName, buildData) {
+                const library = getBuildLibrary();
+                if (!library[category]) {
+                    library[category] = [];
+                }
+                const existingBuildIndex = library[category].findIndex(build => build.name === buildName);
+                if (existingBuildIndex > -1) {
+                    library[category][existingBuildIndex] = { name: buildName, data: buildData };
+                } else {
+                    library[category].push({ name: buildName, data: buildData });
+                }
+                localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library));
+                showToast(`Build "${buildName}" saved to category "${category}"!`);
+            }
+            
+            function deleteBuildFromLibrary(category, buildName) {
+                 const library = getBuildLibrary();
+                 if (library[category]) {
+                    library[category] = library[category].filter(build => build.name !== buildName);
+                    if(library[category].length === 0) {
+                        delete library[category];
+                    }
+                    localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library));
+                    populateLoadBuildModal(); 
+                    showToast(`Build "${buildName}" deleted.`);
+                 }
+            }
+
+            function openSaveBuildModal(buildRowElement) {
+                activeBuildRowForSave = buildRowElement;
+                const library = getBuildLibrary();
+                const categorySelect = document.getElementById('save-build-category-select');
+                categorySelect.innerHTML = '<option value="">Select existing category...</option>';
+                Object.keys(library).sort().forEach(category => {
+                    categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+                });
+                document.getElementById('save-build-name').value = '';
+                document.getElementById('save-build-new-category').value = '';
+                saveBuildModal.classList.remove('hidden');
+            }
+            
+            function populateLoadBuildModal() {
+                const library = getBuildLibrary();
+                const container = document.getElementById('load-build-library-content');
+                container.innerHTML = '';
+                
+                if (Object.keys(library).length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty. Save some builds first!</p>';
+                    return;
+                }
+
+                Object.keys(library).sort().forEach(category => {
+                    const categoryGroup = document.createElement('div');
+                    categoryGroup.className = 'category-group';
+                    categoryGroup.innerHTML = `<h3 class="category-title">${category}</h3>`;
+                    
+                    library[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(build => {
+                        const buildEntry = document.createElement('div');
+                        buildEntry.className = 'saved-build-entry';
+                        buildEntry.innerHTML = `
+                            <span class="saved-build-name">${build.name}</span>
+                            <div>
+                                <button class="load-saved-build-btn bg-blue-600 hover:bg-blue-500 text-white py-1 px-2 rounded text-xs" data-build-json='${JSON.stringify(build.data)}'>Load</button>
+                                <button class="delete-build-btn" data-category="${category}" data-name="${build.name}">&times;</button>
+                            </div>
+                        `;
+                        categoryGroup.appendChild(buildEntry);
+                    });
+                    container.appendChild(categoryGroup);
+                });
+            }
+
+            /* ----------------- SAVE/LOAD COMPOSITION FUNCTIONS ---------------- */
+            function saveComposition() {
+                const compositionData = {
+                    title: compTitleInput.value,
+                    notes: document.getElementById('comp-notes').value,
+                    logoSrc: logoImageSrc,
+                    backgroundImageSrc: backgroundImageSrc, // Add background image to save data
+                    roles: {}
+                };
+
+                ROLES.forEach(role => {
+                    const roleContainer = document.getElementById(role.id);
+                    const buildRows = roleContainer.querySelectorAll('.build-row');
+                    compositionData.roles[role.id] = Array.from(buildRows).map(row => getBuildDataFromRow(row));
+                });
+
+                const dataStr = JSON.stringify(compositionData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.download = `${compositionData.title.replace(/[^a-z0-9]/gi, '_') || 'composition'}.json`;
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+                showToast("Composition saved!");
+            }
+
+            function loadComposition(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const loadedData = JSON.parse(e.target.result);
+                        compTitleInput.value = loadedData.title || '';
+                        document.getElementById('comp-notes').value = loadedData.notes || '';
+                        logoImageSrc = loadedData.logoSrc || null;
+                        backgroundImageSrc = loadedData.backgroundImageSrc || null; // Load background image data
+                        updateLogoTitleDisplay();
+                        applyBackground(); // Apply loaded background image
+
+                        ROLES.forEach(role => {
+                            const buildsContainer = document.querySelector(`#${role.id} .builds-container`);
+                            buildsContainer.innerHTML = ''; 
+                            const roleBuilds = loadedData.roles[role.id];
+                            if (roleBuilds && Array.isArray(roleBuilds)) {
+                                roleBuilds.forEach(buildData => {
+                                    buildsContainer.appendChild(createBuildRow(buildData));
+                                });
+                            }
+                        });
+                        showToast("Composition loaded successfully!");
+                    } catch (error) {
+                        console.error("Error parsing load file:", error);
+                        showToast("Error: Could not load file. Invalid format.");
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            /* ----------------- EVENT LISTENERS SETUP ---------------- */
+            rolesContainer.addEventListener('click', e => {
+                const target = e.target;
+                const addBuildButton = target.closest('.add-build-btn');
+                const loadLibraryButton = target.closest('.load-library-btn');
+                const pasteBuildButton = target.closest('.paste-build-btn');
+                const saveBuildButton = target.closest('.save-build-btn');
+                const removeBuildButton = target.closest('.remove-build-btn');
+                const copyBuildButton = target.closest('.copy-build-btn');
+                const itemSlotElement = target.closest('.item-slot');
+
+                if (addBuildButton) {
+                    const roleId = addBuildButton.dataset.role;
+                    const buildsContainer = document.querySelector(`#${roleId} .builds-container`);
+                    buildsContainer.appendChild(createBuildRow());
+                } else if (loadLibraryButton) {
+                    activeRoleForLoad = loadLibraryButton.dataset.role;
+                    populateLoadBuildModal();
+                    loadBuildModal.classList.remove('hidden');
+                } else if (saveBuildButton) {
+                    openSaveBuildModal(saveBuildButton.closest('.build-row'));
+                } else if (pasteBuildButton) {
+                    pasteBuild(pasteBuildButton.dataset.role);
+                } else if (removeBuildButton) {
+                    removeBuildButton.closest('.build-row').remove();
+                } else if (copyBuildButton) {
+                    copyBuild(copyBuildButton.closest('.build-row'));
+                } else if (itemSlotElement && !e.target.classList.contains('quantity-input')) {
+                    isSelectingAlternative = false;
+                    openModal(itemSlotElement);
+                }
+            });
+
+            // Context Menu Logic with Viewport-Aware Positioning Fix
+            rolesContainer.addEventListener('contextmenu', e => {
+                const slot = e.target.closest('.item-slot');
+                if (slot) {
+                    e.preventDefault();
+                    activeSlot = slot; 
+
+                    const hasPrimary = !!slot.querySelector('.primary-item-img');
+                    
+                    if (hasPrimary) {
+                        const hasAlt = !!slot.querySelector('.alternative-item-overlay img');
+                        
+                        contextMenu.querySelector('[data-action="edit-abilities"]').style.display = 'block';
+                        contextMenu.querySelector('[data-action="add-alt"]').style.display = 'block';
+                        contextMenu.querySelector('[data-action="clear-alt"]').style.display = hasAlt ? 'block' : 'none';
+                        contextMenu.querySelector('[data-action="clear-main"]').style.display = 'block';
+
+                        contextMenu.classList.remove('hidden'); 
+                        
+                        const menuWidth = contextMenu.offsetWidth;
+                        const menuHeight = contextMenu.offsetHeight;
+                        const viewportWidth = window.innerWidth;
+                        const viewportHeight = window.innerHeight;
+
+                        let top = e.clientY;
+                        let left = e.clientX;
+
+                        if (e.clientY + menuHeight > viewportHeight) {
+                            top = viewportHeight - menuHeight - 5; 
+                        }
+                        if (e.clientX + menuWidth > viewportWidth) {
+                            left = viewportWidth - menuWidth - 5; 
+                        }
+                        
+                        if (top < 5) top = 5;
+                        if (left < 5) left = 5;
+
+                        contextMenu.style.top = `${top}px`;
+                        contextMenu.style.left = `${left}px`;
+                    } else {
+                        contextMenu.classList.add('hidden'); 
+                    }
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!contextMenu.contains(e.target)) {
+                    contextMenu.classList.add('hidden');
+                }
+            });
+
+            contextMenu.addEventListener('click', e => {
+                const action = e.target.dataset.action;
+                if (!activeSlot) return;
+                switch(action) {
+                    case 'edit-abilities': openAbilityModal(); break;
+                    case 'add-alt': isSelectingAlternative = true; openModal(activeSlot); break;
+                    case 'clear-alt': clearSlot(activeSlot, 'alt'); break;
+                    case 'clear-main': clearSlot(activeSlot, 'main'); break;
+                }
+                contextMenu.classList.add('hidden');
+            });
+
+            // Ability Modal Listeners
+            abilitySaveBtn.addEventListener('click', () => {
+                if(activeSlot) {
+                    activeSlot.querySelector('.ability-text-overlay').textContent = abilityInput.value;
+                }
+                closeAbilityModal();
+            });
+            abilityCancelBtn.addEventListener('click', closeAbilityModal);
+            abilityInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); abilitySaveBtn.click(); } });
+
+            // Item Selection Modal Listeners
+            closeModalBtn.addEventListener('click', closeModal);
+            itemModal.addEventListener('click', e => { if (e.target === itemModal) closeModal(); });
+            itemSearch.addEventListener('input', () => { if (activeCategory) populateModal(activeCategory); });
+
+            // --- Build Library Modal Listeners ---
+            document.getElementById('save-build-confirm-btn').addEventListener('click', () => {
+                const buildNameInput = document.getElementById('save-build-name');
+                const newCategoryInput = document.getElementById('save-build-new-category');
+                const existingCategorySelect = document.getElementById('save-build-category-select');
+                
+                const buildName = buildNameInput.value.trim();
+                const category = newCategoryInput.value.trim() || existingCategorySelect.value;
+                
+                if (!buildName) { showToast("Please enter a build name."); buildNameInput.focus(); return; }
+                if (!category) { showToast("Please select or create a category."); existingCategorySelect.focus(); return; }
+
+                const buildData = getBuildDataFromRow(activeBuildRowForSave);
+                saveBuildToLibrary(category, buildName, buildData);
+                saveBuildModal.classList.add('hidden');
+            });
+            document.getElementById('save-build-cancel-btn').addEventListener('click', () => saveBuildModal.classList.add('hidden'));
+
+            document.getElementById('load-build-close-btn').addEventListener('click', () => loadBuildModal.classList.add('hidden'));
+            document.getElementById('load-build-library-content').addEventListener('click', e => {
+                const loadButton = e.target.closest('.load-saved-build-btn');
+                const deleteButton = e.target.closest('.delete-build-btn');
+
+                if (loadButton) {
+                    const buildData = JSON.parse(loadButton.dataset.buildJson);
+                    const buildsContainer = document.querySelector(`#${activeRoleForLoad} .builds-container`);
+                    buildsContainer.appendChild(createBuildRow(buildData));
+                    loadBuildModal.classList.add('hidden');
+                } else if (deleteButton) {
+                    const buildName = deleteButton.dataset.name;
+                    const category = deleteButton.dataset.category;
+                    if (confirm(`Are you sure you want to delete build "${buildName}" from category "${category}"?`)) {
+                        deleteBuildFromLibrary(category, buildName);
+                    }
+                }
+            });
+
+            // Item Image Upload Listeners
+            uploadCustomBtn.addEventListener('click', () => customImageUpload.click());
+            customImageUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && activeSlot) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => selectItem(event.target.result, file.name);
+                    reader.readAsDataURL(file);
+                    customImageUpload.value = '';
+                }
+            });
+
+            // Logo Upload Listeners
+            uploadLogoBtn.addEventListener('click', () => compLogoUpload.click());
+            compLogoUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => { logoImageSrc = event.target.result; updateLogoTitleDisplay(); };
+                    reader.readAsDataURL(file);
+                }
+            });
+            removeLogoBtn.addEventListener('click', () => {
+                logoImageSrc = null;
+                compLogoUpload.value = '';
+                updateLogoTitleDisplay();
+            });
+
+            // Background Upload Listeners
+            uploadBackgroundBtn.addEventListener('click', () => backgroundUploadInput.click());
+            removeBackgroundBtn.addEventListener('click', () => {
+                backgroundImageSrc = null;
+                applyBackground();
+            });
+            backgroundUploadInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        backgroundImageSrc = event.target.result;
+                        applyBackground();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Save/Load Listeners
+            saveBtn.addEventListener('click', saveComposition);
+            loadBtn.addEventListener('click', () => loadFileInput.click());
+            loadFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    loadComposition(e.target.files[0]);
+                    e.target.value = null;
+                }
+            });
+
+            // --- EXPORT FUNCTION ---
+            exportBtn.addEventListener('click', () => {
+                const tempExportContainer = document.createElement('div');
+                tempExportContainer.id = 'temp-export-wrapper';
+                document.body.appendChild(tempExportContainer);
+                document.body.classList.add('export-mode');
+
+                // Apply background to export wrapper
+                if (backgroundImageSrc) {
+                    tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`;
+                    tempExportContainer.style.backgroundSize = 'cover';
+                    tempExportContainer.style.backgroundPosition = 'center';
+                }
+
+                if (logoImageSrc) {
+                    const logoClone = document.createElement('img');
+                    logoClone.id = 'logo-image-clone';
+                    logoClone.src = logoImageSrc;
+                    tempExportContainer.appendChild(logoClone);
+                } else {
+                    const titleValue = compTitleInput.value;
+                    const titleClone = document.createElement('div');
+                    titleClone.id = 'comp-title-clone';
+                    titleClone.textContent = titleValue || compTitleInput.placeholder;
+                    tempExportContainer.appendChild(titleClone);
+                }
+
+                const notesValue = document.getElementById('comp-notes').value;
+                if (notesValue) {
+                    const notesClone = document.createElement('div');
+                    notesClone.id = 'comp-notes-clone';
+                    notesClone.textContent = notesValue;
+                    tempExportContainer.appendChild(notesClone);
+                }
+
+                const rolesMainWrapper = document.createElement('div');
+                rolesMainWrapper.className = 'export-roles-main-wrapper';
+                
+                const column1 = document.createElement('div');
+                column1.className = 'export-column-1';
+                EXPORT_COLUMN_1_ROLES.forEach(roleId => {
+                    const roleElementClone = document.getElementById(roleId)?.cloneNode(true);
+                    if (roleElementClone) column1.appendChild(roleElementClone);
+                });
+
+                const column2 = document.createElement('div');
+                column2.className = 'export-column-2';
+                EXPORT_COLUMN_2_ROLES.forEach(roleId => {
+                    const roleElementClone = document.getElementById(roleId)?.cloneNode(true);
+                    if (roleElementClone) column2.appendChild(roleElementClone);
+                });
+
+                rolesMainWrapper.appendChild(column1);
+                rolesMainWrapper.appendChild(column2);
+                tempExportContainer.appendChild(rolesMainWrapper);
+
+                html2canvas(tempExportContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#1a202c' 
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    const title = compTitleInput.value || compTitleInput.placeholder || 'composition';
+                    link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                }).finally(() => {
+                    tempExportContainer.remove();
+                    document.body.classList.remove('export-mode');
+                });
+            });
+
+            /* ----------------- INITIALIZATION ---------------- */
+            function initializeApp() {
+                ROLES.forEach(createRoleSection);
+                ROLES.forEach(role => {
+                    const buildsContainer = document.querySelector(`#${role.id} .builds-container`);
+                    buildsContainer.appendChild(createBuildRow());
+                });
+                updateLogoTitleDisplay();
+            }
+
+            initializeApp();
+        });
+    </script></body></html>

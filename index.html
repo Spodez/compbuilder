@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE new-html>
 <html lang="en">
 
 <head>
@@ -53,7 +53,7 @@
             left: 0;
             width: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            color: #4ade80; 
+            color: #4ade80;
             font-size: 0.7rem;
             font-weight: bold;
             text-align: center;
@@ -65,9 +65,7 @@
             text-overflow: ellipsis;
             line-height: 1.1;
         }
-        .ability-text-overlay:empty {
-            display: none;
-        }
+        .ability-text-overlay:empty { display: none; }
 
         /* --- Alternative Item Overlay --- */
         .alternative-item-overlay {
@@ -181,9 +179,9 @@
             justify-content: center;
             background-color: rgba(0, 0, 0, 0.8);
         }
-        .modal-content { 
-            background-color: #2d3748; 
-            max-height: 80vh; 
+        .modal-content {
+            background-color: #2d3748;
+            max-height: 80vh;
             margin: auto;
             border-radius: 0.5rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -192,9 +190,9 @@
         ::-webkit-scrollbar-track { background: #2d3748; }
         ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #718096; }
-        
+
         .modal-input {
-            width: 100%; 
+            width: 100%;
             padding: 0.5rem;
             background-color: #4a5568;
             border-radius: 0.375rem;
@@ -211,19 +209,19 @@
 
         /* --- Layout Styles --- */
         #roles-container { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 1rem; }
-        .role-section { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 1rem; 
-            border-radius: 0.5rem; 
-            min-width: 200px; 
+        .role-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            min-width: 200px;
             border: 1px solid rgba(45, 55, 72, 0.5);
         }
-        .role-title { 
-            font-size: 1.5rem; 
-            margin-bottom: 0.25rem; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5); 
+        .role-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
         .build-row { display: flex; align-items: center; gap: 2px; }
@@ -246,17 +244,26 @@
         #load-build-library-content .saved-build-name { font-weight: 500; }
         #load-build-library-content .delete-build-btn { color: #ef4444; margin-left: 0.5rem; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
 
+        /* --- Style Controls --- */
+        .style-control-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+        .style-control-group label { font-size: 0.875rem; color: #9ca3af; }
+        .style-control-group input[type="range"] { width: 100px; }
+        .style-control-group input[type="color"] { background-color: transparent; border: none; width: 32px; height: 32px; cursor: pointer; border-radius: 0.25rem; padding: 0; }
+        /* Hides default color picker UI elements for a cleaner look */
+        .style-control-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        .style-control-group input[type="color"]::-webkit-color-swatch { border: 1px solid #4a5568; border-radius: 0.25rem; }
+
         /* --- EXPORT MODE STYLES --- */
         #temp-export-wrapper { padding: 1.5rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
-        .export-mode .drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #comp-title, .export-mode #logo-upload-section, .export-mode #comp-notes, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input { display: none !important; }
+        .export-mode .drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .flex.space-x-2, .export-mode #comp-title, .export-mode #logo-upload-section, .export-mode #comp-notes, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode #style-controls-container { display: none !important; }
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
         .export-mode .build-quantity-display { display: block; }
         .export-mode .build-quantity-display:empty { display: none; }
         .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; }
         .export-mode .item-slot { padding: 1px; border-radius: 0 !important; cursor: default !important; overflow: visible; }
-        .export-mode #comp-title-clone, .export-mode #comp-notes-clone { color: #e2e8f0 !important; text-align: center; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
-        .export-mode #comp-title-clone { font-size: 2.25rem; font-weight: bold; }
-        .export-mode #comp-notes-clone { font-size: 1rem; white-space: pre-wrap; color: #cbd5e0 !important; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .export-mode #comp-title-clone, .export-mode #comp-notes-clone { text-align: center; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
+        .export-mode #comp-title-clone { font-weight: bold; }
+        .export-mode #comp-notes-clone { white-space: pre-wrap; max-width: 800px; margin-left: auto; margin-right: auto; }
         .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
         .export-mode .export-roles-main-wrapper { display: flex; flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; }
         .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem;}
@@ -286,7 +293,37 @@
                         </div>
                     </div>
                     <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center" style="display: block;">
+                    <div id="style-controls-container" class="space-y-2 mt-4 w-full max-w-lg mx-auto">
+                        <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center gap-x-6 gap-y-2">
+                            <span class="font-semibold text-gray-300 w-full text-center text-sm mb-1">Title Style</span>
+                            <div class="style-control-group">
+                                <label for="title-font-size">Size:</label>
+                                <input type="range" id="title-font-size" min="24" max="72" value="36" class="style-control-input">
+                                <span id="title-font-size-value" class="text-xs w-6 text-right">36px</span>
+                            </div>
+                            <div class="style-control-group">
+                                <label for="title-font-color">Color:</label>
+                                <input type="color" id="title-font-color" value="#E2E8F0" class="style-control-input">
+                            </div>
+                        </div>
+                        <div class="p-2 rounded bg-gray-800 border border-gray-700 flex flex-wrap justify-center gap-x-6 gap-y-2">
+                             <span class="font-semibold text-gray-300 w-full text-center text-sm mb-1">Notes Style & Position</span>
+                             <div class="style-control-group">
+                                <label for="notes-font-size">Size:</label>
+                                <input type="range" id="notes-font-size" min="12" max="32" value="16" class="style-control-input">
+                                <span id="notes-font-size-value" class="text-xs w-6 text-right">16px</span>
+                            </div>
+                            <div class="style-control-group">
+                                <label for="notes-font-color">Color:</label>
+                                <input type="color" id="notes-font-color" value="#CBD5E0" class="style-control-input">
+                            </div>
+                             <div class="style-control-group">
+                                 <button id="toggle-notes-position" class="bg-gray-600 hover:bg-gray-500 text-white text-xs font-bold py-1 px-2 rounded">Move Notes Below Roles</button>
+                             </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div>
                     <h3 class="text-xl font-semibold mb-2 text-gray-300">Notes</h3>
                     <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
@@ -302,7 +339,6 @@
         <div id="roles-container"></div>
     </div>
 
-    <!-- Item Selection Modal -->
     <div id="item-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-4xl p-6 relative overflow-y-auto">
             <div class="flex items-center gap-4 mb-4">
@@ -319,7 +355,6 @@
         </div>
     </div>
 
-    <!-- Ability Input Modal -->
     <div id="ability-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-sm p-6 relative">
             <h2 class="text-xl font-bold mb-4">Edit Abilities</h2>
@@ -332,7 +367,6 @@
         </div>
     </div>
 
-    <!-- Save Build Modal -->
     <div id="save-build-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-lg p-6 relative">
             <h2 class="text-xl font-bold mb-4">Save Build to Library</h2>
@@ -357,7 +391,6 @@
         </div>
     </div>
 
-    <!-- Load Build Library Modal -->
     <div id="load-build-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-3xl p-6 relative">
             <div class="flex justify-between items-center mb-4">
@@ -368,7 +401,6 @@
         </div>
     </div>
 
-    <!-- Custom Context Menu for Item Slots -->
     <div id="item-context-menu" class="hidden">
         <button data-action="edit-abilities">Edit Abilities</button>
         <hr>
@@ -428,6 +460,13 @@
             let activeBuildRowForSave = null;
             let activeRoleForLoad = null;
 
+            // NEW: Style state variables
+            let titleFontSize = '36';
+            let titleColor = '#E2E8F0';
+            let notesFontSize = '16';
+            let notesColor = '#CBD5E0';
+            let notesPositionBelow = false;
+
             /* ----------------- DOM ELEMENTS ---------------- */
             const compContainer = document.getElementById('comp-container');
             const rolesContainer = document.getElementById('roles-container');
@@ -442,6 +481,7 @@
             const uploadCustomBtn = document.getElementById('upload-custom-btn');
             const customImageUpload = document.getElementById('custom-image-upload');
             const compTitleInput = document.getElementById('comp-title');
+            const compNotesInput = document.getElementById('comp-notes');
             const logoPreview = document.getElementById('logo-preview');
             const compLogoUpload = document.getElementById('comp-logo-upload');
             const uploadLogoBtn = document.getElementById('upload-logo-btn');
@@ -457,6 +497,15 @@
             const abilityInput = document.getElementById('ability-input');
             const abilitySaveBtn = document.getElementById('ability-save-btn');
             const abilityCancelBtn = document.getElementById('ability-cancel-btn');
+
+            // NEW: Style control DOM elements
+            const titleFontSizeSlider = document.getElementById('title-font-size');
+            const titleFontSizeValue = document.getElementById('title-font-size-value');
+            const titleColorPicker = document.getElementById('title-font-color');
+            const notesFontSizeSlider = document.getElementById('notes-font-size');
+            const notesFontSizeValue = document.getElementById('notes-font-size-value');
+            const notesColorPicker = document.getElementById('notes-font-color');
+            const toggleNotesPosBtn = document.getElementById('toggle-notes-position');
 
             /* ----------------- ROLE & BUILD FUNCTIONS ---------------- */
             function createRoleSection(role) {
@@ -607,7 +656,7 @@
                 activeCategory = null;
                 isSelectingAlternative = false;
             }
-            
+
             function openAbilityModal() {
                 if (!activeSlot) return;
                 const abilityOverlay = activeSlot.querySelector('.ability-text-overlay');
@@ -630,7 +679,7 @@
                     const currentQuantity = parseInt(activeSlot.dataset.quantity || 1);
                     const altContent = activeSlot.querySelector('.alternative-item-overlay')?.innerHTML || '';
                     const abilityContent = activeSlot.querySelector('.ability-text-overlay')?.textContent || '';
-                    
+
                     activeSlot.innerHTML = `<div class="ability-text-overlay">${abilityContent}</div>
                                             <img src="${imageSrc}" alt="${altText}" class="primary-item-img">
                                             <div class="alternative-item-overlay">${altContent}</div>
@@ -664,7 +713,7 @@
                 const partyQuantity = buildRowElement.querySelector('.build-quantity-input')?.value || '';
                 return { slots: buildSlotsData, partyQuantity: partyQuantity };
             }
-            
+
             function copyBuild(buildRowElement) {
                 copiedBuildData = getBuildDataFromRow(buildRowElement);
                 document.querySelectorAll('.paste-build-btn').forEach(btn => btn.classList.remove('hidden'));
@@ -712,7 +761,7 @@
                     removeLogoBtn.classList.add('hidden');
                 }
             }
-            
+
             function applyBackground() {
                 if (backgroundImageSrc) {
                     compContainer.style.backgroundImage = `url(${backgroundImageSrc})`;
@@ -744,17 +793,17 @@
                 localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library));
                 showToast(`Build "${buildName}" saved to category "${category}"!`);
             }
-            
+
             function deleteBuildFromLibrary(category, buildName) {
                  const library = getBuildLibrary();
                  if (library[category]) {
-                    library[category] = library[category].filter(build => build.name !== buildName);
-                    if(library[category].length === 0) {
-                        delete library[category];
-                    }
-                    localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library));
-                    populateLoadBuildModal(); 
-                    showToast(`Build "${buildName}" deleted.`);
+                     library[category] = library[category].filter(build => build.name !== buildName);
+                     if(library[category].length === 0) {
+                         delete library[category];
+                     }
+                     localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library));
+                     populateLoadBuildModal();
+                     showToast(`Build "${buildName}" deleted.`);
                  }
             }
 
@@ -770,12 +819,12 @@
                 document.getElementById('save-build-new-category').value = '';
                 saveBuildModal.classList.remove('hidden');
             }
-            
+
             function populateLoadBuildModal() {
                 const library = getBuildLibrary();
                 const container = document.getElementById('load-build-library-content');
                 container.innerHTML = '';
-                
+
                 if (Object.keys(library).length === 0) {
                     container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty. Save some builds first!</p>';
                     return;
@@ -785,7 +834,7 @@
                     const categoryGroup = document.createElement('div');
                     categoryGroup.className = 'category-group';
                     categoryGroup.innerHTML = `<h3 class="category-title">${category}</h3>`;
-                    
+
                     library[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(build => {
                         const buildEntry = document.createElement('div');
                         buildEntry.className = 'saved-build-entry';
@@ -806,9 +855,17 @@
             function saveComposition() {
                 const compositionData = {
                     title: compTitleInput.value,
-                    notes: document.getElementById('comp-notes').value,
+                    notes: compNotesInput.value,
                     logoSrc: logoImageSrc,
                     backgroundImageSrc: backgroundImageSrc,
+                    // NEW: Save style data
+                    styles: {
+                        titleFontSize: titleFontSize,
+                        titleColor: titleColor,
+                        notesFontSize: notesFontSize,
+                        notesColor: notesColor,
+                        notesPositionBelow: notesPositionBelow
+                    },
                     roles: {}
                 };
 
@@ -835,15 +892,33 @@
                     try {
                         const loadedData = JSON.parse(e.target.result);
                         compTitleInput.value = loadedData.title || '';
-                        document.getElementById('comp-notes').value = loadedData.notes || '';
+                        compNotesInput.value = loadedData.notes || '';
                         logoImageSrc = loadedData.logoSrc || null;
-                        backgroundImageSrc = loadedData.backgroundImageSrc || null; 
+                        backgroundImageSrc = loadedData.backgroundImageSrc || null;
+
+                        // NEW: Load style data
+                        if (loadedData.styles) {
+                            titleFontSize = loadedData.styles.titleFontSize || '36';
+                            titleColor = loadedData.styles.titleColor || '#E2E8F0';
+                            notesFontSize = loadedData.styles.notesFontSize || '16';
+                            notesColor = loadedData.styles.notesColor || '#CBD5E0';
+                            notesPositionBelow = loadedData.styles.notesPositionBelow || false;
+                        } else {
+                            // Reset to default if loading old save without style info
+                            titleFontSize = '36';
+                            titleColor = '#E2E8F0';
+                            notesFontSize = '16';
+                            notesColor = '#CBD5E0';
+                            notesPositionBelow = false;
+                        }
+                        applyCurrentStylesToEditor();
+
                         updateLogoTitleDisplay();
-                        applyBackground(); 
+                        applyBackground();
 
                         ROLES.forEach(role => {
                             const buildsContainer = document.querySelector(`#${role.id} .builds-container`);
-                            buildsContainer.innerHTML = ''; 
+                            buildsContainer.innerHTML = '';
                             const roleBuilds = loadedData.roles[role.id];
                             if (roleBuilds && Array.isArray(roleBuilds)) {
                                 roleBuilds.forEach(buildData => {
@@ -858,6 +933,26 @@
                     }
                 };
                 reader.readAsText(file);
+            }
+            
+            // NEW: Helper function to apply styles from state variables to editor elements
+            function applyCurrentStylesToEditor() {
+                // Apply Title Styles
+                compTitleInput.style.fontSize = `${titleFontSize}px`;
+                compTitleInput.style.color = titleColor;
+                titleFontSizeSlider.value = titleFontSize;
+                titleFontSizeValue.textContent = `${titleFontSize}px`;
+                titleColorPicker.value = titleColor;
+
+                // Apply Notes Styles
+                compNotesInput.style.fontSize = `${notesFontSize}px`;
+                compNotesInput.style.color = notesColor;
+                notesFontSizeSlider.value = notesFontSize;
+                notesFontSizeValue.textContent = `${notesFontSize}px`;
+                notesColorPicker.value = notesColor;
+                
+                // Apply Notes Position Button Text
+                toggleNotesPosBtn.textContent = notesPositionBelow ? 'Move Notes Above Roles' : 'Move Notes Below Roles';
             }
 
             /* ----------------- EVENT LISTENERS SETUP ---------------- */
@@ -897,20 +992,20 @@
             rolesContainer.addEventListener('contextmenu', e => {
                 const slot = e.target.closest('.item-slot');
                 if (slot) {
-                    activeSlot = slot; 
+                    activeSlot = slot;
                     const hasPrimary = !!slot.querySelector('.primary-item-img');
-                    
+
                     if (hasPrimary) {
                         e.preventDefault();
                         const hasAlt = !!slot.querySelector('.alternative-item-overlay img');
-                        
+
                         contextMenu.querySelector('[data-action="edit-abilities"]').style.display = 'block';
                         contextMenu.querySelector('[data-action="add-alt"]').style.display = 'block';
                         contextMenu.querySelector('[data-action="clear-alt"]').style.display = hasAlt ? 'block' : 'none';
                         contextMenu.querySelector('[data-action="clear-main"]').style.display = 'block';
 
-                        contextMenu.classList.remove('hidden'); 
-                        
+                        contextMenu.classList.remove('hidden');
+
                         const menuWidth = contextMenu.offsetWidth;
                         const menuHeight = contextMenu.offsetHeight;
                         const viewportWidth = window.innerWidth;
@@ -920,12 +1015,12 @@
                         let left = e.clientX;
 
                         if (e.clientY + menuHeight > viewportHeight) {
-                            top = viewportHeight - menuHeight - 5; 
+                            top = viewportHeight - menuHeight - 5;
                         }
                         if (e.clientX + menuWidth > viewportWidth) {
-                            left = viewportWidth - menuWidth - 5; 
+                            left = viewportWidth - menuWidth - 5;
                         }
-                        
+
                         if (top < 5) top = 5;
                         if (left < 5) left = 5;
 
@@ -973,10 +1068,10 @@
                 const buildNameInput = document.getElementById('save-build-name');
                 const newCategoryInput = document.getElementById('save-build-new-category');
                 const existingCategorySelect = document.getElementById('save-build-category-select');
-                
+
                 const buildName = buildNameInput.value.trim();
                 const category = newCategoryInput.value.trim() || existingCategorySelect.value;
-                
+
                 if (!buildName) { showToast("Please enter a build name."); buildNameInput.focus(); return; }
                 if (!category) { showToast("Please select or create a category."); existingCategorySelect.focus(); return; }
 
@@ -1061,6 +1156,31 @@
                 }
             });
 
+            // --- NEW: Style Control Listeners ---
+            titleFontSizeSlider.addEventListener('input', (e) => {
+                titleFontSize = e.target.value;
+                titleFontSizeValue.textContent = `${titleFontSize}px`;
+                compTitleInput.style.fontSize = `${titleFontSize}px`;
+            });
+            titleColorPicker.addEventListener('input', (e) => {
+                titleColor = e.target.value;
+                compTitleInput.style.color = titleColor;
+            });
+            notesFontSizeSlider.addEventListener('input', (e) => {
+                notesFontSize = e.target.value;
+                notesFontSizeValue.textContent = `${notesFontSize}px`;
+                compNotesInput.style.fontSize = `${notesFontSize}px`;
+            });
+            notesColorPicker.addEventListener('input', (e) => {
+                notesColor = e.target.value;
+                compNotesInput.style.color = notesColor;
+            });
+            toggleNotesPosBtn.addEventListener('click', () => {
+                notesPositionBelow = !notesPositionBelow;
+                toggleNotesPosBtn.textContent = notesPositionBelow ? 'Move Notes Above Roles' : 'Move Notes Below Roles';
+                showToast(notesPositionBelow ? "Notes will export below roles." : "Notes will export above roles.");
+            });
+
             // --- EXPORT FUNCTION ---
             exportBtn.addEventListener('click', () => {
                 const tempExportContainer = document.createElement('div');
@@ -1074,30 +1194,40 @@
                     tempExportContainer.style.backgroundPosition = 'center';
                 }
 
+                // Create Title/Logo Clone
+                let titleOrLogoClone;
                 if (logoImageSrc) {
                     const logoClone = document.createElement('img');
                     logoClone.id = 'logo-image-clone';
                     logoClone.src = logoImageSrc;
-                    tempExportContainer.appendChild(logoClone);
+                    titleOrLogoClone = logoClone;
                 } else {
                     const titleValue = compTitleInput.value;
                     const titleClone = document.createElement('div');
                     titleClone.id = 'comp-title-clone';
                     titleClone.textContent = titleValue || compTitleInput.placeholder;
-                    tempExportContainer.appendChild(titleClone);
+                    // Apply custom styles
+                    titleClone.style.fontSize = `${titleFontSize}px`;
+                    titleClone.style.color = titleColor;
+                    titleOrLogoClone = titleClone;
                 }
 
-                const notesValue = document.getElementById('comp-notes').value;
+                // Create Notes Clone
+                const notesValue = compNotesInput.value;
+                let notesClone = null;
                 if (notesValue) {
-                    const notesClone = document.createElement('div');
+                    notesClone = document.createElement('div');
                     notesClone.id = 'comp-notes-clone';
                     notesClone.textContent = notesValue;
-                    tempExportContainer.appendChild(notesClone);
+                    // Apply custom styles
+                    notesClone.style.fontSize = `${notesFontSize}px`;
+                    notesClone.style.color = notesColor;
                 }
 
+                // Create Roles Wrapper and Columns
                 const rolesMainWrapper = document.createElement('div');
                 rolesMainWrapper.className = 'export-roles-main-wrapper';
-                
+
                 const column1 = document.createElement('div');
                 column1.className = 'export-column-1';
                 EXPORT_COLUMN_1_ROLES.forEach(roleId => {
@@ -1114,13 +1244,22 @@
 
                 rolesMainWrapper.appendChild(column1);
                 rolesMainWrapper.appendChild(column2);
+
+                // Assemble Final Export Layout based on position preference
+                tempExportContainer.appendChild(titleOrLogoClone);
+                if (!notesPositionBelow && notesClone) {
+                    tempExportContainer.appendChild(notesClone);
+                }
                 tempExportContainer.appendChild(rolesMainWrapper);
+                if (notesPositionBelow && notesClone) {
+                    tempExportContainer.appendChild(notesClone);
+                }
 
                 html2canvas(tempExportContainer, {
                     scale: 2,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#1a202c' 
+                    backgroundColor: '#1a202c'
                 }).then(canvas => {
                     const link = document.createElement('a');
                     const title = compTitleInput.value || compTitleInput.placeholder || 'composition';
@@ -1141,6 +1280,7 @@
                     buildsContainer.appendChild(createBuildRow());
                 });
                 updateLogoTitleDisplay();
+                applyCurrentStylesToEditor(); // Apply default styles on initial load
             }
 
             initializeApp();

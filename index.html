@@ -123,7 +123,7 @@
         .modal-input:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5); }
 
         /* --- Drag Handle & Toast --- */
-        .build-drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; touch-action: none; /* --- MOBILE/TOUCH FIX: Prevent scrolling when grabbing handle --- */ }
+        .build-drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; touch-action: none; }
         .build-drag-handle:active { cursor: grabbing; }
         #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #38a169; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; z-index: 100; }
         #toast.show { opacity: 1; transform: translate(-50%, -10px); }
@@ -140,18 +140,14 @@
         .role-title { font-size: 1.5rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); white-space: nowrap; }
         .role-collapse-toggle { background: none; border: none; color: #9ca3af; font-size: 1rem; cursor: pointer; transition: transform 0.2s; padding: 0.25rem; touch-action: manipulation; }
         .role-section.collapsed .role-collapse-toggle { transform: rotate(-90deg); }
-        .role-drag-handle { cursor: move; color: #718096; font-size: 1.25rem; padding-left: 0.25rem; padding-right: 0.5rem; touch-action: none; /* --- MOBILE/TOUCH FIX: Prevent scrolling when grabbing handle --- */ }
+        .role-drag-handle { cursor: move; color: #718096; font-size: 1.25rem; padding-left: 0.25rem; padding-right: 0.5rem; touch-action: none; }
 
         .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; transition: all 0.3s ease-out; overflow: hidden; }
         .role-section.collapsed .builds-container { display: none; }
 
         .build-row { display: flex; align-items: center; gap: 2px; }
         .build-items-wrapper {
-            display: flex;
-            gap: 2px;
-            overflow-x: auto; /* --- MOBILE/TOUCH FIX: Allow horizontal scrolling for item row --- */
-            padding-bottom: 4px; /* --- MOBILE/TOUCH FIX: Space for scrollbar --- */
-            scrollbar-width: thin; /* Firefox scrollbar styling */
+            display: flex; gap: 2px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin;
         }
         .category-label { position: absolute; top: -1.5rem; left: 0; width: 100%; text-align: center; font-size: 0.75rem; color: #94a3b8; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); }
         .builds-container .build-row:first-child .item-slot-wrapper { margin-top: 1.5rem; position: relative; }
@@ -203,11 +199,16 @@
         #party-table-clone th { background-color: rgba(26, 32, 44, 0.7); font-size: 0.875rem; }
         #party-table-clone td:first-child { font-weight: bold; }
 
-        /* --- EXPORT MODE STYLES --- */
+        /* --- FULL EXPORT MODE STYLES --- */
         #temp-export-wrapper { padding: 1rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
         @media(min-width: 640px) { #temp-export-wrapper { padding: 1.5rem; } }
 
-        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle { display: none !important; }
+        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, 
+        .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, 
+        .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, 
+        .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, 
+        .export-mode .role-drag-handle, .export-mode .export-single-build-btn { display: none !important; } /* --- ADDITION: Added .export-single-build-btn --- */
+        
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
         .export-mode .role-header { justify-content: center; } /* Center role title on export */
         .export-mode .build-quantity-display { display: block; }
@@ -220,18 +221,64 @@
         .export-mode .export-column-1 > #comp-notes-clone, .export-mode .export-column-2 > #comp-notes-clone,
         .export-mode .export-column-1 > #party-table-clone, .export-mode .export-column-2 > #party-table-clone { margin-bottom: 1rem; }
         .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
-        .export-mode .export-roles-main-wrapper { display: flex; flex-direction: column; gap: 1.5rem; } /* --- MOBILE/TOUCH FIX: Stack columns vertically on export for mobile --- */
+        .export-mode .export-roles-main-wrapper { display: flex; flex-direction: column; gap: 1.5rem; } 
         @media (min-width: 768px) { .export-mode .export-roles-main-wrapper { flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; } }
         .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 100%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem; }
         @media (min-width: 768px) { .export-mode .export-column-1, .export-mode .export-column-2 { flex-basis: 50%; } }
         .export-mode .alternative-item-overlay { border: 1px solid #718096; }
         .export-mode .ability-text-overlay { color: #4ade80; font-size: 0.7rem; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; }
         .export-mode .ability-text-overlay:empty { display: none; }
+
+        /* --- START: ADDED FOR SINGLE BUILD EXPORT --- */
+        #single-build-export-wrapper {
+            position: absolute;
+            left: -9999px; /* Position off-screen to hide from view */
+            padding: 1rem;
+            background-color: #1a202c; /* Consistent background color for capture */
+            display: inline-block; /* Ensure wrapper fits content */
+        }
+        #single-build-export-wrapper .build-row {
+            background-color: #2d3748; /* Add a card background to the exported build row */
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        #single-build-export-wrapper .build-drag-handle,
+        #single-build-export-wrapper .save-build-btn,
+        #single-build-export-wrapper .copy-build-btn,
+        #single-build-export-wrapper .remove-build-btn,
+        #single-build-export-wrapper .export-single-build-btn,
+        #single-build-export-wrapper .build-quantity-input,
+        #single-build-export-wrapper .category-label {
+            display: none !important;
+        }
+        #single-build-export-wrapper .build-quantity-display {
+            display: block; /* Show static quantity text */
+            color: #e2e8f0;
+            font-weight: bold;
+            font-size: 1.25rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        #single-build-export-wrapper .item-slot {
+             background-color: transparent !important;
+             border-color: transparent !important;
+             box-shadow: none !important;
+        }
+        #single-build-export-wrapper .build-items-wrapper {
+            overflow-x: visible !important; /* Ensure no scrollbar appears in screenshot */
+        }
+        /* --- END: ADDED FOR SINGLE BUILD EXPORT --- */
     </style>
 </head>
 
-<body class="p-2 sm:p-4 md:p-8"> <div id="comp-container" class="w-full max-w-7xl mx-auto bg-gray-900 p-3 sm:p-6 rounded-lg shadow-xl"> <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <div id="header-controls" class="w-full flex-grow md:mr-8 mb-4 md:mb-0"> <div class="tab-buttons">
+<body class="p-2 sm:p-4 md:p-8">
+
+    <div id="comp-container" class="w-full max-w-7xl mx-auto bg-gray-900 p-3 sm:p-6 rounded-lg shadow-xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div id="header-controls" class="w-full flex-grow md:mr-8 mb-4 md:mb-0">
+                <div class="tab-buttons">
                     <button class="tab-btn active" data-tab="tab-pane-content">Content</button>
                     <button class="tab-btn" data-tab="tab-pane-appearance">Appearance & Layout</button>
                 </div>
@@ -336,16 +383,10 @@
                                     <table id="party-table-editor">
                                         <thead>
                                             <tr>
-                                                <th>Party size</th>
-                                                <th>Engages</th>
-                                                <th>Tanks</th>
-                                                <th>Supports</th>
-                                                <th>Healers</th>
-                                                <th>DPS</th>
+                                                <th>Party size</th> <th>Engages</th> <th>Tanks</th> <th>Supports</th> <th>Healers</th> <th>DPS</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="party-table-body">
-                                        </tbody>
+                                        <tbody id="party-table-body"></tbody>
                                     </table>
                                 </div>
                                 <button id="add-party-row-btn" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-1 px-2 rounded mt-1">+ Add Row</button>
@@ -425,7 +466,7 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             const ITEMS = {
-                'weapons': ['Arcane Staff.png', 'Arclight Blasters.png', 'Arctic Staff.png', 'Astral Staff.png', 'Battle Bracers.png', 'Battleaxe.png', 'Bear Paws.png', 'Bedrock Mace.png', 'Black Monk Stave.png', 'Blazing Staff.png', 'Blight Staff.png', 'Bloodletter.png', 'Bloodmoon Staff.png', 'Boltcasters.png', 'Bow of Badon.png', 'Bow.png', 'Brawler Gloves.png', 'Bridled Fury.png', 'Brimstone Staff.png', 'Broadsword.png', 'Camlann Mace.png', 'Carrioncaller.png', 'Carving Sword.png', 'Chillhowl.png', 'Clarent Blade.png', 'Claws.png', 'Claymore.png', 'Crossbow.png', 'Crystal Reaper.png', 'Cursed Skull.png', 'Cursed Staff.png', 'Dagger Pair.png', 'Dagger.png', 'Damnation Staff.png', 'Dawnsong.png', 'Daybreaker.png', 'Deathgivers.png', 'Demonfang.png', 'Demonic Staff.png', 'Divine Staff.png', 'Double Bladed Staff.png', 'Dreadstorm Monach.png', 'Druidic Staff.png', 'Dualswords.png', 'Earthrune Staff.png', 'Energy Shaper.png', 'Enigmatic Staff.png', 'Evensong.png', 'Exalted Staff.png', 'Fallen Staff.png', 'Fire Staff.png', 'Fists of Avalon.png', 'Flamewalker Staff.png', 'Forcepulse Bracers.png', 'Forge Hammers.png', 'Forgebark Staff.png', 'Frost Staff.png', 'Galatine Pair.png', 'Glacial Staff.png', 'Glaive.png', 'Grailseeker.png', 'Great Arcane Staff.png', 'Great Cursed Staff.png', 'Great Frost Staff.png', 'Great Hammer.png', 'Great Holy Staff.png', 'Great Nature Staff.png', 'Greataxe.png', 'Grovekeeper.png', 'Halberd.png', 'Hallowfall.png', 'Hammer.png', 'Hand of Justice.png', 'Heavy Crossbow.png', 'Heavy Mace.png', 'Hellfire Hands.png', 'Hellspawn Staff.png', 'Heron Spear.png', 'Hoarfrost Staff.png', 'Holy Staff.png', 'Icicle Staff.png', 'Incubus Mace.png', 'Infernal Scythe.png', 'Infernal Staff.png', 'Infinity Blade.png', 'Iron Clad Staff.png', 'Ironroof Staff.png', 'Kingmaker.png', 'Lifecurse Staff.png', 'Lifetouch Staff.png', 'Light Crossbow.png', 'Lightcaller.png', 'Longbow.png', 'Mace.png', 'Malevolent Locus.png', 'Mistpiercer.png', 'Morning Star.png', 'Nature Staff.png', 'Oathkeepers.png', 'Occult Staff.png', 'Permafrost Prism.png', 'Phantom Twinblade.png', 'Pike.png', 'Polehammer.png', 'Primal Staff.png', 'Prowling Staff.png', 'Quarterstaff.png', 'Rampant Staff.png', 'Ravenstrike Cestus.png', 'Realmbreaker.png', 'Redemption Staff.png', 'Riftglaive.png', 'Rootbound Staff.png', 'Rotcaller Staff.png', 'Shadowcaller.png', 'Siegebow.png', 'Skystrider Bow.png', 'Soulscythe.png', 'Spear.png', 'Spiked Gauntlets.png', 'Spirithunter.png', 'Staff of Balance.png', 'Stillgaze Staff.png', 'Tombhammer.png', 'Trinity Spear.png', 'Truebolt Hammer.png', 'Twin Slayers.png', 'Ursine Maulers.png', 'Wailing Bow.png', 'Warbow.png', 'Weeping Repeater.png', 'Whispering Bow.png', 'Wild Staff.png', 'Wildfire Staff.png', 'Witchwork Staff.png'],
+                'weapons': ['Arcane Staff.png', 'Arclight Blasters.png', 'Arctic Staff.png', 'Astral Staff.png', 'Battle Bracers.png', 'Battleaxe.png', 'Bear Paws.png', 'Bedrock Mace.png', 'Black Monk Stave.png', 'Blazing Staff.png', 'Blight Staff.png', 'Bloodletter.png', 'Bloodmoon Staff.png', 'Boltcasters.png', 'Bow of Badon.png', 'Bow.png', 'Brawler Gloves.png', 'Bridled Fury.png', 'Brimstone Staff.png', 'Broadsword.png', 'Camlann Mace.png', 'Carrioncaller.png', 'Carving Sword.png', 'Chillhowl.png', 'Clarent Blade.png', 'Claws.png', 'Claymore.png', 'Crossbow.png', 'Crystal Reaper.png', 'Cursed Skull.png', 'Cursed Staff.png', 'Dagger Pair.png', 'Dagger.png', 'Damnation Staff.png', 'Dawnsong.png', 'Daybreaker.png', 'Deathgivers.png', 'Demonfang.png', 'Demonic Staff.png', 'Divine Staff.png', 'Double Bladed Staff.png', 'Dreadstorm Monach.png', 'Druidic Staff.png', 'Dualswords.png', 'Earthrune Staff.png', 'Energy Shaper.png', 'Enigmatic Staff.png', 'Evensong.png', 'Exalted Staff.png', 'Fallen Staff.png', 'Fire Staff.png', 'Fists of Avalon.png', 'Flamewalker Staff.png', 'Forcepulse Bracers.png', 'Forge Hammers.png', 'Forgebark Staff.png', 'Frost Staff.png', 'Galatine Pair.png', 'Glacial Staff.png', 'Glaive.png', 'Grailseeker.png', 'Great Arcane Staff.png', 'Great Cursed Staff.png', 'Great Frost Staff.png', 'Great Hammer.png', 'Great Holy Staff.png', 'Great Nature Staff.png', 'Greataxe.png', 'Grovekeeper.png', 'Halberd.png', 'Hallowfall.png', 'Hammer.png', 'Hand of Justice.png', 'Heavy Crossbow.png', 'Heavy Mace.png', 'Hellfire Hands.png', 'Hellspawn Staff.png', 'Heron Spear.png', 'Hoarfrost Staff.png', 'Holy Staff.png', 'Icicle Staff.png', 'Incubus Mace.png', 'Infernal Scythe.png', 'Infernal Staff.png', 'Infinity Blade.png', 'Iron Clad Staff.png', 'Ironroof Staff.png', 'Kingmaker.png', 'Lifecurse Staff.png', 'Lifetouch Staff.png', 'Light Crossbow.png', 'Lightcaller.png', 'Longbow.png', 'Mace.png', 'Malevolent Locus.png', 'Mistpiercer.png', 'Morning Star.png', 'Nature Staff.png', 'Oathkeepers.png', 'Occult Staff.png', 'Permafrost Prism.png', 'Phantom Twinblade.png', 'Pike.png', 'Polehammer.png', 'Primal Staff.png', 'Prowling Staff.png', 'Quarterstaff.png', 'Rampant Staff.png', 'Ravenstrike Cestus.png', 'Realmbreaker.png', 'Redemption Staff.png', 'Riftglaive.png', 'Rootbound Staff.png', 'Rotcaller Staff.png', 'Shadowcaller.png', 'Siegebow.png', 'Skystrider Bow.png', 'Soulscythe.png', 'Spear.png', 'Spiked Gauntlets.png', 'Spirithunter.png', 'Staff of Balance.png', 'Stillgaze Staff.png', 'Tombhammer.png', 'Trinity Spear.png', 'Truebolt Hammer.png', 'Twin Slayers.png', 'Ursine Maulers.png', 'Wailing Bow.png', 'Warbow.png',g', 'Weeping Repeater.png', 'Whispering Bow.png', 'Wild Staff.png', 'Wildfire Staff.png', 'Witchwork Staff.png'],
                 'OffHands': ['Astral Aegis.png', 'Caitiff Shield.png', 'Celestial Censer.png', 'Cryptcandle.png', 'Eye of Secrets.png', 'Facebreaker.png', 'Leering Cane.png', 'Mistcaller.png', 'Muisak.png', 'Sacred Scepter.png', 'Sarcophagus.png', 'Shield.png', 'Taproot.png', 'Tome of Spells.png', 'Torch.png'],
                 'Head': ['Assassin Hood.png', 'Cleric Cowl.png', 'Cowl of Purity.png', 'Cultist Cowl.png', 'Demon Helmet.png', 'Druid Cowl.png', 'Duskweaver Helmet.png', 'Feyscale Hat.png', 'Fiend Cowl.png', 'Graveguard Helmet.png', 'Guardian Helmet.png', 'Hellion Hood.png', 'Helmet of Valor.png', 'Hood of Tenacity.png', 'Hunter Hood.png', 'Judicator Helmet.png', 'Knight Helmet.png', 'Mage Cowl.png', 'Mercenary Hood.png', 'Mistwalker Hood.png', 'Royal Cowl.png', 'Royal Helmet.png', 'Royal Hood.png', 'Scholar Cowl.png', 'Soldier Helmet.png', 'Specter Hood.png', 'Stalker Hood.png'],
                 'Chest': ['Armor of Valor.png', 'Assassin Jacket.png', 'Cleric Robe.png', 'Cultist Robe.png', 'Demon Armor.png', 'Druid Robe.png', 'Duskweaver Armor.png', 'Feyscale Robe.png', 'Fiend Robe.png', 'Graveguard Armor.png', 'Guardian Armor.png', 'Hellion Jacket.png', 'Hunter Jacket.png', 'Jacket of Tenacity.png', 'Judicator Armor.png', 'Knight Armor.png', 'Mage Robe.png', 'Mercenary Jacket.png', 'Mistwalker Jacket.png', 'Robe of Purity.png', 'Royal Armor.png', 'Royal Jacket.png', 'Royal Robe.png', 'Scholar Robe.png', 'Soldier Armor.png', 'Specter Jacket.png', 'Stalker Jacket.png'],
@@ -463,19 +504,11 @@
             let activeRoleForLoad = null;
 
             // Style state
-            let titleFontSize = '36';
-            let titleColor = '#E2E8F0';
-            let titleAlign = 'center';
-            let notesFontSize = '16';
-            let notesColor = '#CBD5E0';
-            let notesAlign = 'left';
-            let notesPosition = 'above_full';
+            let titleFontSize = '36'; let titleColor = '#E2E8F0'; let titleAlign = 'center';
+            let notesFontSize = '16'; let notesColor = '#CBD5E0'; let notesAlign = 'left'; let notesPosition = 'above_full';
 
             // Party table state
-            let partyTableData = [];
-            let isPartyTableEnabled = false;
-            let partyTablePosition = 'above_full';
-            let partyTableScale = 1;
+            let partyTableData = []; let isPartyTableEnabled = false; let partyTablePosition = 'above_full'; let partyTableScale = 1;
 
             /* ----------------- DOM ELEMENTS ---------------- */
             const compContainer = document.getElementById('comp-container');
@@ -507,7 +540,6 @@
             const abilityInput = document.getElementById('ability-input');
             const abilitySaveBtn = document.getElementById('ability-save-btn');
             const abilityCancelBtn = document.getElementById('ability-cancel-btn');
-
             const titleFontSizeSlider = document.getElementById('title-font-size');
             const titleFontSizeValue = document.getElementById('title-font-size-value');
             const titleColorPicker = document.getElementById('title-font-color');
@@ -518,8 +550,6 @@
             const notesAlignGroup = document.getElementById('notes-align-group');
             const notesPositionSelect = document.getElementById('notes-position-select');
             const tabButtonsContainer = document.querySelector('.tab-buttons');
-
-            // Party table DOM elements
             const enablePartyTableCheck = document.getElementById('enable-party-table');
             const partyTableControls = document.getElementById('party-table-controls');
             const partyTableBody = document.getElementById('party-table-body');
@@ -540,7 +570,8 @@
                         <span class="role-drag-handle" title="Drag to reorder role">⠿</span>
                         <button class="role-collapse-toggle" title="Collapse/Expand Role">▼</button>
                         <h2 class="role-title font-bold ${role.color.replace('bg-', 'text-').replace('-800', '-300')}">${role.name}</h2>
-                        <div class="flex space-x-2 ml-auto pl-2 flex-shrink-0"> <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
+                        <div class="flex space-x-2 ml-auto pl-2 flex-shrink-0">
+                            <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
                             <button class="paste-build-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded text-xs hidden" data-role="${role.id}">Paste</button>
                             <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">+ Add</button>
                         </div>
@@ -548,11 +579,8 @@
                     <div class="builds-container" data-role="${role.id}"></div>
                 `;
                 rolesContainer.appendChild(section);
-                // Desktop drag events
                 section.addEventListener('dragstart', handleRoleDragStart);
                 section.addEventListener('dragend', handleRoleDragEnd);
-                
-                // --- MOBILE/TOUCH FIX: Add touch event listeners ---
                 section.addEventListener('touchstart', handleRoleTouchStart, { passive: false });
                 section.addEventListener('touchmove', handleRoleTouchMove, { passive: false });
                 section.addEventListener('touchend', handleRoleTouchEnd);
@@ -572,7 +600,13 @@
                     const slotData = buildSlots[index] || { primary: null, alt: null, quantity: 1, abilities: '' };
                     const quantity = slotData.quantity || 1;
                     const abilitiesText = slotData.abilities || '';
-                    const primaryImgHTML = slotData.primary ? `<img src="${slotData.primary}" alt="item" class="primary-item-img">` : '';
+                    // Try to find original filename for alt text from primary image source URL
+                    const primaryImgSrc = slotData.primary || "";
+                    let primaryItemName = "item";
+                    if (primaryImgSrc && ITEMS[cat.key]) {
+                        primaryItemName = ITEMS[cat.key].find(item => primaryImgSrc.includes(`/${item}`)) || primaryImgSrc.substring(primaryImgSrc.lastIndexOf('/') + 1);
+                    }
+                    const primaryImgHTML = slotData.primary ? `<img src="${primaryImgSrc}" alt="${primaryItemName}" class="primary-item-img">` : '';
                     const altImgHTML = slotData.alt ? `<img src="${slotData.alt}" alt="alternative item">` : '';
                     const borderColorStyle = slotData.primary ? 'border-color: transparent;' : '';
 
@@ -598,18 +632,16 @@
                     </div>
                     <div class="build-drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
                     <div class="build-items-wrapper">${slotsHTML}</div>
-                    <div class="flex flex-col space-y-1 ml-2 sm:ml-4 self-center"> <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
+                    <div class="flex flex-col space-y-1 ml-2 sm:ml-4 self-center">
+                        <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
                         <button class="copy-build-btn text-blue-400 hover:text-blue-300 font-bold text-lg" title="Copy Build">⧉</button>
-                        <button class="remove-build-btn text-red-500 hover:text-red-400 font-bold text-2xl" title="Remove Build">&times;</button>
+                        <button class="export-single-build-btn text-purple-400 hover:text-purple-300 font-bold text-lg" title="Export Build as PNG">📸</button> <button class="remove-build-btn text-red-500 hover:text-red-400 font-bold text-2xl" title="Remove Build">&times;</button>
                     </div>
                 `;
 
-                // Desktop drag events
                 buildRow.addEventListener('dragstart', handleBuildDragStart);
                 buildRow.addEventListener('dragend', handleBuildDragEnd);
                 buildRow.addEventListener('dragover', handleBuildDragOver);
-
-                // --- MOBILE/TOUCH FIX: Add touch event listeners ---
                 buildRow.addEventListener('touchstart', handleBuildTouchStart, { passive: false });
                 buildRow.addEventListener('touchmove', handleBuildTouchMove, { passive: false });
                 buildRow.addEventListener('touchend', handleBuildTouchEnd);
@@ -636,19 +668,11 @@
                 if (e.target.classList.contains('build-drag-handle')) {
                     draggedBuildRow = e.currentTarget;
                     e.dataTransfer.effectAllowed = 'move';
-                    // Set data transfer for firefox compatibility
                     e.dataTransfer.setData('text/plain', null);
                     setTimeout(() => { draggedBuildRow.classList.add('opacity-50', 'dragging'); }, 0);
-                } else {
-                    e.preventDefault();
-                }
+                } else { e.preventDefault(); }
             }
-
-            function handleBuildDragEnd(e) {
-                if (draggedBuildRow) draggedBuildRow.classList.remove('opacity-50', 'dragging');
-                draggedBuildRow = null;
-            }
-
+            function handleBuildDragEnd(e) { if (draggedBuildRow) draggedBuildRow.classList.remove('opacity-50', 'dragging'); draggedBuildRow = null; }
             function handleBuildDragOver(e) {
                 e.preventDefault();
                 const targetRow = e.currentTarget.closest('.build-row');
@@ -660,45 +684,27 @@
                 if (e.clientY < midpoint) container.insertBefore(draggedBuildRow, targetRow);
                 else container.insertBefore(draggedBuildRow, targetRow.nextSibling);
             }
-
             function handleRoleDragStart(e) {
                 if (e.target.classList.contains('role-drag-handle')) {
                     draggedRoleColumn = e.currentTarget;
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', null);
+                    e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', null);
                     setTimeout(() => { draggedRoleColumn.classList.add('dragging'); }, 0);
-                } else {
-                    if (!e.target.closest('.build-drag-handle')) e.preventDefault();
-                }
+                } else { if (!e.target.closest('.build-drag-handle')) e.preventDefault(); }
             }
-
-            function handleRoleDragEnd(e) {
-                if (draggedRoleColumn) draggedRoleColumn.classList.remove('dragging');
-                draggedRoleColumn = null;
-            }
-
+            function handleRoleDragEnd(e) { if (draggedRoleColumn) draggedRoleColumn.classList.remove('dragging'); draggedRoleColumn = null; }
             function handleRoleDragOver(e) {
-                e.preventDefault(); // Important: allow drop
+                e.preventDefault();
                 const targetRole = e.target.closest('.role-section');
                 if (!draggedRoleColumn || draggedRoleColumn === targetRole || !targetRole) return;
-                
-                // --- MOBILE/TOUCH FIX: Use different logic for horizontal reordering ---
                 const rect = targetRole.getBoundingClientRect();
-                const containerRect = rolesContainer.getBoundingClientRect();
-                const containerScrollLeft = rolesContainer.scrollLeft;
-
-                // Check if layout is wrapped (mobile view) or single row (desktop view)
                 const firstRoleTop = rolesContainer.children[0].getBoundingClientRect().top;
                 const targetRoleTop = rect.top;
                 const isWrapped = Math.abs(firstRoleTop - targetRoleTop) > rect.height / 2;
-
                 if (isWrapped) {
-                    // Vertical reordering when wrapped
                     const midpointY = rect.top + rect.height / 2;
                     if (e.clientY < midpointY) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
                     else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
                 } else {
-                    // Horizontal reordering when in a single line
                     const midpointX = rect.left + rect.width / 2;
                     if (e.clientX < midpointX) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
                     else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
@@ -706,84 +712,33 @@
             }
 
             /* ----------------- DRAG & DROP HANDLERS (MOBILE/TOUCH) ---------------- */
-            function handleBuildTouchStart(e) {
-                if (e.target.classList.contains('build-drag-handle')) {
-                    draggedBuildRow = e.currentTarget;
-                    draggedBuildRow.classList.add('opacity-50', 'dragging');
-                    e.preventDefault(); // Prevent screen scrolling
-                }
-            }
-
+            function handleBuildTouchStart(e) { if (e.target.classList.contains('build-drag-handle')) { draggedBuildRow = e.currentTarget; draggedBuildRow.classList.add('opacity-50', 'dragging'); e.preventDefault(); } }
             function handleBuildTouchMove(e) {
-                if (!draggedBuildRow) return;
-                e.preventDefault();
-
-                const touch = e.touches[0];
-                const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (!draggedBuildRow) return; e.preventDefault();
+                const touch = e.touches[0]; const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
                 const targetRow = targetElement ? targetElement.closest('.build-row') : null;
-
                 if (!targetRow || targetRow === draggedBuildRow || !draggedBuildRow.parentElement.contains(targetRow)) return;
-                
-                const rect = targetRow.getBoundingClientRect();
-                const midpoint = rect.top + rect.height / 2;
-                if (touch.clientY < midpoint) {
-                    targetRow.parentElement.insertBefore(draggedBuildRow, targetRow);
-                } else {
-                    targetRow.parentElement.insertBefore(draggedBuildRow, targetRow.nextSibling);
-                }
+                const rect = targetRow.getBoundingClientRect(); const midpoint = rect.top + rect.height / 2;
+                if (touch.clientY < midpoint) { targetRow.parentElement.insertBefore(draggedBuildRow, targetRow); } else { targetRow.parentElement.insertBefore(draggedBuildRow, targetRow.nextSibling); }
             }
-
-            function handleBuildTouchEnd(e) {
-                if (draggedBuildRow) {
-                    draggedBuildRow.classList.remove('opacity-50', 'dragging');
-                    draggedBuildRow = null;
-                }
-            }
-            
-            function handleRoleTouchStart(e) {
-                if (e.target.classList.contains('role-drag-handle')) {
-                    draggedRoleColumn = e.currentTarget;
-                    draggedRoleColumn.classList.add('dragging');
-                    e.preventDefault();
-                }
-            }
-
+            function handleBuildTouchEnd(e) { if (draggedBuildRow) { draggedBuildRow.classList.remove('opacity-50', 'dragging'); draggedBuildRow = null; } }
+            function handleRoleTouchStart(e) { if (e.target.classList.contains('role-drag-handle')) { draggedRoleColumn = e.currentTarget; draggedRoleColumn.classList.add('dragging'); e.preventDefault(); } }
             function handleRoleTouchMove(e) {
-                if (!draggedRoleColumn) return;
-                e.preventDefault();
-
-                const touch = e.touches[0];
-                const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (!draggedRoleColumn) return; e.preventDefault();
+                const touch = e.touches[0]; const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
                 const targetRole = targetElement ? targetElement.closest('.role-section') : null;
-
                 if (!targetRole || targetRole === draggedRoleColumn || !rolesContainer.contains(targetRole)) return;
-
-                const rect = targetRole.getBoundingClientRect();
-                
-                // Check if layout is wrapped (mobile view) or single row (desktop view) by comparing top positions
-                const firstRoleTop = rolesContainer.children[0].getBoundingClientRect().top;
-                const targetRoleTop = rect.top;
-                const isWrapped = Math.abs(firstRoleTop - targetRoleTop) > rect.height / 2;
-
+                const rect = targetRole.getBoundingClientRect(); const firstRoleTop = rolesContainer.children[0].getBoundingClientRect().top;
+                const targetRoleTop = rect.top; const isWrapped = Math.abs(firstRoleTop - targetRoleTop) > rect.height / 2;
                 if (isWrapped) {
-                    // Vertical reordering when wrapped
                     const midpointY = rect.top + rect.height / 2;
-                    if (touch.clientY < midpointY) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
-                    else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                    if (touch.clientY < midpointY) rolesContainer.insertBefore(draggedRoleColumn, targetRole); else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
                 } else {
-                    // Horizontal reordering when in a single line
                     const midpointX = rect.left + rect.width / 2;
-                    if (touch.clientX < midpointX) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
-                    else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                    if (touch.clientX < midpointX) rolesContainer.insertBefore(draggedRoleColumn, targetRole); else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
                 }
             }
-
-            function handleRoleTouchEnd(e) {
-                if (draggedRoleColumn) {
-                    draggedRoleColumn.classList.remove('dragging');
-                    draggedRoleColumn = null;
-                }
-            }
+            function handleRoleTouchEnd(e) { if (draggedRoleColumn) { draggedRoleColumn.classList.remove('dragging'); draggedRoleColumn = null; } }
 
             /* ----------------- MODAL FUNCTIONS ---------------- */
             function populateModal(category) {
@@ -792,38 +747,27 @@
                 const searchTerm = itemSearch.value.toLowerCase();
                 items.filter(item => item.toLowerCase().includes(searchTerm)).forEach(itemFilename => {
                     const itemDiv = document.createElement('div');
-                    // --- FAKE IMAGE PATH: Replace with actual image path logic if needed ---
-                    // Using a placeholder background color for demonstration as image paths are likely incorrect.
                     const imagePath = `./images/${category}/${itemFilename}`; 
                     itemDiv.className = 'cursor-pointer p-1 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center flex-col';
                     itemDiv.innerHTML = `<img src="${imagePath}" alt="${itemFilename}" class="w-16 h-16 object-contain" style="background-color: #4a5568;"><span class="text-xs text-center mt-1 text-gray-300 break-words w-full">${itemFilename.replace('.png', '')}</span>`;
-                    itemDiv.addEventListener('click', () => selectItem(imagePath, itemFilename)); // Changed to pass imagePath
-                    // Handle image loading errors gracefully
-                    itemDiv.querySelector('img').onerror = function() { this.style.visibility = 'hidden'; /* Hide broken image icon */ };
+                    itemDiv.addEventListener('click', () => selectItem(imagePath, itemFilename)); 
+                    itemDiv.querySelector('img').onerror = function() { this.style.visibility = 'hidden'; };
                     modalGrid.appendChild(itemDiv);
                 });
             }
-
             function openModal(slotElement) {
-                activeSlot = slotElement;
-                activeCategory = slotElement.closest('.item-slot-wrapper').dataset.category;
-                const categoryInfo = CATEGORIES.find(c => c.key === activeCategory);
-                document.getElementById('modal-category-tag').textContent = categoryInfo ? categoryInfo.label : activeCategory;
+                activeSlot = slotElement; activeCategory = slotElement.closest('.item-slot-wrapper').dataset.category;
+                const categoryInfo = CATEGORIES.find(c => c.key === activeCategory); document.getElementById('modal-category-tag').textContent = categoryInfo ? categoryInfo.label : activeCategory;
                 itemSearch.value = ''; populateModal(activeCategory); itemModal.classList.remove('hidden');
             }
             function closeModal() { itemModal.classList.add('hidden'); activeSlot = null; activeCategory = null; isSelectingAlternative = false; }
-            function openAbilityModal() {
-                if (!activeSlot) return; abilityInput.value = activeSlot.querySelector('.ability-text-overlay')?.textContent || ''; abilityModal.classList.remove('hidden'); abilityInput.focus();
-            }
+            function openAbilityModal() { if (!activeSlot) return; abilityInput.value = activeSlot.querySelector('.ability-text-overlay')?.textContent || ''; abilityModal.classList.remove('hidden'); abilityInput.focus(); }
             function closeAbilityModal() { abilityModal.classList.add('hidden'); }
-
             function selectItem(imageSrc, altText = 'custom-item') {
                 if (!activeSlot) return;
-                if (isSelectingAlternative) {
-                    activeSlot.querySelector('.alternative-item-overlay').innerHTML = `<img src="${imageSrc}" alt="alternative item">`;
-                } else {
-                    const currentQuantity = parseInt(activeSlot.dataset.quantity || 1);
-                    const altContent = activeSlot.querySelector('.alternative-item-overlay')?.innerHTML || '';
+                if (isSelectingAlternative) { activeSlot.querySelector('.alternative-item-overlay').innerHTML = `<img src="${imageSrc}" alt="alternative item">`; } 
+                else {
+                    const currentQuantity = parseInt(activeSlot.dataset.quantity || 1); const altContent = activeSlot.querySelector('.alternative-item-overlay')?.innerHTML || '';
                     const abilityContent = activeSlot.querySelector('.ability-text-overlay')?.textContent || '';
                     activeSlot.innerHTML = `<div class="ability-text-overlay">${abilityContent}</div><img src="${imageSrc}" alt="${altText}" class="primary-item-img"><div class="alternative-item-overlay">${altContent}</div><input type="number" class="quantity-input" min="1" value="${currentQuantity}"><span class="item-quantity">x${currentQuantity}</span>`;
                     activeSlot.style.borderColor = 'transparent';
@@ -836,17 +780,14 @@
                 const buildSlotsData = CATEGORIES.map((cat, i) => {
                     const slot = buildRowElement.querySelectorAll('.item-slot')[i];
                     if (slot) {
-                        const primaryImg = slot.querySelector('.primary-item-img');
-                        const altImg = slot.querySelector('.alternative-item-overlay img');
+                        const primaryImg = slot.querySelector('.primary-item-img'); const altImg = slot.querySelector('.alternative-item-overlay img');
                         return { primary: primaryImg ? primaryImg.src : null, alt: altImg ? altImg.src : null, quantity: parseInt(slot.dataset.quantity || 1), abilities: slot.querySelector('.ability-text-overlay')?.textContent || '' };
                     } return { primary: null, alt: null, quantity: 1, abilities: '' };
                 });
                 return { slots: buildSlotsData, partyQuantity: buildRowElement.querySelector('.build-quantity-input')?.value || '' };
             }
-
             function copyBuild(buildRowElement) { copiedBuildData = getBuildDataFromRow(buildRowElement); document.querySelectorAll('.paste-build-btn').forEach(btn => btn.classList.remove('hidden')); showToast("Build copied!"); }
             function pasteBuild(roleId) { if (copiedBuildData) document.querySelector(`#${roleId} .builds-container`).appendChild(createBuildRow(copiedBuildData)); }
-
             function clearSlot(slotElement, partToClear = 'main') {
                 if (partToClear === 'main') {
                     const currentQuantity = parseInt(slotElement.dataset.quantity || 1); const abilityContent = slotElement.querySelector('.ability-text-overlay')?.textContent || '';
@@ -854,15 +795,8 @@
                     slotElement.style.borderColor = '';
                 } else if (partToClear === 'alt') { const overlay = slotElement.querySelector('.alternative-item-overlay'); if (overlay) overlay.innerHTML = ''; }
             }
-
             function showToast(message) { toast.textContent = message; toast.classList.add('show'); setTimeout(() => { toast.classList.remove('show'); }, 2000); }
-            function updateLogoTitleDisplay() { 
-                if (logoImageSrc) { 
-                    logoPreview.src = logoImageSrc; logoPreview.classList.remove('hidden'); removeLogoBtn.classList.remove('hidden'); 
-                } else { 
-                    logoPreview.classList.add('hidden'); removeLogoBtn.classList.add('hidden'); logoPreview.src = ''; 
-                } 
-            }
+            function updateLogoTitleDisplay() { if (logoImageSrc) { logoPreview.src = logoImageSrc; logoPreview.classList.remove('hidden'); removeLogoBtn.classList.remove('hidden'); } else { logoPreview.classList.add('hidden'); removeLogoBtn.classList.add('hidden'); logoPreview.src = ''; } }
             function applyBackground() { if (backgroundImageSrc) { compContainer.style.backgroundImage = `url(${backgroundImageSrc})`; compContainer.style.backgroundSize = 'cover'; compContainer.style.backgroundPosition = 'center'; removeBackgroundBtn.classList.remove('hidden'); } else { compContainer.style.backgroundImage = 'none'; removeBackgroundBtn.classList.add('hidden'); } }
 
             /* ----------------- BUILD LIBRARY (localStorage) FUNCTIONS ---------------- */
@@ -871,157 +805,70 @@
             function deleteBuildFromLibrary(category, buildName) { const library = getBuildLibrary(); if (library[category]) { library[category] = library[category].filter(build => build.name !== buildName); if (library[category].length === 0) delete library[category]; localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library)); populateLoadBuildModal(); showToast(`Build "${buildName}" deleted.`); } }
             function openSaveBuildModal(buildRowElement) { activeBuildRowForSave = buildRowElement; const library = getBuildLibrary(); const categorySelect = document.getElementById('save-build-category-select'); categorySelect.innerHTML = '<option value="">Select existing category...</option>'; Object.keys(library).sort().forEach(category => { categorySelect.innerHTML += `<option value="${category}">${category}</option>`; }); document.getElementById('save-build-name').value = ''; document.getElementById('save-build-new-category').value = ''; saveBuildModal.classList.remove('hidden'); }
             function populateLoadBuildModal() { 
-                const library = getBuildLibrary(); 
-                const container = document.getElementById('load-build-library-content'); 
-                container.innerHTML = ''; 
-                if (Object.keys(library).length === 0) { container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty.</p>'; return; } 
-                const categoryGrid = document.createElement('div');
-                categoryGrid.className = "space-y-4";
-
+                const library = getBuildLibrary(); const container = document.getElementById('load-build-library-content'); container.innerHTML = ''; if (Object.keys(library).length === 0) { container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty.</p>'; return; } 
+                const categoryGrid = document.createElement('div'); categoryGrid.className = "space-y-4";
                 Object.keys(library).sort().forEach(category => { 
-                    const categoryGroup = document.createElement('div'); 
-                    categoryGroup.className = 'category-group border border-gray-700 rounded-lg p-3'; 
+                    const categoryGroup = document.createElement('div'); categoryGroup.className = 'category-group border border-gray-700 rounded-lg p-3'; 
                     categoryGroup.innerHTML = `<h3 class="category-title text-lg font-bold text-blue-300 mb-2">${category}</h3>`; 
-                    const buildsList = document.createElement('div');
-                    buildsList.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2";
+                    const buildsList = document.createElement('div'); buildsList.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2";
                     library[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(build => { 
-                        const buildEntry = document.createElement('div'); 
-                        buildEntry.className = 'saved-build-entry flex justify-between items-center bg-gray-800 p-2 rounded'; 
-                        buildEntry.innerHTML = `<span class="saved-build-name text-sm text-gray-200 truncate pr-2">${build.name}</span>
-                                                <div class="flex-shrink-0 space-x-1">
-                                                    <button class="load-saved-build-btn bg-blue-600 hover:bg-blue-500 text-white py-1 px-2 rounded text-xs" data-build-json='${JSON.stringify(build.data)}'>Load</button>
-                                                    <button class="delete-build-btn text-red-400 hover:text-red-300 text-xs py-1 px-2 rounded" data-category="${category}" data-name="${build.name}">&times;</button>
-                                                </div>`; 
+                        const buildEntry = document.createElement('div'); buildEntry.className = 'saved-build-entry flex justify-between items-center bg-gray-800 p-2 rounded'; 
+                        buildEntry.innerHTML = `<span class="saved-build-name text-sm text-gray-200 truncate pr-2">${build.name}</span> <div class="flex-shrink-0 space-x-1"> <button class="load-saved-build-btn bg-blue-600 hover:bg-blue-500 text-white py-1 px-2 rounded text-xs" data-build-json='${JSON.stringify(build.data)}'>Load</button> <button class="delete-build-btn text-red-400 hover:text-red-300 text-xs py-1 px-2 rounded" data-category="${category}" data-name="${build.name}">&times;</button> </div>`; 
                         buildsList.appendChild(buildEntry); 
                     }); 
-                    categoryGroup.appendChild(buildsList);
-                    categoryGrid.appendChild(categoryGroup);
+                    categoryGroup.appendChild(buildsList); categoryGrid.appendChild(categoryGroup);
                 }); 
                 container.appendChild(categoryGrid);
             }
 
             /* ----------------- PARTY TABLE FUNCTIONS ---------------- */
             function initializePartyTable() {
-                const defaultData = [
-                    { partySize: 10, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 4 }, { partySize: 11, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 5 },
-                    { partySize: 12, engages: 1, tanks: 2, supports: 2, healers: 2, dps: 5 }, { partySize: 13, engages: 1, tanks: 2, supports: 2, healers: 3, dps: 5 },
-                    { partySize: 14, engages: 1, tanks: 3, supports: 2, healers: 3, dps: 5 },
-                ];
+                const defaultData = [ { partySize: 10, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 4 }, { partySize: 11, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 5 }, { partySize: 12, engages: 1, tanks: 2, supports: 2, healers: 2, dps: 5 }, { partySize: 13, engages: 1, tanks: 2, supports: 2, healers: 3, dps: 5 }, { partySize: 14, engages: 1, tanks: 3, supports: 2, healers: 3, dps: 5 }, ];
                 partyTableData = defaultData; renderPartyTable();
             }
-
             function renderPartyTable() {
                 partyTableBody.innerHTML = '';
                 partyTableData.forEach((rowData, index) => {
                     const tr = document.createElement('tr'); tr.dataset.index = index;
-                    tr.innerHTML = `
-                        <td><input type="number" class="w-16 bg-transparent font-bold text-center" value="${rowData.partySize}" data-key="partySize"></td>
-                        <td><input type="number" min="0" value="${rowData.engages}" data-key="engages"></td> <td><input type="number" min="0" value="${rowData.tanks}" data-key="tanks"></td>
-                        <td><input type="number" min="0" value="${rowData.supports}" data-key="supports"></td> <td><input type="number" min="0" value="${rowData.healers}" data-key="healers"></td>
-                        <td><input type="number" min="0" value="${rowData.dps}" data-key="dps"></td>
-                    `;
+                    tr.innerHTML = `<td><input type="number" class="w-16 bg-transparent font-bold text-center" value="${rowData.partySize}" data-key="partySize"></td> <td><input type="number" min="0" value="${rowData.engages}" data-key="engages"></td> <td><input type="number" min="0" value="${rowData.tanks}" data-key="tanks"></td> <td><input type="number" min="0" value="${rowData.supports}" data-key="supports"></td> <td><input type="number" min="0" value="${rowData.healers}" data-key="healers"></td> <td><input type="number" min="0" value="${rowData.dps}" data-key="dps"></td>`;
                     partyTableBody.appendChild(tr);
                 });
             }
-
-            function addNewPartyTableRow() {
-                const lastRow = partyTableData.length > 0 ? partyTableData[partyTableData.length - 1] : { partySize: 9 };
-                const newPartySize = lastRow.partySize + 1;
-                partyTableData.push({ partySize: newPartySize, engages: 0, tanks: 0, supports: 0, healers: 0, dps: 0 }); renderPartyTable();
-            }
-            
+            function addNewPartyTableRow() { const lastRow = partyTableData.length > 0 ? partyTableData[partyTableData.length - 1] : { partySize: 9 }; const newPartySize = lastRow.partySize + 1; partyTableData.push({ partySize: newPartySize, engages: 0, tanks: 0, supports: 0, healers: 0, dps: 0 }); renderPartyTable(); }
             function createExportableTableClone() {
                 const tableClone = document.createElement('table'); tableClone.id = 'party-table-clone'; tableClone.style.transform = `scale(${partyTableScale})`;
                 const thead = document.createElement('thead'); thead.innerHTML = `<tr><th>Party size</th><th>Engages</th><th>Tanks</th><th>Supports</th><th>Healers</th><th>DPS</th></tr>`; tableClone.appendChild(thead);
                 const tbody = document.createElement('tbody');
-                partyTableData.forEach(rowData => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${rowData.partySize}</td><td>${rowData.engages}</td><td>${rowData.tanks}</td><td>${rowData.supports}</td><td>${rowData.healers}</td><td>${rowData.dps}</td>`;
-                    tbody.appendChild(tr);
-                });
+                partyTableData.forEach(rowData => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${rowData.partySize}</td><td>${rowData.engages}</td><td>${rowData.tanks}</td><td>${rowData.supports}</td><td>${rowData.healers}</td><td>${rowData.dps}</td>`; tbody.appendChild(tr); });
                 tableClone.appendChild(tbody); return tableClone;
             }
 
             /* ----------------- SAVE/LOAD COMPOSITION FUNCTIONS ---------------- */
             function saveComposition() {
-                partyTableData = Array.from(partyTableBody.querySelectorAll('tr')).map(row => ({
-                    partySize: parseInt(row.querySelector('[data-key="partySize"]').value) || 0, engages: parseInt(row.querySelector('[data-key="engages"]').value) || 0,
-                    tanks: parseInt(row.querySelector('[data-key="tanks"]').value) || 0, supports: parseInt(row.querySelector('[data-key="supports"]').value) || 0,
-                    healers: parseInt(row.querySelector('[data-key="healers"]').value) || 0, dps: parseInt(row.querySelector('[data-key="dps"]').value) || 0,
-                }));
-
-                const compositionData = {
-                    title: compTitleInput.value, notes: compNotesInput.value, logoSrc: logoImageSrc, backgroundImageSrc: backgroundImageSrc,
-                    styles: { titleFontSize, titleColor, titleAlign, notesFontSize, notesColor, notesAlign, notesPosition },
-                    partyTableSettings: { isEnabled: isPartyTableEnabled, position: partyTablePosition, scale: partyTableScale, data: partyTableData },
-                    roleOrder: Array.from(rolesContainer.children).map(role => role.id), roleStates: {}, roles: {}
-                };
-
-                document.querySelectorAll('.role-section').forEach(roleSection => {
-                    const roleId = roleSection.id;
-                    compositionData.roles[roleId] = Array.from(roleSection.querySelectorAll('.build-row')).map(row => getBuildDataFromRow(row));
-                    compositionData.roleStates[roleId] = { isCollapsed: roleSection.classList.contains('collapsed') };
-                });
-
-                const dataStr = JSON.stringify(compositionData, null, 2); const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob); const link = document.createElement('a');
-                link.download = `${compositionData.title.replace(/[^a-z0-9]/gi, '_') || 'composition'}.json`; link.href = url; link.click(); URL.revokeObjectURL(url); showToast("Composition saved!");
+                partyTableData = Array.from(partyTableBody.querySelectorAll('tr')).map(row => ({ partySize: parseInt(row.querySelector('[data-key="partySize"]').value) || 0, engages: parseInt(row.querySelector('[data-key="engages"]').value) || 0, tanks: parseInt(row.querySelector('[data-key="tanks"]').value) || 0, supports: parseInt(row.querySelector('[data-key="supports"]').value) || 0, healers: parseInt(row.querySelector('[data-key="healers"]').value) || 0, dps: parseInt(row.querySelector('[data-key="dps"]').value) || 0, }));
+                const compositionData = { title: compTitleInput.value, notes: compNotesInput.value, logoSrc: logoImageSrc, backgroundImageSrc: backgroundImageSrc, styles: { titleFontSize, titleColor, titleAlign, notesFontSize, notesColor, notesAlign, notesPosition }, partyTableSettings: { isEnabled: isPartyTableEnabled, position: partyTablePosition, scale: partyTableScale, data: partyTableData }, roleOrder: Array.from(rolesContainer.children).map(role => role.id), roleStates: {}, roles: {} };
+                document.querySelectorAll('.role-section').forEach(roleSection => { const roleId = roleSection.id; compositionData.roles[roleId] = Array.from(roleSection.querySelectorAll('.build-row')).map(row => getBuildDataFromRow(row)); compositionData.roleStates[roleId] = { isCollapsed: roleSection.classList.contains('collapsed') }; });
+                const dataStr = JSON.stringify(compositionData, null, 2); const dataBlob = new Blob([dataStr], { type: 'application/json' }); const url = URL.createObjectURL(dataBlob); const link = document.createElement('a'); link.download = `${compositionData.title.replace(/[^a-z0-9]/gi, '_') || 'composition'}.json`; link.href = url; link.click(); URL.revokeObjectURL(url); showToast("Composition saved!");
             }
-
             function loadComposition(file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
-                        const loadedData = JSON.parse(e.target.result);
-                        compTitleInput.value = loadedData.title || ''; compNotesInput.value = loadedData.notes || '';
-                        logoImageSrc = loadedData.logoSrc || null; backgroundImageSrc = loadedData.backgroundImageSrc || null;
-
-                        const styles = loadedData.styles || {};
-                        titleFontSize = styles.titleFontSize || '36'; titleColor = styles.titleColor || '#E2E8F0'; titleAlign = styles.titleAlign || 'center';
-                        notesFontSize = styles.notesFontSize || '16'; notesColor = styles.notesColor || '#CBD5E0'; notesAlign = styles.notesAlign || 'left'; notesPosition = styles.notesPosition || 'above_full';
-
-                        if (loadedData.partyTableSettings) {
-                            partyTableData = loadedData.partyTableSettings.data || []; isPartyTableEnabled = loadedData.partyTableSettings.isEnabled || false;
-                            partyTablePosition = loadedData.partyTableSettings.position || 'above_full'; partyTableScale = loadedData.partyTableSettings.scale || 1;
-                            if (partyTableData.length === 0) initializePartyTable();
-                        } else { initializePartyTable(); }
+                        const loadedData = JSON.parse(e.target.result); compTitleInput.value = loadedData.title || ''; compNotesInput.value = loadedData.notes || ''; logoImageSrc = loadedData.logoSrc || null; backgroundImageSrc = loadedData.backgroundImageSrc || null;
+                        const styles = loadedData.styles || {}; titleFontSize = styles.titleFontSize || '36'; titleColor = styles.titleColor || '#E2E8F0'; titleAlign = styles.titleAlign || 'center'; notesFontSize = styles.notesFontSize || '16'; notesColor = styles.notesColor || '#CBD5E0'; notesAlign = styles.notesAlign || 'left'; notesPosition = styles.notesPosition || 'above_full';
+                        if (loadedData.partyTableSettings) { partyTableData = loadedData.partyTableSettings.data || []; isPartyTableEnabled = loadedData.partyTableSettings.isEnabled || false; partyTablePosition = loadedData.partyTableSettings.position || 'above_full'; partyTableScale = loadedData.partyTableSettings.scale || 1; if (partyTableData.length === 0) initializePartyTable(); } else { initializePartyTable(); }
                         renderPartyTable(); applyCurrentStylesToEditor(); updateLogoTitleDisplay(); applyBackground();
-
-                        rolesContainer.innerHTML = '';
-                        const roleOrder = loadedData.roleOrder || ROLES.map(r => r.id); const loadedRoleIds = new Set(roleOrder);
-                        const missingRoles = ROLES.filter(r => !loadedRoleIds.has(r.id));
-                        roleOrder.forEach(roleId => { const config = ROLES.find(r => r.id === roleId); if (config) createRoleSection(config); });
-                        missingRoles.forEach(createRoleSection);
-
-                        document.querySelectorAll('.role-section').forEach(roleSection => {
-                            const roleId = roleSection.id; const buildsContainer = roleSection.querySelector('.builds-container'); buildsContainer.innerHTML = '';
-                            const roleBuilds = loadedData.roles[roleId];
-                            if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) { roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData))); } 
-                            else { buildsContainer.appendChild(createBuildRow()); }
-                            if (loadedData.roleStates && loadedData.roleStates[roleId] && loadedData.roleStates[roleId].isCollapsed) {
-                                roleSection.classList.add('collapsed'); roleSection.querySelector('.role-collapse-toggle').textContent = '►';
-                            }
-                        });
+                        rolesContainer.innerHTML = ''; const roleOrder = loadedData.roleOrder || ROLES.map(r => r.id); const loadedRoleIds = new Set(roleOrder); const missingRoles = ROLES.filter(r => !loadedRoleIds.has(r.id)); roleOrder.forEach(roleId => { const config = ROLES.find(r => r.id === roleId); if (config) createRoleSection(config); }); missingRoles.forEach(createRoleSection);
+                        document.querySelectorAll('.role-section').forEach(roleSection => { const roleId = roleSection.id; const buildsContainer = roleSection.querySelector('.builds-container'); buildsContainer.innerHTML = ''; const roleBuilds = loadedData.roles[roleId]; if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) { roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData))); } else { buildsContainer.appendChild(createBuildRow()); } if (loadedData.roleStates && loadedData.roleStates[roleId] && loadedData.roleStates[roleId].isCollapsed) { roleSection.classList.add('collapsed'); roleSection.querySelector('.role-collapse-toggle').textContent = '►'; } });
                         showToast("Composition loaded successfully!");
                     } catch (error) { console.error("Error parsing load file:", error); showToast("Error: Could not load file. Invalid format."); }
-                };
-                reader.readAsText(file);
+                }; reader.readAsText(file);
             }
-
             function applyCurrentStylesToEditor() {
-                compTitleInput.style.fontSize = `${titleFontSize}px`; compTitleInput.style.color = titleColor; compTitleInput.style.textAlign = titleAlign;
-                titleFontSizeSlider.value = titleFontSize; titleFontSizeValue.textContent = `${titleFontSize}px`; titleColorPicker.value = titleColor;
-                updateAlignmentButtons(titleAlignGroup, titleAlign);
-
-                compNotesInput.style.fontSize = `${notesFontSize}px`; compNotesInput.style.color = notesColor; compNotesInput.style.textAlign = notesAlign;
-                notesFontSizeSlider.value = notesFontSize; notesFontSizeValue.textContent = `${notesFontSize}px`; notesColorPicker.value = notesColor;
-                updateAlignmentButtons(notesAlignGroup, notesAlign);
-                notesPositionSelect.value = notesPosition;
-
-                enablePartyTableCheck.checked = isPartyTableEnabled; partyTableControls.style.display = isPartyTableEnabled ? 'block' : 'none';
-                partyTablePositionSelect.value = partyTablePosition; partyTableScaleSlider.value = partyTableScale; partyTableScaleValue.textContent = `${Math.round(partyTableScale * 100)}%`;
+                compTitleInput.style.fontSize = `${titleFontSize}px`; compTitleInput.style.color = titleColor; compTitleInput.style.textAlign = titleAlign; titleFontSizeSlider.value = titleFontSize; titleFontSizeValue.textContent = `${titleFontSize}px`; titleColorPicker.value = titleColor; updateAlignmentButtons(titleAlignGroup, titleAlign);
+                compNotesInput.style.fontSize = `${notesFontSize}px`; compNotesInput.style.color = notesColor; compNotesInput.style.textAlign = notesAlign; notesFontSizeSlider.value = notesFontSize; notesFontSizeValue.textContent = `${notesFontSize}px`; notesColorPicker.value = notesColor; updateAlignmentButtons(notesAlignGroup, notesAlign); notesPositionSelect.value = notesPosition;
+                enablePartyTableCheck.checked = isPartyTableEnabled; partyTableControls.style.display = isPartyTableEnabled ? 'block' : 'none'; partyTablePositionSelect.value = partyTablePosition; partyTableScaleSlider.value = partyTableScale; partyTableScaleValue.textContent = `${Math.round(partyTableScale * 100)}%`;
             }
-
             function updateAlignmentButtons(buttonGroup, activeAlignment) { buttonGroup.querySelectorAll('button').forEach(btn => { btn.classList.toggle('active', btn.dataset.align === activeAlignment); }); }
 
             /* ----------------- EVENT LISTENERS SETUP ---------------- */
@@ -1033,10 +880,11 @@
                 else if (target.closest('.paste-build-btn')) { pasteBuild(target.closest('.paste-build-btn').dataset.role); }
                 else if (target.closest('.remove-build-btn')) { buildRow.remove(); }
                 else if (target.closest('.copy-build-btn')) { copyBuild(buildRow); }
+                else if (target.closest('.export-single-build-btn')) { exportSingleBuild(buildRow); } /* --- ADDITION --- */
                 else if (target.closest('.item-slot') && !target.classList.contains('quantity-input')) { isSelectingAlternative = false; openModal(target.closest('.item-slot')); }
                 else if (target.closest('.role-collapse-toggle')) { const roleSection = target.closest('.role-section'); roleSection.classList.toggle('collapsed'); target.textContent = roleSection.classList.contains('collapsed') ? '►' : '▼'; }
             });
-            rolesContainer.addEventListener('dragover', handleRoleDragOver); // Keep for desktop role dragging
+            rolesContainer.addEventListener('dragover', handleRoleDragOver);
 
             contextMenu.addEventListener('contextmenu', e => e.preventDefault());
             rolesContainer.addEventListener('contextmenu', e => {
@@ -1044,14 +892,10 @@
                 if (slot) {
                     activeSlot = slot; const hasPrimary = !!slot.querySelector('.primary-item-img');
                     if (hasPrimary) {
-                        e.preventDefault(); contextMenu.classList.remove('hidden');
-                        const hasAlt = !!slot.querySelector('.alternative-item-overlay img');
-                        contextMenu.querySelector('[data-action="edit-abilities"]').style.display = 'block'; contextMenu.querySelector('[data-action="add-alt"]').style.display = 'block';
-                        contextMenu.querySelector('[data-action="clear-alt"]').style.display = hasAlt ? 'block' : 'none'; contextMenu.querySelector('[data-action="clear-main"]').style.display = 'block';
-                        const { clientX: mouseX, clientY: mouseY } = e; const { innerWidth, innerHeight } = window;
-                        const menuWidth = contextMenu.offsetWidth; const menuHeight = contextMenu.offsetHeight;
-                        contextMenu.style.top = `${mouseY + menuHeight > innerHeight ? innerHeight - menuHeight - 5 : mouseY}px`;
-                        contextMenu.style.left = `${mouseX + menuWidth > innerWidth ? innerWidth - menuWidth - 5 : mouseX}px`;
+                        e.preventDefault(); contextMenu.classList.remove('hidden'); const hasAlt = !!slot.querySelector('.alternative-item-overlay img');
+                        contextMenu.querySelector('[data-action="edit-abilities"]').style.display = 'block'; contextMenu.querySelector('[data-action="add-alt"]').style.display = 'block'; contextMenu.querySelector('[data-action="clear-alt"]').style.display = hasAlt ? 'block' : 'none'; contextMenu.querySelector('[data-action="clear-main"]').style.display = 'block';
+                        const { clientX: mouseX, clientY: mouseY } = e; const { innerWidth, innerHeight } = window; const menuWidth = contextMenu.offsetWidth; const menuHeight = contextMenu.offsetHeight;
+                        contextMenu.style.top = `${mouseY + menuHeight > innerHeight ? innerHeight - menuHeight - 5 : mouseY}px`; contextMenu.style.left = `${mouseX + menuWidth > innerWidth ? innerWidth - menuWidth - 5 : mouseX}px`;
                     }
                 }
             });
@@ -1082,13 +926,7 @@
             loadBtn.addEventListener('click', () => loadFileInput.click());
             loadFileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) { loadComposition(e.target.files[0]); e.target.value = null; } });
 
-            tabButtonsContainer.addEventListener('click', e => {
-                const clickedTabButton = e.target.closest('.tab-btn'); if (!clickedTabButton) return;
-                tabButtonsContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); clickedTabButton.classList.add('active');
-                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active')); document.getElementById(clickedTabButton.dataset.tab).classList.add('active');
-            });
-
-            // Style Control Listeners
+            tabButtonsContainer.addEventListener('click', e => { const clickedTabButton = e.target.closest('.tab-btn'); if (!clickedTabButton) return; tabButtonsContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); clickedTabButton.classList.add('active'); document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active')); document.getElementById(clickedTabButton.dataset.tab).classList.add('active'); });
             titleFontSizeSlider.addEventListener('input', (e) => { titleFontSize = e.target.value; titleFontSizeValue.textContent = `${titleFontSize}px`; compTitleInput.style.fontSize = `${titleFontSize}px`; });
             titleColorPicker.addEventListener('input', (e) => { titleColor = e.target.value; compTitleInput.style.color = titleColor; });
             titleAlignGroup.addEventListener('click', (e) => { const button = e.target.closest('button'); if (button && button.dataset.align) { titleAlign = button.dataset.align; compTitleInput.style.textAlign = titleAlign; updateAlignmentButtons(titleAlignGroup, titleAlign); } });
@@ -1096,55 +934,77 @@
             notesColorPicker.addEventListener('input', (e) => { notesColor = e.target.value; compNotesInput.style.color = notesColor; });
             notesAlignGroup.addEventListener('click', (e) => { const button = e.target.closest('button'); if (button && button.dataset.align) { notesAlign = button.dataset.align; compNotesInput.style.textAlign = notesAlign; updateAlignmentButtons(notesAlignGroup, notesAlign); } });
             notesPositionSelect.addEventListener('change', (e) => { notesPosition = e.target.value; });
-
-            // Party Table Listeners
             enablePartyTableCheck.addEventListener('change', (e) => { isPartyTableEnabled = e.target.checked; partyTableControls.style.display = isPartyTableEnabled ? 'block' : 'none'; });
             addPartyRowBtn.addEventListener('click', addNewPartyTableRow);
             partyTablePositionSelect.addEventListener('change', (e) => { partyTablePosition = e.target.value; });
             partyTableScaleSlider.addEventListener('input', (e) => { partyTableScale = parseFloat(e.target.value); partyTableScaleValue.textContent = `${Math.round(partyTableScale * 100)}%`; });
-            partyTableBody.addEventListener('input', (e) => {
-                const input = e.target; const key = input.dataset.key; const index = input.closest('tr').dataset.index;
-                if (key && index && partyTableData[index]) { partyTableData[index][key] = parseInt(input.value) || 0; }
-            });
+            partyTableBody.addEventListener('input', (e) => { const input = e.target; const key = input.dataset.key; const index = input.closest('tr').dataset.index; if (key && index && partyTableData[index]) { partyTableData[index][key] = parseInt(input.value) || 0; } });
 
-            // --- EXPORT FUNCTION ---
+            // --- FULL EXPORT FUNCTION ---
             exportBtn.addEventListener('click', () => {
-                const tempExportContainer = document.createElement('div'); tempExportContainer.id = 'temp-export-wrapper';
-                document.body.appendChild(tempExportContainer); document.body.classList.add('export-mode');
+                const tempExportContainer = document.createElement('div'); tempExportContainer.id = 'temp-export-wrapper'; document.body.appendChild(tempExportContainer); document.body.classList.add('export-mode');
                 if (backgroundImageSrc) { tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`; }
-
-                let titleOrLogoClone;
-                if (logoImageSrc) { titleOrLogoClone = document.createElement('img'); titleOrLogoClone.id = 'logo-image-clone'; titleOrLogoClone.src = logoImageSrc; } 
-                else { titleOrLogoClone = document.createElement('div'); titleOrLogoClone.id = 'comp-title-clone'; titleOrLogoClone.textContent = compTitleInput.value || compTitleInput.placeholder; titleOrLogoClone.style.fontSize = `${titleFontSize}px`; titleOrLogoClone.style.color = titleColor; titleOrLogoClone.style.textAlign = titleAlign; }
-
+                let titleOrLogoClone; if (logoImageSrc) { titleOrLogoClone = document.createElement('img'); titleOrLogoClone.id = 'logo-image-clone'; titleOrLogoClone.src = logoImageSrc; } else { titleOrLogoClone = document.createElement('div'); titleOrLogoClone.id = 'comp-title-clone'; titleOrLogoClone.textContent = compTitleInput.value || compTitleInput.placeholder; titleOrLogoClone.style.fontSize = `${titleFontSize}px`; titleOrLogoClone.style.color = titleColor; titleOrLogoClone.style.textAlign = titleAlign; }
                 let notesClone = null; if (compNotesInput.value) { notesClone = document.createElement('div'); notesClone.id = 'comp-notes-clone'; notesClone.textContent = compNotesInput.value; notesClone.style.fontSize = `${notesFontSize}px`; notesClone.style.color = notesColor; notesClone.style.textAlign = notesAlign; }
                 let partyTableClone = null; if (isPartyTableEnabled) { partyTableClone = createExportableTableClone(); }
-
-                tempExportContainer.appendChild(titleOrLogoClone);
-                if (partyTablePosition === 'above_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone);
-                if (notesPosition === 'above_full' && notesClone) tempExportContainer.appendChild(notesClone);
-
-                const rolesMainWrapper = document.createElement('div'); rolesMainWrapper.className = 'export-roles-main-wrapper';
-                const column1 = document.createElement('div'); column1.className = 'export-column-1'; const column2 = document.createElement('div'); column2.className = 'export-column-2';
-
-                if (partyTablePosition === 'col1_top' && partyTableClone) column1.appendChild(partyTableClone);
-                if (notesPosition === 'col1_top' && notesClone) column1.appendChild(notesClone);
-                if (partyTablePosition === 'col2_top' && partyTableClone) column2.appendChild(partyTableClone);
-                if (notesPosition === 'col2_top' && notesClone) column2.appendChild(notesClone);
-
-                Array.from(rolesContainer.querySelectorAll('.role-section')).forEach(roleElement => {
-                    const roleId = roleElement.id; const roleElementClone = roleElement.cloneNode(true);
-                    if (EXPORT_COLUMN_1_ROLES.includes(roleId)) column1.appendChild(roleElementClone); else if (EXPORT_COLUMN_2_ROLES.includes(roleId)) column2.appendChild(roleElementClone);
-                });
-
+                tempExportContainer.appendChild(titleOrLogoClone); if (partyTablePosition === 'above_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone); if (notesPosition === 'above_full' && notesClone) tempExportContainer.appendChild(notesClone);
+                const rolesMainWrapper = document.createElement('div'); rolesMainWrapper.className = 'export-roles-main-wrapper'; const column1 = document.createElement('div'); column1.className = 'export-column-1'; const column2 = document.createElement('div'); column2.className = 'export-column-2';
+                if (partyTablePosition === 'col1_top' && partyTableClone) column1.appendChild(partyTableClone); if (notesPosition === 'col1_top' && notesClone) column1.appendChild(notesClone); if (partyTablePosition === 'col2_top' && partyTableClone) column2.appendChild(partyTableClone); if (notesPosition === 'col2_top' && notesClone) column2.appendChild(notesClone);
+                Array.from(rolesContainer.querySelectorAll('.role-section')).forEach(roleElement => { const roleId = roleElement.id; const roleElementClone = roleElement.cloneNode(true); if (EXPORT_COLUMN_1_ROLES.includes(roleId)) column1.appendChild(roleElementClone); else if (EXPORT_COLUMN_2_ROLES.includes(roleId)) column2.appendChild(roleElementClone); });
                 rolesMainWrapper.appendChild(column1); rolesMainWrapper.appendChild(column2); tempExportContainer.appendChild(rolesMainWrapper);
-                if (partyTablePosition === 'below_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone);
-                if (notesPosition === 'below_full' && notesClone) tempExportContainer.appendChild(notesClone);
-
+                if (partyTablePosition === 'below_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone); if (notesPosition === 'below_full' && notesClone) tempExportContainer.appendChild(notesClone);
                 html2canvas(tempExportContainer, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#1a202c' })
                     .then(canvas => { const link = document.createElement('a'); link.download = `${(compTitleInput.value || 'composition').replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`; link.href = canvas.toDataURL(); link.click(); })
                     .finally(() => { tempExportContainer.remove(); document.body.classList.remove('export-mode'); });
             });
+            
+            /* --- START: ADDED FOR SINGLE BUILD EXPORT --- */
+            function exportSingleBuild(buildRowElement) {
+                // 1. Create temporary container and position off-screen
+                const exportWrapper = document.createElement('div');
+                exportWrapper.id = 'single-build-export-wrapper';
+                document.body.appendChild(exportWrapper);
+
+                // 2. Clone build row and prepare for export by syncing visible values
+                const buildClone = buildRowElement.cloneNode(true);
+                const quantityInput = buildClone.querySelector('.build-quantity-input');
+                const quantityDisplay = buildClone.querySelector('.build-quantity-display');
+                if (quantityInput && quantityDisplay) {
+                    quantityDisplay.textContent = quantityInput.value || "";
+                }
+                exportWrapper.appendChild(buildClone);
+
+                // 3. Generate filename from weapon item if possible
+                let buildName = 'build';
+                try {
+                    const weaponImg = buildRowElement.querySelector('.item-slot-wrapper[data-category="weapons"] .primary-item-img');
+                    if (weaponImg && weaponImg.alt) {
+                        const altText = weaponImg.alt;
+                        // Clean up alt text (e.g., remove .png and path components if any)
+                        buildName = altText.substring(altText.lastIndexOf('/') + 1).replace('.png', '');
+                    }
+                } catch (err) { console.warn("Could not generate build name from item.", err); }
+
+                // 4. Use html2canvas to capture the temporary wrapper
+                html2canvas(exportWrapper, { 
+                    scale: 2, 
+                    useCORS: true, 
+                    allowTaint: true, 
+                    backgroundColor: null // Use wrapper's CSS background color
+                })
+                .then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `albion_build_${buildName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+                    showToast(`Exported build: ${buildName}.png`);
+                })
+                .finally(() => {
+                    // 5. Cleanup temporary elements
+                    document.body.removeChild(exportWrapper);
+                });
+            }
+            /* --- END: ADDED FOR SINGLE BUILD EXPORT --- */
 
             /* ----------------- INITIALIZATION ---------------- */
             function initializeApp() {
@@ -1155,6 +1015,4 @@
 
             initializeApp();
         });
-    </script>
-</body>
-</html>
+    </script></body></html>

@@ -20,8 +20,8 @@
 
         /* --- Item Slot Styles --- */
         .item-slot {
-            width: 64px;
-            height: 64px;
+            width: 56px; /* --- MOBILE/TOUCH FIX: Smaller base size for mobile --- */
+            height: 56px;
             background-color: #2d3748;
             border: 2px dashed #4a5568;
             cursor: pointer;
@@ -32,6 +32,14 @@
             transition: background-color 0.2s;
             overflow: hidden;
             position: relative;
+            flex-shrink: 0; /* --- MOBILE/TOUCH FIX: Prevent shrinking in flex container --- */
+        }
+
+        @media (min-width: 640px) { /* sm breakpoint */
+            .item-slot {
+                width: 64px; /* --- MOBILE/TOUCH FIX: Restore original size on larger screens --- */
+                height: 64px;
+            }
         }
 
         .item-slot:hover {
@@ -48,246 +56,103 @@
 
         /* --- Ability Text Overlay --- */
         .ability-text-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #4ade80;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-align: center;
-            padding: 1px 0;
-            z-index: 3;
-            pointer-events: none;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.1;
+            position: absolute; top: 0; left: 0; width: 100%;
+            background-color: rgba(0, 0, 0, 0.7); color: #4ade80; font-size: 0.7rem; font-weight: bold;
+            text-align: center; padding: 1px 0; z-index: 3; pointer-events: none;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1;
         }
-
-        .ability-text-overlay:empty {
-            display: none;
-        }
+        .ability-text-overlay:empty { display: none; }
 
         /* --- Alternative Item Overlay --- */
         .alternative-item-overlay {
-            position: absolute;
-            bottom: -1px;
-            right: -1px;
-            width: 45%;
-            height: 45%;
-            background-color: rgba(45, 55, 72, 0.8);
-            border: 1px solid #4a5568;
-            border-radius: 0.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 4;
-            transition: opacity 0.2s;
-            opacity: 0;
+            position: absolute; bottom: -1px; right: -1px; width: 45%; height: 45%;
+            background-color: rgba(45, 55, 72, 0.8); border: 1px solid #4a5568; border-radius: 0.25rem;
+            display: flex; align-items: center; justify-content: center; z-index: 4; transition: opacity 0.2s; opacity: 0;
         }
 
-        .item-slot:hover .alternative-item-overlay {
-            opacity: 1;
-        }
+        .alternative-item-overlay img { width: 100%; height: 100%; object-fit: contain; border-radius: 0.125rem; }
+        .alternative-item-overlay:has(img) { opacity: 1; }
+        .item-slot:not(:has(.primary-item-img)) .alternative-item-overlay { display: none; }
 
-        .alternative-item-overlay img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 0.125rem;
-        }
-
-        .alternative-item-overlay:has(img) {
-            opacity: 1;
-        }
-
-        .item-slot:not(:has(.primary-item-img)) .alternative-item-overlay {
-            display: none;
+        @media (hover: hover) {
+            .item-slot:hover .alternative-item-overlay { opacity: 1; }
+            .item-slot:not(:hover) .alternative-item-overlay:not(:has(img)) { opacity: 0; }
         }
 
         /* Quantity display on items */
         .item-quantity {
-            position: absolute;
-            bottom: 2px;
-            left: 2px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
-            padding: 1px 4px;
-            border-radius: 0.375rem;
-            min-width: 1.5rem;
-            text-align: center;
-            z-index: 2;
-            display: none;
+            position: absolute; bottom: 2px; left: 2px; background-color: rgba(0, 0, 0, 0.7); color: white;
+            font-size: 0.75rem; font-weight: bold; padding: 1px 4px; border-radius: 0.375rem;
+            min-width: 1.5rem; text-align: center; z-index: 2; display: none;
         }
-
-        .item-slot[data-quantity]:not([data-quantity="1"]) .item-quantity {
-            display: block;
-        }
-
+        .item-slot[data-quantity]:not([data-quantity="1"]) .item-quantity { display: block; }
         .item-slot .quantity-input {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 30px;
-            height: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 0.75rem;
-            padding: 0;
-            z-index: 5;
-            display: none;
+            position: absolute; top: 2px; right: 2px; width: 30px; height: 20px;
+            background-color: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 4px;
+            text-align: center; font-size: 0.75rem; padding: 0; z-index: 5; display: none;
         }
 
-        .item-slot:hover .quantity-input {
-            display: block;
-        }
-
-        .item-slot:hover .item-quantity {
-            display: none;
+        @media (hover: hover) {
+            .item-slot:hover .quantity-input { display: block; }
+            .item-slot:hover .item-quantity { display: none; }
         }
 
         /* --- Build Party Quantity Input --- */
-        .build-quantity-container {
-            width: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
+        .build-quantity-container { width: 50px; display: flex; justify-content: center; align-items: center; }
         .build-quantity-input {
-            width: 40px;
-            background-color: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 0.375rem;
-            color: white;
-            text-align: center;
-            font-size: 0.875rem;
-            padding: 2px;
+            width: 40px; background-color: #4a5568; border: 1px solid #718096; border-radius: 0.375rem;
+            color: white; text-align: center; font-size: 0.875rem; padding: 2px; touch-action: manipulation;
         }
-
-        .build-quantity-display {
-            display: none;
-            font-weight: bold;
-            font-size: 1.25rem;
-            color: #e2e8f0;
-            width: 40px;
-            text-align: center;
-            margin-right: 0.5rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
+        .build-quantity-display { display: none; font-weight: bold; font-size: 1.25rem; color: #e2e8f0; width: 40px; text-align: center; margin-right: 0.5rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); }
 
         /* --- Custom Context Menu --- */
-        #item-context-menu {
-            position: fixed;
-            z-index: 1000;
-            width: 200px;
-            background-color: #2d3748;
-            border: 1px solid #4a5568;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        #item-context-menu button {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 0.75rem 1rem;
-            color: #e2e8f0;
-            font-size: 0.875rem;
-        }
-
-        #item-context-menu button:hover {
-            background-color: #4a5568;
-        }
-
-        #item-context-menu button.danger {
-            color: #f87171;
-        }
-
-        #item-context-menu hr {
-            border-color: #4a5568;
-            margin: 0.25rem 0;
-        }
+        #item-context-menu { position: fixed; z-index: 1000; width: 200px; background-color: #2d3748; border: 1px solid #4a5568; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        #item-context-menu button { display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; color: #e2e8f0; font-size: 0.875rem; touch-action: manipulation; }
+        #item-context-menu button:hover { background-color: #4a5568; }
+        #item-context-menu button.danger { color: #f87171; }
+        #item-context-menu hr { border-color: #4a5568; margin: 0.25rem 0; }
 
         /* --- Modals and Scrollbar --- */
-        .modal-wrapper {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .modal-content {
-            background-color: #2d3748;
-            max-height: 80vh;
-            margin: auto;
-            border-radius: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
+        .modal-wrapper { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.8); }
+        .modal-content { background-color: #2d3748; max-height: 80vh; margin: auto; border-radius: 0.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #2d3748; }
         ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #718096; }
-
-        .modal-input {
-            width: 100%;
-            padding: 0.5rem;
-            background-color: #4a5568;
-            border-radius: 0.375rem;
-            border: 1px solid #718096;
-            color: white;
-        }
-
-        .modal-input:focus {
-            outline: none;
-            border-color: #63b3ed;
-            box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5);
-        }
+        .modal-input { width: 100%; padding: 0.5rem; background-color: #4a5568; border-radius: 0.375rem; border: 1px solid #718096; color: white; }
+        .modal-input:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5); }
 
         /* --- Drag Handle & Toast --- */
-        .build-drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; }
+        .build-drag-handle { cursor: grab; padding: 0 8px; color: #718096; font-size: 1.25rem; line-height: 1; touch-action: none; /* --- MOBILE/TOUCH FIX: Prevent scrolling when grabbing handle --- */ }
         .build-drag-handle:active { cursor: grabbing; }
-
         #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #38a169; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; z-index: 100; }
         #toast.show { opacity: 1; transform: translate(-50%, -10px); }
 
         /* --- Layout Styles --- */
         #roles-container { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 1rem; }
         .role-section {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch; /* Stretch children to fill width */
-            padding: 1rem;
-            border-radius: 0.5rem;
-            min-width: 200px;
-            border: 1px solid rgba(45, 55, 72, 0.5);
-            background-color: #2d3748;
-            transition: box-shadow 0.2s, transform 0.2s;
+            display: flex; flex-direction: column; align-items: stretch; padding: 1rem;
+            border-radius: 0.5rem; min-width: 200px; border: 1px solid rgba(45, 55, 72, 0.5);
+            background-color: #2d3748; transition: box-shadow 0.2s, transform 0.2s;
         }
-
         .role-section.dragging { opacity: 0.5; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); transform: scale(1.02); }
         .role-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-shrink: 0; }
         .role-title { font-size: 1.5rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); white-space: nowrap; }
-        .role-collapse-toggle { background: none; border: none; color: #9ca3af; font-size: 1rem; cursor: pointer; transition: transform 0.2s; padding: 0.25rem; }
+        .role-collapse-toggle { background: none; border: none; color: #9ca3af; font-size: 1rem; cursor: pointer; transition: transform 0.2s; padding: 0.25rem; touch-action: manipulation; }
         .role-section.collapsed .role-collapse-toggle { transform: rotate(-90deg); }
-        .role-drag-handle { cursor: move; color: #718096; font-size: 1.25rem; padding-left: 0.25rem; padding-right: 0.5rem; }
+        .role-drag-handle { cursor: move; color: #718096; font-size: 1.25rem; padding-left: 0.25rem; padding-right: 0.5rem; touch-action: none; /* --- MOBILE/TOUCH FIX: Prevent scrolling when grabbing handle --- */ }
 
         .builds-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; transition: all 0.3s ease-out; overflow: hidden; }
         .role-section.collapsed .builds-container { display: none; }
 
         .build-row { display: flex; align-items: center; gap: 2px; }
-        .build-items-wrapper { display: flex; gap: 2px; }
+        .build-items-wrapper {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto; /* --- MOBILE/TOUCH FIX: Allow horizontal scrolling for item row --- */
+            padding-bottom: 4px; /* --- MOBILE/TOUCH FIX: Space for scrollbar --- */
+            scrollbar-width: thin; /* Firefox scrollbar styling */
+        }
         .category-label { position: absolute; top: -1.5rem; left: 0; width: 100%; text-align: center; font-size: 0.75rem; color: #94a3b8; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); }
         .builds-container .build-row:first-child .item-slot-wrapper { margin-top: 1.5rem; position: relative; }
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="weapons"] .category-label::before { content: "Weapon"; }
@@ -300,8 +165,10 @@
         .builds-container .build-row:first-child .item-slot-wrapper[data-category="Potion"] .category-label::before { content: "Potion"; }
 
         /* --- Tab Controls --- */
-        .tab-buttons { display: flex; border-bottom: 2px solid #4a5568; margin-bottom: 1rem; }
-        .tab-btn { padding: 0.75rem 1.5rem; background-color: transparent; border: none; color: #9ca3af; font-size: 1rem; font-weight: 600; cursor: pointer; transition: color 0.2s, border-bottom-color 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+        .tab-buttons { display: flex; border-bottom: 2px solid #4a5568; margin-bottom: 1rem; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;}
+        .tab-buttons::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 0.75rem 1rem; background-color: transparent; border: none; color: #9ca3af; font-size: 1rem; font-weight: 600; cursor: pointer; transition: color 0.2s, border-bottom-color 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; touch-action: manipulation; }
+        @media(min-width: 640px) { .tab-btn { padding: 0.75rem 1.5rem; } }
         .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
         .tab-btn:hover:not(.active) { color: #e2e8f0; }
         .tab-pane { display: none; }
@@ -311,12 +178,12 @@
         .control-section { background-color: #2d3748; border: 1px solid #4a5568; border-radius: 0.5rem; padding: 0.75rem; }
         .style-control-group { display: flex; align-items: center; gap: 0.5rem; }
         .style-control-group label { font-size: 0.875rem; color: #9ca3af; white-space: nowrap; }
-        .style-control-group input[type="range"] { width: 100px; }
+        .style-control-group input[type="range"] { width: 100px; touch-action: manipulation; }
         .style-control-group input[type="color"] { background-color: transparent; border: none; width: 32px; height: 32px; cursor: pointer; border-radius: 0.25rem; padding: 0; }
         .style-control-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         .style-control-group input[type="color"]::-webkit-color-swatch { border: 1px solid #4a5568; border-radius: 0.25rem; }
-        .style-control-group .select-input { background-color: #4a5568; border: 1px solid #718096; border-radius: 0.375rem; color: white; padding: 4px 8px; font-size: 0.875rem; }
-        .align-btn-group button { background-color: #4a5568; padding: 4px 10px; font-size: 0.875rem; border: 1px solid #718096; color: #cbd5e0; transition: background-color 0.2s; }
+        .style-control-group .select-input { background-color: #4a5568; border: 1px solid #718096; border-radius: 0.375rem; color: white; padding: 4px 8px; font-size: 0.875rem; touch-action: manipulation; }
+        .align-btn-group button { background-color: #4a5568; padding: 4px 10px; font-size: 0.875rem; border: 1px solid #718096; color: #cbd5e0; transition: background-color 0.2s; touch-action: manipulation; }
         .align-btn-group button:first-child { border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem; }
         .align-btn-group button:last-child { border-top-right-radius: 0.375rem; border-bottom-right-radius: 0.375rem; }
         .align-btn-group button.active { background-color: #3b82f6; color: white; font-weight: bold; }
@@ -326,7 +193,7 @@
         #party-table-editor { border-collapse: collapse; table-layout: auto; }
         #party-table-editor th, #party-table-editor td { padding: 0.5rem 0.75rem; border: 1px solid #4a5568; text-align: center; }
         #party-table-editor th { background-color: #374151; font-weight: 600; font-size: 0.875rem; }
-        #party-table-editor td input[type="number"] { width: 4rem; background-color: #4a5568; color: white; border: 1px solid #718096; border-radius: 0.25rem; text-align: center; padding: 0.25rem; }
+        #party-table-editor td input[type="number"] { width: 4rem; background-color: #4a5568; color: white; border: 1px solid #718096; border-radius: 0.25rem; text-align: center; padding: 0.25rem; touch-action: manipulation; }
         #party-table-editor td input[type="number"]::-webkit-inner-spin-button, 
         #party-table-editor td input[type="number"]::-webkit-outer-spin-button { margin: 0; appearance: none; }
         #party-table-editor td:first-child { font-weight: bold; background-color: #374151; }
@@ -337,13 +204,15 @@
         #party-table-clone td:first-child { font-weight: bold; }
 
         /* --- EXPORT MODE STYLES --- */
-        #temp-export-wrapper { padding: 1.5rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
+        #temp-export-wrapper { padding: 1rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
+        @media(min-width: 640px) { #temp-export-wrapper { padding: 1.5rem; } }
+
         .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle { display: none !important; }
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
         .export-mode .role-header { justify-content: center; } /* Center role title on export */
         .export-mode .build-quantity-display { display: block; }
         .export-mode .build-quantity-display:empty { display: none; }
-        .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; display: flex !important; }
+        .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; display: flex !important; overflow-x: visible !important; }
         .export-mode .item-slot { padding: 1px; border-radius: 0 !important; cursor: default !important; overflow: visible; }
         .export-mode #comp-title-clone { font-weight: bold; margin-bottom: 1rem; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); }
         .export-mode #comp-notes-clone { white-space: pre-wrap; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); }
@@ -351,20 +220,18 @@
         .export-mode .export-column-1 > #comp-notes-clone, .export-mode .export-column-2 > #comp-notes-clone,
         .export-mode .export-column-1 > #party-table-clone, .export-mode .export-column-2 > #party-table-clone { margin-bottom: 1rem; }
         .export-mode #logo-image-clone { max-width: 300px; height: auto; display: block; margin: 0 auto 1.5rem auto; }
-        .export-mode .export-roles-main-wrapper { display: flex; flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; }
-        .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 50%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem; }
+        .export-mode .export-roles-main-wrapper { display: flex; flex-direction: column; gap: 1.5rem; } /* --- MOBILE/TOUCH FIX: Stack columns vertically on export for mobile --- */
+        @media (min-width: 768px) { .export-mode .export-roles-main-wrapper { flex-direction: row; justify-content: space-between; gap: 2rem; align-items: flex-start; } }
+        .export-mode .export-column-1, .export-mode .export-column-2 { display: flex; flex-direction: column; gap: 1.5rem; flex-basis: 100%; background-color: rgba(26, 32, 44, 0.5); border-radius: 0.5rem; padding: 0.5rem; }
+        @media (min-width: 768px) { .export-mode .export-column-1, .export-mode .export-column-2 { flex-basis: 50%; } }
         .export-mode .alternative-item-overlay { border: 1px solid #718096; }
         .export-mode .ability-text-overlay { color: #4ade80; font-size: 0.7rem; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; }
         .export-mode .ability-text-overlay:empty { display: none; }
     </style>
 </head>
 
-<body class="p-4 md:p-8">
-
-    <div id="comp-container" class="max-w-7xl mx-auto bg-gray-900 p-6 rounded-lg shadow-xl">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <div id="header-controls" class="flex-grow md:mr-8 mb-4 md:mb-0">
-                <div class="tab-buttons">
+<body class="p-2 sm:p-4 md:p-8"> <div id="comp-container" class="w-full max-w-7xl mx-auto bg-gray-900 p-3 sm:p-6 rounded-lg shadow-xl"> <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div id="header-controls" class="w-full flex-grow md:mr-8 mb-4 md:mb-0"> <div class="tab-buttons">
                     <button class="tab-btn active" data-tab="tab-pane-content">Content</button>
                     <button class="tab-btn" data-tab="tab-pane-appearance">Appearance & Layout</button>
                 </div>
@@ -372,11 +239,11 @@
                 <div class="tab-content-container space-y-6">
                     <div id="tab-pane-content" class="tab-pane active space-y-6">
                         <div>
-                            <label for="comp-title" class="text-xl font-semibold mb-2 text-gray-300 block">Composition Title</label>
-                            <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" style="text-align: center;">
+                            <label for="comp-title" class="text-lg sm:text-xl font-semibold mb-2 text-gray-300 block">Composition Title</label>
+                            <input type="text" id="comp-title" placeholder="Untitled Composition" class="w-full bg-gray-800 text-white text-3xl sm:text-4xl font-bold p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" style="text-align: center;">
                         </div>
                         <div>
-                            <label for="comp-notes" class="text-xl font-semibold mb-2 text-gray-300 block">Notes</label>
+                            <label for="comp-notes" class="text-lg sm:text-xl font-semibold mb-2 text-gray-300 block">Notes</label>
                             <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
                         </div>
                     </div>
@@ -446,7 +313,7 @@
                         <div class="control-section space-y-3">
                             <div class="flex items-center space-x-2">
                                 <input type="checkbox" id="enable-party-table" class="rounded border-gray-500">
-                                <label for="enable-party-table" class="font-semibold text-lg text-gray-200">Party Composition Table</label>
+                                <label for="enable-party-table" class="font-semibold text-base sm:text-lg text-gray-200">Party Composition Table</label>
                             </div>
                             <div id="party-table-controls" class="hidden space-y-4 pt-2">
                                 <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -478,7 +345,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="party-table-body">
-                                            </tbody>
+                                        </tbody>
                                     </table>
                                 </div>
                                 <button id="add-party-row-btn" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-1 px-2 rounded mt-1">+ Add Row</button>
@@ -488,7 +355,7 @@
                 </div>
             </div>
 
-            <div id="action-buttons" class="flex flex-col space-y-2 w-full md:w-auto self-start md:mt-16">
+            <div id="action-buttons" class="flex flex-col space-y-2 w-full md:w-auto self-stretch md:self-start md:mt-16">
                 <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Composition</button>
                 <button id="load-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Load Composition</button>
                 <input type="file" id="load-file-input" class="hidden" accept=".json">
@@ -499,18 +366,18 @@
     </div>
 
     <div id="item-modal" class="modal-wrapper hidden">
-        <div class="modal-content w-11/12 max-w-4xl p-6 relative overflow-y-auto">
-            <div class="flex items-center gap-4 mb-4">
-                <h2 class="text-2xl font-bold">Select Item</h2>
-                <span id="modal-category-tag" class="text-base font-semibold text-blue-300 bg-blue-800/50 px-4 py-1 rounded-full"></span>
+        <div class="modal-content w-11/12 max-w-4xl p-4 sm:p-6 relative overflow-y-auto">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
+                <h2 class="text-xl sm:text-2xl font-bold whitespace-nowrap">Select Item</h2>
+                <span id="modal-category-tag" class="text-sm sm:text-base font-semibold text-blue-300 bg-blue-800/50 px-3 py-1 rounded-full"></span>
             </div>
-            <div class="flex justify-between items-center mb-4 gap-4">
-                <input type="text" id="item-search" placeholder="Search from predefined list..." class="modal-input flex-grow">
-                <button id="upload-custom-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded whitespace-nowrap">Upload File</button>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2 sm:gap-4">
+                <input type="text" id="item-search" placeholder="Search from predefined list..." class="modal-input flex-grow w-full sm:w-auto">
+                <button id="upload-custom-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded whitespace-nowrap w-full sm:w-auto">Upload File</button>
                 <input type="file" id="custom-image-upload" class="hidden" accept="image/*">
             </div>
-            <div id="modal-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4"></div>
-            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl">&times;</button>
+            <div id="modal-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-4"></div>
+            <button id="close-modal" class="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-400 hover:text-white text-4xl leading-none">&times;</button>
         </div>
     </div>
 
@@ -543,7 +410,7 @@
 
     <div id="load-build-modal" class="modal-wrapper hidden">
         <div class="modal-content w-11/12 max-w-3xl p-6 relative">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Load Build from Library</h2><button id="load-build-close-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button></div>
+            <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Load Build from Library</h2><button id="load-build-close-btn" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button></div>
             <div id="load-build-library-content" class="overflow-y-auto max-h-[60vh]"></div>
         </div>
     </div>
@@ -673,8 +540,7 @@
                         <span class="role-drag-handle" title="Drag to reorder role">⠿</span>
                         <button class="role-collapse-toggle" title="Collapse/Expand Role">▼</button>
                         <h2 class="role-title font-bold ${role.color.replace('bg-', 'text-').replace('-800', '-300')}">${role.name}</h2>
-                        <div class="flex space-x-2 ml-auto pl-2">
-                            <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
+                        <div class="flex space-x-2 ml-auto pl-2 flex-shrink-0"> <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
                             <button class="paste-build-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded text-xs hidden" data-role="${role.id}">Paste</button>
                             <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">+ Add</button>
                         </div>
@@ -682,8 +548,14 @@
                     <div class="builds-container" data-role="${role.id}"></div>
                 `;
                 rolesContainer.appendChild(section);
+                // Desktop drag events
                 section.addEventListener('dragstart', handleRoleDragStart);
                 section.addEventListener('dragend', handleRoleDragEnd);
+                
+                // --- MOBILE/TOUCH FIX: Add touch event listeners ---
+                section.addEventListener('touchstart', handleRoleTouchStart, { passive: false });
+                section.addEventListener('touchmove', handleRoleTouchMove, { passive: false });
+                section.addEventListener('touchend', handleRoleTouchEnd);
             }
 
             function createBuildRow(buildData = { slots: [] }) {
@@ -726,16 +598,21 @@
                     </div>
                     <div class="build-drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
                     <div class="build-items-wrapper">${slotsHTML}</div>
-                    <div class="flex flex-col space-y-1 ml-4 self-center">
-                        <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
+                    <div class="flex flex-col space-y-1 ml-2 sm:ml-4 self-center"> <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
                         <button class="copy-build-btn text-blue-400 hover:text-blue-300 font-bold text-lg" title="Copy Build">⧉</button>
                         <button class="remove-build-btn text-red-500 hover:text-red-400 font-bold text-2xl" title="Remove Build">&times;</button>
                     </div>
                 `;
 
+                // Desktop drag events
                 buildRow.addEventListener('dragstart', handleBuildDragStart);
                 buildRow.addEventListener('dragend', handleBuildDragEnd);
                 buildRow.addEventListener('dragover', handleBuildDragOver);
+
+                // --- MOBILE/TOUCH FIX: Add touch event listeners ---
+                buildRow.addEventListener('touchstart', handleBuildTouchStart, { passive: false });
+                buildRow.addEventListener('touchmove', handleBuildTouchMove, { passive: false });
+                buildRow.addEventListener('touchend', handleBuildTouchEnd);
 
                 buildRow.addEventListener('input', (e) => {
                     if (e.target.classList.contains('quantity-input')) {
@@ -754,19 +631,21 @@
                 return buildRow;
             }
 
-            /* ----------------- DRAG & DROP HANDLERS ---------------- */
+            /* ----------------- DRAG & DROP HANDLERS (DESKTOP) ---------------- */
             function handleBuildDragStart(e) {
                 if (e.target.classList.contains('build-drag-handle')) {
                     draggedBuildRow = e.currentTarget;
                     e.dataTransfer.effectAllowed = 'move';
-                    setTimeout(() => { draggedBuildRow.classList.add('opacity-50'); }, 0);
+                    // Set data transfer for firefox compatibility
+                    e.dataTransfer.setData('text/plain', null);
+                    setTimeout(() => { draggedBuildRow.classList.add('opacity-50', 'dragging'); }, 0);
                 } else {
                     e.preventDefault();
                 }
             }
 
             function handleBuildDragEnd(e) {
-                if (draggedBuildRow) draggedBuildRow.classList.remove('opacity-50');
+                if (draggedBuildRow) draggedBuildRow.classList.remove('opacity-50', 'dragging');
                 draggedBuildRow = null;
             }
 
@@ -786,6 +665,7 @@
                 if (e.target.classList.contains('role-drag-handle')) {
                     draggedRoleColumn = e.currentTarget;
                     e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', null);
                     setTimeout(() => { draggedRoleColumn.classList.add('dragging'); }, 0);
                 } else {
                     if (!e.target.closest('.build-drag-handle')) e.preventDefault();
@@ -798,13 +678,111 @@
             }
 
             function handleRoleDragOver(e) {
-                e.preventDefault();
+                e.preventDefault(); // Important: allow drop
                 const targetRole = e.target.closest('.role-section');
                 if (!draggedRoleColumn || draggedRoleColumn === targetRole || !targetRole) return;
+                
+                // --- MOBILE/TOUCH FIX: Use different logic for horizontal reordering ---
                 const rect = targetRole.getBoundingClientRect();
-                const midpoint = rect.left + rect.width / 2;
-                if (e.clientX < midpoint) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
-                else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                const containerRect = rolesContainer.getBoundingClientRect();
+                const containerScrollLeft = rolesContainer.scrollLeft;
+
+                // Check if layout is wrapped (mobile view) or single row (desktop view)
+                const firstRoleTop = rolesContainer.children[0].getBoundingClientRect().top;
+                const targetRoleTop = rect.top;
+                const isWrapped = Math.abs(firstRoleTop - targetRoleTop) > rect.height / 2;
+
+                if (isWrapped) {
+                    // Vertical reordering when wrapped
+                    const midpointY = rect.top + rect.height / 2;
+                    if (e.clientY < midpointY) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
+                    else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                } else {
+                    // Horizontal reordering when in a single line
+                    const midpointX = rect.left + rect.width / 2;
+                    if (e.clientX < midpointX) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
+                    else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                }
+            }
+
+            /* ----------------- DRAG & DROP HANDLERS (MOBILE/TOUCH) ---------------- */
+            function handleBuildTouchStart(e) {
+                if (e.target.classList.contains('build-drag-handle')) {
+                    draggedBuildRow = e.currentTarget;
+                    draggedBuildRow.classList.add('opacity-50', 'dragging');
+                    e.preventDefault(); // Prevent screen scrolling
+                }
+            }
+
+            function handleBuildTouchMove(e) {
+                if (!draggedBuildRow) return;
+                e.preventDefault();
+
+                const touch = e.touches[0];
+                const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+                const targetRow = targetElement ? targetElement.closest('.build-row') : null;
+
+                if (!targetRow || targetRow === draggedBuildRow || !draggedBuildRow.parentElement.contains(targetRow)) return;
+                
+                const rect = targetRow.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
+                if (touch.clientY < midpoint) {
+                    targetRow.parentElement.insertBefore(draggedBuildRow, targetRow);
+                } else {
+                    targetRow.parentElement.insertBefore(draggedBuildRow, targetRow.nextSibling);
+                }
+            }
+
+            function handleBuildTouchEnd(e) {
+                if (draggedBuildRow) {
+                    draggedBuildRow.classList.remove('opacity-50', 'dragging');
+                    draggedBuildRow = null;
+                }
+            }
+            
+            function handleRoleTouchStart(e) {
+                if (e.target.classList.contains('role-drag-handle')) {
+                    draggedRoleColumn = e.currentTarget;
+                    draggedRoleColumn.classList.add('dragging');
+                    e.preventDefault();
+                }
+            }
+
+            function handleRoleTouchMove(e) {
+                if (!draggedRoleColumn) return;
+                e.preventDefault();
+
+                const touch = e.touches[0];
+                const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+                const targetRole = targetElement ? targetElement.closest('.role-section') : null;
+
+                if (!targetRole || targetRole === draggedRoleColumn || !rolesContainer.contains(targetRole)) return;
+
+                const rect = targetRole.getBoundingClientRect();
+                
+                // Check if layout is wrapped (mobile view) or single row (desktop view) by comparing top positions
+                const firstRoleTop = rolesContainer.children[0].getBoundingClientRect().top;
+                const targetRoleTop = rect.top;
+                const isWrapped = Math.abs(firstRoleTop - targetRoleTop) > rect.height / 2;
+
+                if (isWrapped) {
+                    // Vertical reordering when wrapped
+                    const midpointY = rect.top + rect.height / 2;
+                    if (touch.clientY < midpointY) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
+                    else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                } else {
+                    // Horizontal reordering when in a single line
+                    const midpointX = rect.left + rect.width / 2;
+                    if (touch.clientX < midpointX) rolesContainer.insertBefore(draggedRoleColumn, targetRole);
+                    else rolesContainer.insertBefore(draggedRoleColumn, targetRole.nextSibling);
+                }
+            }
+
+            function handleRoleTouchEnd(e) {
+                if (draggedRoleColumn) {
+                    draggedRoleColumn.classList.remove('dragging');
+                    draggedRoleColumn = null;
+                }
             }
 
             /* ----------------- MODAL FUNCTIONS ---------------- */
@@ -814,10 +792,14 @@
                 const searchTerm = itemSearch.value.toLowerCase();
                 items.filter(item => item.toLowerCase().includes(searchTerm)).forEach(itemFilename => {
                     const itemDiv = document.createElement('div');
-                    const imagePath = `./images/${category}/${itemFilename}`;
+                    // --- FAKE IMAGE PATH: Replace with actual image path logic if needed ---
+                    // Using a placeholder background color for demonstration as image paths are likely incorrect.
+                    const imagePath = `./images/${category}/${itemFilename}`; 
                     itemDiv.className = 'cursor-pointer p-1 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center flex-col';
-                    itemDiv.innerHTML = `<img src="${imagePath}" alt="${itemFilename}" class="w-16 h-16 object-contain"><span class="text-xs text-center mt-1 text-gray-300">${itemFilename.replace('.png', '')}</span>`;
-                    itemDiv.addEventListener('click', () => selectItem(itemDiv.querySelector('img').src, itemFilename));
+                    itemDiv.innerHTML = `<img src="${imagePath}" alt="${itemFilename}" class="w-16 h-16 object-contain" style="background-color: #4a5568;"><span class="text-xs text-center mt-1 text-gray-300 break-words w-full">${itemFilename.replace('.png', '')}</span>`;
+                    itemDiv.addEventListener('click', () => selectItem(imagePath, itemFilename)); // Changed to pass imagePath
+                    // Handle image loading errors gracefully
+                    itemDiv.querySelector('img').onerror = function() { this.style.visibility = 'hidden'; /* Hide broken image icon */ };
                     modalGrid.appendChild(itemDiv);
                 });
             }
@@ -874,7 +856,13 @@
             }
 
             function showToast(message) { toast.textContent = message; toast.classList.add('show'); setTimeout(() => { toast.classList.remove('show'); }, 2000); }
-            function updateLogoTitleDisplay() { if (logoImageSrc) { logoPreview.src = logoImageSrc; logoPreview.classList.remove('hidden'); } else { logoPreview.classList.add('hidden'); logoPreview.src = ''; } }
+            function updateLogoTitleDisplay() { 
+                if (logoImageSrc) { 
+                    logoPreview.src = logoImageSrc; logoPreview.classList.remove('hidden'); removeLogoBtn.classList.remove('hidden'); 
+                } else { 
+                    logoPreview.classList.add('hidden'); removeLogoBtn.classList.add('hidden'); logoPreview.src = ''; 
+                } 
+            }
             function applyBackground() { if (backgroundImageSrc) { compContainer.style.backgroundImage = `url(${backgroundImageSrc})`; compContainer.style.backgroundSize = 'cover'; compContainer.style.backgroundPosition = 'center'; removeBackgroundBtn.classList.remove('hidden'); } else { compContainer.style.backgroundImage = 'none'; removeBackgroundBtn.classList.add('hidden'); } }
 
             /* ----------------- BUILD LIBRARY (localStorage) FUNCTIONS ---------------- */
@@ -882,32 +870,54 @@
             function saveBuildToLibrary(category, buildName, buildData) { const library = getBuildLibrary(); if (!library[category]) { library[category] = []; } const existingBuildIndex = library[category].findIndex(build => build.name === buildName); if (existingBuildIndex > -1) library[category][existingBuildIndex] = { name: buildName, data: buildData }; else library[category].push({ name: buildName, data: buildData }); localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library)); showToast(`Build "${buildName}" saved to category "${category}"!`); }
             function deleteBuildFromLibrary(category, buildName) { const library = getBuildLibrary(); if (library[category]) { library[category] = library[category].filter(build => build.name !== buildName); if (library[category].length === 0) delete library[category]; localStorage.setItem(BUILD_LIBRARY_STORAGE_KEY, JSON.stringify(library)); populateLoadBuildModal(); showToast(`Build "${buildName}" deleted.`); } }
             function openSaveBuildModal(buildRowElement) { activeBuildRowForSave = buildRowElement; const library = getBuildLibrary(); const categorySelect = document.getElementById('save-build-category-select'); categorySelect.innerHTML = '<option value="">Select existing category...</option>'; Object.keys(library).sort().forEach(category => { categorySelect.innerHTML += `<option value="${category}">${category}</option>`; }); document.getElementById('save-build-name').value = ''; document.getElementById('save-build-new-category').value = ''; saveBuildModal.classList.remove('hidden'); }
-            function populateLoadBuildModal() { const library = getBuildLibrary(); const container = document.getElementById('load-build-library-content'); container.innerHTML = ''; if (Object.keys(library).length === 0) { container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty.</p>'; return; } Object.keys(library).sort().forEach(category => { const categoryGroup = document.createElement('div'); categoryGroup.className = 'category-group'; categoryGroup.innerHTML = `<h3 class="category-title">${category}</h3>`; library[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(build => { const buildEntry = document.createElement('div'); buildEntry.className = 'saved-build-entry'; buildEntry.innerHTML = `<span class="saved-build-name">${build.name}</span><div><button class="load-saved-build-btn bg-blue-600 hover:bg-blue-500 text-white py-1 px-2 rounded text-xs" data-build-json='${JSON.stringify(build.data)}'>Load</button><button class="delete-build-btn" data-category="${category}" data-name="${build.name}">&times;</button></div>`; categoryGroup.appendChild(buildEntry); }); container.appendChild(categoryGroup); }); }
+            function populateLoadBuildModal() { 
+                const library = getBuildLibrary(); 
+                const container = document.getElementById('load-build-library-content'); 
+                container.innerHTML = ''; 
+                if (Object.keys(library).length === 0) { container.innerHTML = '<p class="text-gray-400 text-center">Your build library is empty.</p>'; return; } 
+                const categoryGrid = document.createElement('div');
+                categoryGrid.className = "space-y-4";
+
+                Object.keys(library).sort().forEach(category => { 
+                    const categoryGroup = document.createElement('div'); 
+                    categoryGroup.className = 'category-group border border-gray-700 rounded-lg p-3'; 
+                    categoryGroup.innerHTML = `<h3 class="category-title text-lg font-bold text-blue-300 mb-2">${category}</h3>`; 
+                    const buildsList = document.createElement('div');
+                    buildsList.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2";
+                    library[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(build => { 
+                        const buildEntry = document.createElement('div'); 
+                        buildEntry.className = 'saved-build-entry flex justify-between items-center bg-gray-800 p-2 rounded'; 
+                        buildEntry.innerHTML = `<span class="saved-build-name text-sm text-gray-200 truncate pr-2">${build.name}</span>
+                                                <div class="flex-shrink-0 space-x-1">
+                                                    <button class="load-saved-build-btn bg-blue-600 hover:bg-blue-500 text-white py-1 px-2 rounded text-xs" data-build-json='${JSON.stringify(build.data)}'>Load</button>
+                                                    <button class="delete-build-btn text-red-400 hover:text-red-300 text-xs py-1 px-2 rounded" data-category="${category}" data-name="${build.name}">&times;</button>
+                                                </div>`; 
+                        buildsList.appendChild(buildEntry); 
+                    }); 
+                    categoryGroup.appendChild(buildsList);
+                    categoryGrid.appendChild(categoryGroup);
+                }); 
+                container.appendChild(categoryGrid);
+            }
 
             /* ----------------- PARTY TABLE FUNCTIONS ---------------- */
             function initializePartyTable() {
                 const defaultData = [
-                    { partySize: 10, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 4 },
-                    { partySize: 11, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 5 },
-                    { partySize: 12, engages: 1, tanks: 2, supports: 2, healers: 2, dps: 5 },
-                    { partySize: 13, engages: 1, tanks: 2, supports: 2, healers: 3, dps: 5 },
+                    { partySize: 10, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 4 }, { partySize: 11, engages: 1, tanks: 2, supports: 1, healers: 2, dps: 5 },
+                    { partySize: 12, engages: 1, tanks: 2, supports: 2, healers: 2, dps: 5 }, { partySize: 13, engages: 1, tanks: 2, supports: 2, healers: 3, dps: 5 },
                     { partySize: 14, engages: 1, tanks: 3, supports: 2, healers: 3, dps: 5 },
                 ];
-                partyTableData = defaultData;
-                renderPartyTable();
+                partyTableData = defaultData; renderPartyTable();
             }
 
             function renderPartyTable() {
                 partyTableBody.innerHTML = '';
                 partyTableData.forEach((rowData, index) => {
-                    const tr = document.createElement('tr');
-                    tr.dataset.index = index;
+                    const tr = document.createElement('tr'); tr.dataset.index = index;
                     tr.innerHTML = `
                         <td><input type="number" class="w-16 bg-transparent font-bold text-center" value="${rowData.partySize}" data-key="partySize"></td>
-                        <td><input type="number" min="0" value="${rowData.engages}" data-key="engages"></td>
-                        <td><input type="number" min="0" value="${rowData.tanks}" data-key="tanks"></td>
-                        <td><input type="number" min="0" value="${rowData.supports}" data-key="supports"></td>
-                        <td><input type="number" min="0" value="${rowData.healers}" data-key="healers"></td>
+                        <td><input type="number" min="0" value="${rowData.engages}" data-key="engages"></td> <td><input type="number" min="0" value="${rowData.tanks}" data-key="tanks"></td>
+                        <td><input type="number" min="0" value="${rowData.supports}" data-key="supports"></td> <td><input type="number" min="0" value="${rowData.healers}" data-key="healers"></td>
                         <td><input type="number" min="0" value="${rowData.dps}" data-key="dps"></td>
                     `;
                     partyTableBody.appendChild(tr);
@@ -915,68 +925,36 @@
             }
 
             function addNewPartyTableRow() {
-                const lastRow = partyTableData[partyTableData.length - 1];
-                const newPartySize = lastRow ? lastRow.partySize + 1 : 10;
-                partyTableData.push({ partySize: newPartySize, engages: 0, tanks: 0, supports: 0, healers: 0, dps: 0 });
-                renderPartyTable();
+                const lastRow = partyTableData.length > 0 ? partyTableData[partyTableData.length - 1] : { partySize: 9 };
+                const newPartySize = lastRow.partySize + 1;
+                partyTableData.push({ partySize: newPartySize, engages: 0, tanks: 0, supports: 0, healers: 0, dps: 0 }); renderPartyTable();
             }
             
             function createExportableTableClone() {
-                const tableClone = document.createElement('table');
-                tableClone.id = 'party-table-clone';
-                tableClone.style.transform = `scale(${partyTableScale})`;
-
-                const thead = document.createElement('thead');
-                thead.innerHTML = `<tr><th>Party size</th><th>Engages</th><th>Tanks</th><th>Supports</th><th>Healers</th><th>DPS</th></tr>`;
-                tableClone.appendChild(thead);
-                
+                const tableClone = document.createElement('table'); tableClone.id = 'party-table-clone'; tableClone.style.transform = `scale(${partyTableScale})`;
+                const thead = document.createElement('thead'); thead.innerHTML = `<tr><th>Party size</th><th>Engages</th><th>Tanks</th><th>Supports</th><th>Healers</th><th>DPS</th></tr>`; tableClone.appendChild(thead);
                 const tbody = document.createElement('tbody');
                 partyTableData.forEach(rowData => {
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${rowData.partySize}</td>
-                        <td>${rowData.engages}</td>
-                        <td>${rowData.tanks}</td>
-                        <td>${rowData.supports}</td>
-                        <td>${rowData.healers}</td>
-                        <td>${rowData.dps}</td>
-                    `;
+                    tr.innerHTML = `<td>${rowData.partySize}</td><td>${rowData.engages}</td><td>${rowData.tanks}</td><td>${rowData.supports}</td><td>${rowData.healers}</td><td>${rowData.dps}</td>`;
                     tbody.appendChild(tr);
                 });
-                tableClone.appendChild(tbody);
-                return tableClone;
+                tableClone.appendChild(tbody); return tableClone;
             }
 
             /* ----------------- SAVE/LOAD COMPOSITION FUNCTIONS ---------------- */
             function saveComposition() {
-                // Ensure latest table data is captured from inputs before saving
                 partyTableData = Array.from(partyTableBody.querySelectorAll('tr')).map(row => ({
-                    partySize: parseInt(row.querySelector('[data-key="partySize"]').value) || 0,
-                    engages: parseInt(row.querySelector('[data-key="engages"]').value) || 0,
-                    tanks: parseInt(row.querySelector('[data-key="tanks"]').value) || 0,
-                    supports: parseInt(row.querySelector('[data-key="supports"]').value) || 0,
-                    healers: parseInt(row.querySelector('[data-key="healers"]').value) || 0,
-                    dps: parseInt(row.querySelector('[data-key="dps"]').value) || 0,
+                    partySize: parseInt(row.querySelector('[data-key="partySize"]').value) || 0, engages: parseInt(row.querySelector('[data-key="engages"]').value) || 0,
+                    tanks: parseInt(row.querySelector('[data-key="tanks"]').value) || 0, supports: parseInt(row.querySelector('[data-key="supports"]').value) || 0,
+                    healers: parseInt(row.querySelector('[data-key="healers"]').value) || 0, dps: parseInt(row.querySelector('[data-key="dps"]').value) || 0,
                 }));
 
                 const compositionData = {
-                    title: compTitleInput.value,
-                    notes: compNotesInput.value,
-                    logoSrc: logoImageSrc,
-                    backgroundImageSrc: backgroundImageSrc,
-                    styles: {
-                        titleFontSize, titleColor, titleAlign,
-                        notesFontSize, notesColor, notesAlign, notesPosition
-                    },
-                    partyTableSettings: {
-                        isEnabled: isPartyTableEnabled,
-                        position: partyTablePosition,
-                        scale: partyTableScale,
-                        data: partyTableData
-                    },
-                    roleOrder: Array.from(rolesContainer.children).map(role => role.id),
-                    roleStates: {},
-                    roles: {}
+                    title: compTitleInput.value, notes: compNotesInput.value, logoSrc: logoImageSrc, backgroundImageSrc: backgroundImageSrc,
+                    styles: { titleFontSize, titleColor, titleAlign, notesFontSize, notesColor, notesAlign, notesPosition },
+                    partyTableSettings: { isEnabled: isPartyTableEnabled, position: partyTablePosition, scale: partyTableScale, data: partyTableData },
+                    roleOrder: Array.from(rolesContainer.children).map(role => role.id), roleStates: {}, roles: {}
                 };
 
                 document.querySelectorAll('.role-section').forEach(roleSection => {
@@ -985,12 +963,9 @@
                     compositionData.roleStates[roleId] = { isCollapsed: roleSection.classList.contains('collapsed') };
                 });
 
-                const dataStr = JSON.stringify(compositionData, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.download = `${compositionData.title.replace(/[^a-z0-9]/gi, '_') || 'composition'}.json`;
-                link.href = url; link.click(); URL.revokeObjectURL(url); showToast("Composition saved!");
+                const dataStr = JSON.stringify(compositionData, null, 2); const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob); const link = document.createElement('a');
+                link.download = `${compositionData.title.replace(/[^a-z0-9]/gi, '_') || 'composition'}.json`; link.href = url; link.click(); URL.revokeObjectURL(url); showToast("Composition saved!");
             }
 
             function loadComposition(file) {
@@ -998,48 +973,31 @@
                 reader.onload = (e) => {
                     try {
                         const loadedData = JSON.parse(e.target.result);
-                        compTitleInput.value = loadedData.title || '';
-                        compNotesInput.value = loadedData.notes || '';
-                        logoImageSrc = loadedData.logoSrc || null;
-                        backgroundImageSrc = loadedData.backgroundImageSrc || null;
+                        compTitleInput.value = loadedData.title || ''; compNotesInput.value = loadedData.notes || '';
+                        logoImageSrc = loadedData.logoSrc || null; backgroundImageSrc = loadedData.backgroundImageSrc || null;
 
                         const styles = loadedData.styles || {};
                         titleFontSize = styles.titleFontSize || '36'; titleColor = styles.titleColor || '#E2E8F0'; titleAlign = styles.titleAlign || 'center';
                         notesFontSize = styles.notesFontSize || '16'; notesColor = styles.notesColor || '#CBD5E0'; notesAlign = styles.notesAlign || 'left'; notesPosition = styles.notesPosition || 'above_full';
 
-                        // Load party table settings
                         if (loadedData.partyTableSettings) {
-                            partyTableData = loadedData.partyTableSettings.data || [];
-                            isPartyTableEnabled = loadedData.partyTableSettings.isEnabled || false;
-                            partyTablePosition = loadedData.partyTableSettings.position || 'above_full';
-                            partyTableScale = loadedData.partyTableSettings.scale || 1;
-                            if (partyTableData.length === 0) initializePartyTable(); // Initialize if data array is empty in save
-                        } else {
-                            initializePartyTable(); // Initialize for old saves without this feature
-                        }
-                        renderPartyTable();
-                        applyCurrentStylesToEditor();
-
-                        updateLogoTitleDisplay();
-                        applyBackground();
+                            partyTableData = loadedData.partyTableSettings.data || []; isPartyTableEnabled = loadedData.partyTableSettings.isEnabled || false;
+                            partyTablePosition = loadedData.partyTableSettings.position || 'above_full'; partyTableScale = loadedData.partyTableSettings.scale || 1;
+                            if (partyTableData.length === 0) initializePartyTable();
+                        } else { initializePartyTable(); }
+                        renderPartyTable(); applyCurrentStylesToEditor(); updateLogoTitleDisplay(); applyBackground();
 
                         rolesContainer.innerHTML = '';
-                        const roleOrder = loadedData.roleOrder || ROLES.map(r => r.id);
-                        const loadedRoleIds = new Set(roleOrder);
+                        const roleOrder = loadedData.roleOrder || ROLES.map(r => r.id); const loadedRoleIds = new Set(roleOrder);
                         const missingRoles = ROLES.filter(r => !loadedRoleIds.has(r.id));
                         roleOrder.forEach(roleId => { const config = ROLES.find(r => r.id === roleId); if (config) createRoleSection(config); });
                         missingRoles.forEach(createRoleSection);
 
                         document.querySelectorAll('.role-section').forEach(roleSection => {
-                            const roleId = roleSection.id;
-                            const buildsContainer = roleSection.querySelector('.builds-container');
-                            buildsContainer.innerHTML = '';
+                            const roleId = roleSection.id; const buildsContainer = roleSection.querySelector('.builds-container'); buildsContainer.innerHTML = '';
                             const roleBuilds = loadedData.roles[roleId];
-                            if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) {
-                                roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData)));
-                            } else {
-                                buildsContainer.appendChild(createBuildRow());
-                            }
+                            if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) { roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData))); } 
+                            else { buildsContainer.appendChild(createBuildRow()); }
                             if (loadedData.roleStates && loadedData.roleStates[roleId] && loadedData.roleStates[roleId].isCollapsed) {
                                 roleSection.classList.add('collapsed'); roleSection.querySelector('.role-collapse-toggle').textContent = '►';
                             }
@@ -1060,33 +1018,25 @@
                 updateAlignmentButtons(notesAlignGroup, notesAlign);
                 notesPositionSelect.value = notesPosition;
 
-                // Apply party table styles and visibility
-                enablePartyTableCheck.checked = isPartyTableEnabled;
-                partyTableControls.style.display = isPartyTableEnabled ? 'block' : 'none';
-                partyTablePositionSelect.value = partyTablePosition;
-                partyTableScaleSlider.value = partyTableScale;
-                partyTableScaleValue.textContent = `${Math.round(partyTableScale * 100)}%`;
+                enablePartyTableCheck.checked = isPartyTableEnabled; partyTableControls.style.display = isPartyTableEnabled ? 'block' : 'none';
+                partyTablePositionSelect.value = partyTablePosition; partyTableScaleSlider.value = partyTableScale; partyTableScaleValue.textContent = `${Math.round(partyTableScale * 100)}%`;
             }
 
-            function updateAlignmentButtons(buttonGroup, activeAlignment) {
-                buttonGroup.querySelectorAll('button').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.align === activeAlignment);
-                });
-            }
+            function updateAlignmentButtons(buttonGroup, activeAlignment) { buttonGroup.querySelectorAll('button').forEach(btn => { btn.classList.toggle('active', btn.dataset.align === activeAlignment); }); }
 
             /* ----------------- EVENT LISTENERS SETUP ---------------- */
             rolesContainer.addEventListener('click', e => {
-                const target = e.target;
+                const target = e.target; const buildRow = target.closest('.build-row');
                 if (target.closest('.add-build-btn')) { const roleId = target.closest('.add-build-btn').dataset.role; document.querySelector(`#${roleId} .builds-container`).appendChild(createBuildRow()); }
                 else if (target.closest('.load-library-btn')) { activeRoleForLoad = target.closest('.load-library-btn').dataset.role; populateLoadBuildModal(); loadBuildModal.classList.remove('hidden'); }
-                else if (target.closest('.save-build-btn')) { openSaveBuildModal(target.closest('.build-row')); }
+                else if (target.closest('.save-build-btn')) { openSaveBuildModal(buildRow); }
                 else if (target.closest('.paste-build-btn')) { pasteBuild(target.closest('.paste-build-btn').dataset.role); }
-                else if (target.closest('.remove-build-btn')) { target.closest('.build-row').remove(); }
-                else if (target.closest('.copy-build-btn')) { copyBuild(target.closest('.build-row')); }
+                else if (target.closest('.remove-build-btn')) { buildRow.remove(); }
+                else if (target.closest('.copy-build-btn')) { copyBuild(buildRow); }
                 else if (target.closest('.item-slot') && !target.classList.contains('quantity-input')) { isSelectingAlternative = false; openModal(target.closest('.item-slot')); }
                 else if (target.closest('.role-collapse-toggle')) { const roleSection = target.closest('.role-section'); roleSection.classList.toggle('collapsed'); target.textContent = roleSection.classList.contains('collapsed') ? '►' : '▼'; }
             });
-            rolesContainer.addEventListener('dragover', handleRoleDragOver);
+            rolesContainer.addEventListener('dragover', handleRoleDragOver); // Keep for desktop role dragging
 
             contextMenu.addEventListener('contextmenu', e => e.preventDefault());
             rolesContainer.addEventListener('contextmenu', e => {
@@ -1125,7 +1075,7 @@
             compLogoUpload.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { logoImageSrc = event.target.result; updateLogoTitleDisplay(); }; reader.readAsDataURL(file); } });
             removeLogoBtn.addEventListener('click', () => { logoImageSrc = null; compLogoUpload.value = ''; updateLogoTitleDisplay(); });
             uploadBackgroundBtn.addEventListener('click', () => backgroundUploadInput.click());
-            removeBackgroundBtn.addEventListener('click', () => { backgroundImageSrc = null; applyBackground(); });
+            removeBackgroundBtn.addEventListener('click', () => { backgroundImageSrc = null; backgroundUploadInput.value = ''; applyBackground(); });
             backgroundUploadInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { backgroundImageSrc = event.target.result; applyBackground(); }; reader.readAsDataURL(file); } });
 
             saveBtn.addEventListener('click', saveComposition);
@@ -1153,40 +1103,29 @@
             partyTablePositionSelect.addEventListener('change', (e) => { partyTablePosition = e.target.value; });
             partyTableScaleSlider.addEventListener('input', (e) => { partyTableScale = parseFloat(e.target.value); partyTableScaleValue.textContent = `${Math.round(partyTableScale * 100)}%`; });
             partyTableBody.addEventListener('input', (e) => {
-                const input = e.target;
-                const key = input.dataset.key;
-                const index = input.closest('tr').dataset.index;
-                if (key && index) {
-                    partyTableData[index][key] = parseInt(input.value) || 0;
-                }
+                const input = e.target; const key = input.dataset.key; const index = input.closest('tr').dataset.index;
+                if (key && index && partyTableData[index]) { partyTableData[index][key] = parseInt(input.value) || 0; }
             });
 
             // --- EXPORT FUNCTION ---
             exportBtn.addEventListener('click', () => {
-                const tempExportContainer = document.createElement('div');
-                tempExportContainer.id = 'temp-export-wrapper';
-                document.body.appendChild(tempExportContainer);
-                document.body.classList.add('export-mode');
-
+                const tempExportContainer = document.createElement('div'); tempExportContainer.id = 'temp-export-wrapper';
+                document.body.appendChild(tempExportContainer); document.body.classList.add('export-mode');
                 if (backgroundImageSrc) { tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`; }
 
                 let titleOrLogoClone;
                 if (logoImageSrc) { titleOrLogoClone = document.createElement('img'); titleOrLogoClone.id = 'logo-image-clone'; titleOrLogoClone.src = logoImageSrc; } 
                 else { titleOrLogoClone = document.createElement('div'); titleOrLogoClone.id = 'comp-title-clone'; titleOrLogoClone.textContent = compTitleInput.value || compTitleInput.placeholder; titleOrLogoClone.style.fontSize = `${titleFontSize}px`; titleOrLogoClone.style.color = titleColor; titleOrLogoClone.style.textAlign = titleAlign; }
 
-                let notesClone = null;
-                if (compNotesInput.value) { notesClone = document.createElement('div'); notesClone.id = 'comp-notes-clone'; notesClone.textContent = compNotesInput.value; notesClone.style.fontSize = `${notesFontSize}px`; notesClone.style.color = notesColor; notesClone.style.textAlign = notesAlign; }
-                
-                let partyTableClone = null;
-                if (isPartyTableEnabled) { partyTableClone = createExportableTableClone(); }
+                let notesClone = null; if (compNotesInput.value) { notesClone = document.createElement('div'); notesClone.id = 'comp-notes-clone'; notesClone.textContent = compNotesInput.value; notesClone.style.fontSize = `${notesFontSize}px`; notesClone.style.color = notesColor; notesClone.style.textAlign = notesAlign; }
+                let partyTableClone = null; if (isPartyTableEnabled) { partyTableClone = createExportableTableClone(); }
 
                 tempExportContainer.appendChild(titleOrLogoClone);
                 if (partyTablePosition === 'above_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone);
                 if (notesPosition === 'above_full' && notesClone) tempExportContainer.appendChild(notesClone);
 
                 const rolesMainWrapper = document.createElement('div'); rolesMainWrapper.className = 'export-roles-main-wrapper';
-                const column1 = document.createElement('div'); column1.className = 'export-column-1';
-                const column2 = document.createElement('div'); column2.className = 'export-column-2';
+                const column1 = document.createElement('div'); column1.className = 'export-column-1'; const column2 = document.createElement('div'); column2.className = 'export-column-2';
 
                 if (partyTablePosition === 'col1_top' && partyTableClone) column1.appendChild(partyTableClone);
                 if (notesPosition === 'col1_top' && notesClone) column1.appendChild(notesClone);
@@ -1195,12 +1134,10 @@
 
                 Array.from(rolesContainer.querySelectorAll('.role-section')).forEach(roleElement => {
                     const roleId = roleElement.id; const roleElementClone = roleElement.cloneNode(true);
-                    if (EXPORT_COLUMN_1_ROLES.includes(roleId)) column1.appendChild(roleElementClone);
-                    else if (EXPORT_COLUMN_2_ROLES.includes(roleId)) column2.appendChild(roleElementClone);
+                    if (EXPORT_COLUMN_1_ROLES.includes(roleId)) column1.appendChild(roleElementClone); else if (EXPORT_COLUMN_2_ROLES.includes(roleId)) column2.appendChild(roleElementClone);
                 });
 
-                rolesMainWrapper.appendChild(column1); rolesMainWrapper.appendChild(column2);
-                tempExportContainer.appendChild(rolesMainWrapper);
+                rolesMainWrapper.appendChild(column1); rolesMainWrapper.appendChild(column2); tempExportContainer.appendChild(rolesMainWrapper);
                 if (partyTablePosition === 'below_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone);
                 if (notesPosition === 'below_full' && notesClone) tempExportContainer.appendChild(notesClone);
 
@@ -1213,11 +1150,11 @@
             function initializeApp() {
                 ROLES.forEach(createRoleSection);
                 document.querySelectorAll('.role-section').forEach(roleSection => { roleSection.querySelector('.builds-container').appendChild(createBuildRow()); });
-                initializePartyTable();
-                applyCurrentStylesToEditor();
-                updateLogoTitleDisplay();
+                initializePartyTable(); applyCurrentStylesToEditor(); updateLogoTitleDisplay();
             }
 
             initializeApp();
         });
-    </script></body></html>
+    </script>
+</body>
+</html>

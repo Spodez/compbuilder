@@ -137,7 +137,9 @@
         }
         .role-section.dragging { opacity: 0.5; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); transform: scale(1.02); }
         .role-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-shrink: 0; }
-        .role-title { font-size: 1.5rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); white-space: nowrap; }
+        .role-title { font-size: 1.5rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); white-space: nowrap; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background-color 0.2s; }
+        .role-title:hover { background-color: #4a5568; }
+        .role-title-input { font-size: 1.5rem; font-weight: bold; background-color: #4a5568; border: 1px solid #63b3ed; color: white; padding: 2px 4px; border-radius: 4px; width: 100%; }
         .role-collapse-toggle { background: none; border: none; color: #9ca3af; font-size: 1rem; cursor: pointer; transition: transform 0.2s; padding: 0.25rem; touch-action: manipulation; }
         .role-section.collapsed .role-collapse-toggle { transform: rotate(-90deg); }
         .role-drag-handle { cursor: move; color: #718096; font-size: 1.25rem; padding-left: 0.25rem; padding-right: 0.5rem; touch-action: none; /* --- MOBILE/TOUCH FIX: Prevent scrolling when grabbing handle --- */ }
@@ -207,9 +209,10 @@
         #temp-export-wrapper { padding: 1rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
         @media(min-width: 640px) { #temp-export-wrapper { padding: 1.5rem; } }
 
-        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle { display: none !important; }
+        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle, .export-mode .delete-role-btn, .export-mode #add-role-btn { display: none !important; }
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
         .export-mode .role-header { justify-content: center; } /* Center role title on export */
+        .export-mode .role-title { cursor: default !important; } .export-mode .role-title:hover { background-color: transparent !important; }
         .export-mode .build-quantity-display { display: block; }
         .export-mode .build-quantity-display:empty { display: none; }
         .export-mode .builds-container, .export-mode .build-items-wrapper { gap: 0px !important; display: flex !important; overflow-x: visible !important; }
@@ -230,8 +233,14 @@
     </style>
 </head>
 
-<body class="p-2 sm:p-4 md:p-8"> <div id="comp-container" class="w-full max-w-7xl mx-auto bg-gray-900 p-3 sm:p-6 rounded-lg shadow-xl"> <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <div id="header-controls" class="w-full flex-grow md:mr-8 mb-4 md:mb-0"> <div class="tab-buttons">
+<body class="p-2 sm:p-4 md:p-8">
+
+    <div id="comp-container" class="w-full max-w-7xl mx-auto bg-gray-900 p-3 sm:p-6 rounded-lg shadow-xl">
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div id="header-controls" class="w-full flex-grow md:mr-8 mb-4 md:mb-0">
+
+                <div class="tab-buttons">
                     <button class="tab-btn active" data-tab="tab-pane-content">Content</button>
                     <button class="tab-btn" data-tab="tab-pane-appearance">Appearance & Layout</button>
                 </div>
@@ -355,13 +364,21 @@
                 </div>
             </div>
 
-            <div id="action-buttons" class="flex flex-col space-y-2 w-full md:w-auto self-stretch md:self-start md:mt-16">
-                <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Composition</button>
-                <button id="load-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Load Composition</button>
-                <input type="file" id="load-file-input" class="hidden" accept=".json">
-                <button id="export-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Export to PNG</button>
+            <div class="flex flex-col space-y-2 w-full md:w-auto self-stretch md:self-start md:mt-16">
+                <div id="action-buttons" class="flex flex-col space-y-2 w-full">
+                    <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Composition</button>
+                    <button id="load-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Load Composition</button>
+                    <input type="file" id="load-file-input" class="hidden" accept=".json">
+                    <button id="export-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Export to PNG</button>
+                    <button id="clear-all-btn" class="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 mt-2">Clear All</button>
+                </div>
             </div>
         </div>
+
+        <div class="text-center mb-4">
+            <button id="add-role-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">+ Add Role</button>
+        </div>
+
         <div id="roles-container"></div>
     </div>
 
@@ -441,13 +458,12 @@
                 { key: 'Food', label: 'Food' }, { key: 'Potion', label: 'Potion' }
             ];
 
-            const ROLES = [
+            // MODIFIED: Renamed ROLES to DEFAULT_ROLES for clarity
+            const DEFAULT_ROLES = [
                 { id: 'engage', name: 'Engage', color: 'bg-purple-800' }, { id: 'tanks', name: 'Tanks', color: 'bg-blue-800' },
                 { id: 'support', name: 'Support', color: 'bg-yellow-800' }, { id: 'healer', name: 'Healer', color: 'bg-green-800' },
                 { id: 'dps', name: 'DPS', color: 'bg-red-800' }
             ];
-            const EXPORT_COLUMN_1_ROLES = ['engage', 'tanks', 'support'];
-            const EXPORT_COLUMN_2_ROLES = ['healer', 'dps'];
             const BUILD_LIBRARY_STORAGE_KEY = 'albionBuildLibrary';
 
             /* ----------------- STATE VARIABLES ---------------- */
@@ -461,6 +477,9 @@
             let isSelectingAlternative = false;
             let activeBuildRowForSave = null;
             let activeRoleForLoad = null;
+            
+            // ADDED: State variable for current roles
+            let currentRoles = [];
 
             // Style state
             let titleFontSize = '36';
@@ -518,6 +537,10 @@
             const notesAlignGroup = document.getElementById('notes-align-group');
             const notesPositionSelect = document.getElementById('notes-position-select');
             const tabButtonsContainer = document.querySelector('.tab-buttons');
+            
+            // ADDED: New button DOM elements
+            const clearAllBtn = document.getElementById('clear-all-btn');
+            const addRoleBtn = document.getElementById('add-role-btn');
 
             // Party table DOM elements
             const enablePartyTableCheck = document.getElementById('enable-party-table');
@@ -529,25 +552,38 @@
             const partyTableScaleValue = document.getElementById('party-table-scale-value');
 
             /* ----------------- ROLE & BUILD FUNCTIONS ---------------- */
+            
+            // ADDED: Function to render all roles from the currentRoles state
+            function renderRoles() {
+                rolesContainer.innerHTML = '';
+                currentRoles.forEach(role => {
+                    const section = createRoleSection(role);
+                    rolesContainer.appendChild(section);
+                });
+            }
+
             function createRoleSection(role) {
                 const section = document.createElement('div');
                 section.id = role.id;
                 section.className = 'role-section';
                 section.draggable = true;
-
+                
+                // MODIFIED: Added delete button and data-role-id for renaming
                 section.innerHTML = `
                     <div class="role-header">
                         <span class="role-drag-handle" title="Drag to reorder role">⠿</span>
                         <button class="role-collapse-toggle" title="Collapse/Expand Role">▼</button>
-                        <h2 class="role-title font-bold ${role.color.replace('bg-', 'text-').replace('-800', '-300')}">${role.name}</h2>
-                        <div class="flex space-x-2 ml-auto pl-2 flex-shrink-0"> <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
+                        <h2 class="role-title font-bold ${role.color.replace('bg-', 'text-').replace('-800', '-300')}" data-role-id="${role.id}" title="Click to rename">${role.name}</h2>
+                        <div class="flex space-x-2 ml-auto pl-2 flex-shrink-0">
+                            <button class="delete-role-btn text-red-500 hover:text-red-400 font-bold text-lg" title="Delete Role">🗑️</button>
+                            <button class="load-library-btn bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">Load</button>
                             <button class="paste-build-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded text-xs hidden" data-role="${role.id}">Paste</button>
                             <button class="add-build-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded text-xs" data-role="${role.id}">+ Add</button>
                         </div>
                     </div>
                     <div class="builds-container" data-role="${role.id}"></div>
                 `;
-                rolesContainer.appendChild(section);
+                
                 // Desktop drag events
                 section.addEventListener('dragstart', handleRoleDragStart);
                 section.addEventListener('dragend', handleRoleDragEnd);
@@ -556,6 +592,8 @@
                 section.addEventListener('touchstart', handleRoleTouchStart, { passive: false });
                 section.addEventListener('touchmove', handleRoleTouchMove, { passive: false });
                 section.addEventListener('touchend', handleRoleTouchEnd);
+
+                return section; // MODIFIED: Return the created element
             }
 
             function createBuildRow(buildData = { slots: [] }) {
@@ -598,7 +636,8 @@
                     </div>
                     <div class="build-drag-handle self-stretch flex items-center pr-2 mr-2 border-r border-gray-700">⠿</div>
                     <div class="build-items-wrapper">${slotsHTML}</div>
-                    <div class="flex flex-col space-y-1 ml-2 sm:ml-4 self-center"> <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
+                    <div class="flex flex-col space-y-1 ml-2 sm:ml-4 self-center">
+                        <button class="save-build-btn text-green-400 hover:text-green-300 font-bold text-lg" title="Save Build to Library">💾</button>
                         <button class="copy-build-btn text-blue-400 hover:text-blue-300 font-bold text-lg" title="Copy Build">⧉</button>
                         <button class="remove-build-btn text-red-500 hover:text-red-400 font-bold text-2xl" title="Remove Build">&times;</button>
                     </div>
@@ -949,17 +988,25 @@
                     tanks: parseInt(row.querySelector('[data-key="tanks"]').value) || 0, supports: parseInt(row.querySelector('[data-key="supports"]').value) || 0,
                     healers: parseInt(row.querySelector('[data-key="healers"]').value) || 0, dps: parseInt(row.querySelector('[data-key="dps"]').value) || 0,
                 }));
-
+                
+                // MODIFIED: Save the custom roles array ('currentRoles')
+                const roleOrder = Array.from(rolesContainer.children).map(roleSection => roleSection.id);
+                // Update currentRoles array to match the dragged order
+                currentRoles = roleOrder.map(id => currentRoles.find(r => r.id === id));
+                
                 const compositionData = {
+                    schemaVersion: 2, // ADDED: Schema version for future-proofing
                     title: compTitleInput.value, notes: compNotesInput.value, logoSrc: logoImageSrc, backgroundImageSrc: backgroundImageSrc,
                     styles: { titleFontSize, titleColor, titleAlign, notesFontSize, notesColor, notesAlign, notesPosition },
                     partyTableSettings: { isEnabled: isPartyTableEnabled, position: partyTablePosition, scale: partyTableScale, data: partyTableData },
-                    roleOrder: Array.from(rolesContainer.children).map(role => role.id), roleStates: {}, roles: {}
+                    roles: currentRoles, // MODIFIED: Save the entire roles array
+                    roleStates: {},
+                    builds: {}
                 };
 
                 document.querySelectorAll('.role-section').forEach(roleSection => {
                     const roleId = roleSection.id;
-                    compositionData.roles[roleId] = Array.from(roleSection.querySelectorAll('.build-row')).map(row => getBuildDataFromRow(row));
+                    compositionData.builds[roleId] = Array.from(roleSection.querySelectorAll('.build-row')).map(row => getBuildDataFromRow(row));
                     compositionData.roleStates[roleId] = { isCollapsed: roleSection.classList.contains('collapsed') };
                 });
 
@@ -987,17 +1034,29 @@
                         } else { initializePartyTable(); }
                         renderPartyTable(); applyCurrentStylesToEditor(); updateLogoTitleDisplay(); applyBackground();
 
-                        rolesContainer.innerHTML = '';
-                        const roleOrder = loadedData.roleOrder || ROLES.map(r => r.id); const loadedRoleIds = new Set(roleOrder);
-                        const missingRoles = ROLES.filter(r => !loadedRoleIds.has(r.id));
-                        roleOrder.forEach(roleId => { const config = ROLES.find(r => r.id === roleId); if (config) createRoleSection(config); });
-                        missingRoles.forEach(createRoleSection);
+                        // MODIFIED: Load custom roles from file, or use defaults for old files
+                        if (loadedData.schemaVersion === 2 && loadedData.roles) {
+                            currentRoles = loadedData.roles;
+                        } else {
+                            // Fallback for old save files
+                            currentRoles = JSON.parse(JSON.stringify(DEFAULT_ROLES));
+                        }
+                        
+                        renderRoles(); // Render the roles from the loaded data
 
                         document.querySelectorAll('.role-section').forEach(roleSection => {
-                            const roleId = roleSection.id; const buildsContainer = roleSection.querySelector('.builds-container'); buildsContainer.innerHTML = '';
-                            const roleBuilds = loadedData.roles[roleId];
-                            if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) { roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData))); } 
-                            else { buildsContainer.appendChild(createBuildRow()); }
+                            const roleId = roleSection.id; 
+                            const buildsContainer = roleSection.querySelector('.builds-container'); 
+                            buildsContainer.innerHTML = '';
+                            
+                            // MODIFIED: Path to builds data changed in save structure
+                            const roleBuilds = loadedData.builds ? loadedData.builds[roleId] : loadedData.roles[roleId];
+                            
+                            if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) { 
+                                roleBuilds.forEach(buildData => buildsContainer.appendChild(createBuildRow(buildData))); 
+                            } else { 
+                                buildsContainer.appendChild(createBuildRow()); 
+                            }
                             if (loadedData.roleStates && loadedData.roleStates[roleId] && loadedData.roleStates[roleId].isCollapsed) {
                                 roleSection.classList.add('collapsed'); roleSection.querySelector('.role-collapse-toggle').textContent = '►';
                             }
@@ -1026,7 +1085,10 @@
 
             /* ----------------- EVENT LISTENERS SETUP ---------------- */
             rolesContainer.addEventListener('click', e => {
-                const target = e.target; const buildRow = target.closest('.build-row');
+                const target = e.target; 
+                const buildRow = target.closest('.build-row');
+                const roleSection = target.closest('.role-section');
+
                 if (target.closest('.add-build-btn')) { const roleId = target.closest('.add-build-btn').dataset.role; document.querySelector(`#${roleId} .builds-container`).appendChild(createBuildRow()); }
                 else if (target.closest('.load-library-btn')) { activeRoleForLoad = target.closest('.load-library-btn').dataset.role; populateLoadBuildModal(); loadBuildModal.classList.remove('hidden'); }
                 else if (target.closest('.save-build-btn')) { openSaveBuildModal(buildRow); }
@@ -1034,8 +1096,53 @@
                 else if (target.closest('.remove-build-btn')) { buildRow.remove(); }
                 else if (target.closest('.copy-build-btn')) { copyBuild(buildRow); }
                 else if (target.closest('.item-slot') && !target.classList.contains('quantity-input')) { isSelectingAlternative = false; openModal(target.closest('.item-slot')); }
-                else if (target.closest('.role-collapse-toggle')) { const roleSection = target.closest('.role-section'); roleSection.classList.toggle('collapsed'); target.textContent = roleSection.classList.contains('collapsed') ? '►' : '▼'; }
+                else if (target.closest('.role-collapse-toggle')) { roleSection.classList.toggle('collapsed'); target.textContent = roleSection.classList.contains('collapsed') ? '►' : '▼'; }
+                
+                // --- ADDED: Role Management Click Listeners ---
+                else if (target.matches('.role-title')) {
+                    const roleId = target.dataset.roleId;
+                    const originalText = target.textContent;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = originalText;
+                    input.className = 'role-title-input';
+                    
+                    target.replaceWith(input);
+                    input.focus();
+                    input.select();
+
+                    const saveRename = () => {
+                        const newName = input.value.trim();
+                        const newTitle = document.createElement('h2');
+                        newTitle.className = target.className;
+                        newTitle.dataset.roleId = roleId;
+                        newTitle.textContent = newName || originalText; // Revert if empty
+                        
+                        const role = currentRoles.find(r => r.id === roleId);
+                        if (role) {
+                            role.name = newName || originalText;
+                        }
+                        
+                        input.replaceWith(newTitle);
+                    };
+
+                    input.addEventListener('blur', saveRename);
+                    input.addEventListener('keydown', (ev) => {
+                        if (ev.key === 'Enter') input.blur();
+                        if (ev.key === 'Escape') {
+                            input.value = originalText;
+                            input.blur();
+                        }
+                    });
+                }
+                else if (target.closest('.delete-role-btn')) {
+                    if (confirm(`Are you sure you want to delete the "${roleSection.querySelector('.role-title').textContent}" role?`)) {
+                        currentRoles = currentRoles.filter(role => role.id !== roleSection.id);
+                        roleSection.remove();
+                    }
+                }
             });
+
             rolesContainer.addEventListener('dragover', handleRoleDragOver); // Keep for desktop role dragging
 
             contextMenu.addEventListener('contextmenu', e => e.preventDefault());
@@ -1081,6 +1188,29 @@
             saveBtn.addEventListener('click', saveComposition);
             loadBtn.addEventListener('click', () => loadFileInput.click());
             loadFileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) { loadComposition(e.target.files[0]); e.target.value = null; } });
+            
+            // --- ADDED: Listeners for new buttons ---
+            clearAllBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear the entire composition? This cannot be undone.')) {
+                    initializeApp();
+                    showToast('Composition cleared.');
+                }
+            });
+            
+            addRoleBtn.addEventListener('click', () => {
+                const newRoleName = prompt("Enter the name for the new role:", "New Role");
+                if (newRoleName && newRoleName.trim() !== '') {
+                    const newRole = {
+                        id: 'custom_' + Date.now(),
+                        name: newRoleName.trim(),
+                        color: 'bg-gray-600' // A neutral color for custom roles
+                    };
+                    currentRoles.push(newRole);
+                    const roleSection = createRoleSection(newRole);
+                    rolesContainer.appendChild(roleSection);
+                    roleSection.querySelector('.builds-container').appendChild(createBuildRow());
+                }
+            });
 
             tabButtonsContainer.addEventListener('click', e => {
                 const clickedTabButton = e.target.closest('.tab-btn'); if (!clickedTabButton) return;
@@ -1132,12 +1262,22 @@
                 if (partyTablePosition === 'col2_top' && partyTableClone) column2.appendChild(partyTableClone);
                 if (notesPosition === 'col2_top' && notesClone) column2.appendChild(notesClone);
 
-                Array.from(rolesContainer.querySelectorAll('.role-section')).forEach(roleElement => {
-                    const roleId = roleElement.id; const roleElementClone = roleElement.cloneNode(true);
-                    if (EXPORT_COLUMN_1_ROLES.includes(roleId)) column1.appendChild(roleElementClone); else if (EXPORT_COLUMN_2_ROLES.includes(roleId)) column2.appendChild(roleElementClone);
+                // --- MODIFIED: Dynamic column splitting for export ---
+                const orderedRoles = Array.from(rolesContainer.querySelectorAll('.role-section'));
+                const midpoint = Math.ceil(orderedRoles.length / 2);
+                orderedRoles.forEach((roleElement, index) => {
+                    const roleElementClone = roleElement.cloneNode(true);
+                    if (index < midpoint) {
+                        column1.appendChild(roleElementClone);
+                    } else {
+                        column2.appendChild(roleElementClone);
+                    }
                 });
+                
+                if (column1.children.length > 0) rolesMainWrapper.appendChild(column1); 
+                if (column2.children.length > 0) rolesMainWrapper.appendChild(column2); 
+                tempExportContainer.appendChild(rolesMainWrapper);
 
-                rolesMainWrapper.appendChild(column1); rolesMainWrapper.appendChild(column2); tempExportContainer.appendChild(rolesMainWrapper);
                 if (partyTablePosition === 'below_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone);
                 if (notesPosition === 'below_full' && notesClone) tempExportContainer.appendChild(notesClone);
 
@@ -1148,9 +1288,27 @@
 
             /* ----------------- INITIALIZATION ---------------- */
             function initializeApp() {
-                ROLES.forEach(createRoleSection);
-                document.querySelectorAll('.role-section').forEach(roleSection => { roleSection.querySelector('.builds-container').appendChild(createBuildRow()); });
-                initializePartyTable(); applyCurrentStylesToEditor(); updateLogoTitleDisplay();
+                // MODIFIED: This function now resets the entire state
+                // Reset text and visual styles
+                compTitleInput.value = '';
+                compNotesInput.value = '';
+                logoImageSrc = null;
+                backgroundImageSrc = null;
+                updateLogoTitleDisplay();
+                applyBackground();
+
+                // Reset roles to default
+                currentRoles = JSON.parse(JSON.stringify(DEFAULT_ROLES));
+                renderRoles();
+
+                document.querySelectorAll('.role-section').forEach(roleSection => {
+                    const container = roleSection.querySelector('.builds-container');
+                    container.innerHTML = ''; // Clear existing builds
+                    container.appendChild(createBuildRow());
+                });
+
+                initializePartyTable();
+                applyCurrentStylesToEditor();
             }
 
             initializeApp();

@@ -15,7 +15,7 @@
         }
 
         #comp-container {
-            transition: background-image 0.3s ease-in-out;
+            transition: background-image 0.3s ease-in-out, background-color 0.3s ease-in-out;
         }
 
         /* --- Item Slot Styles --- */
@@ -191,14 +191,19 @@
         .align-btn-group button.active { background-color: #3b82f6; color: white; font-weight: bold; }
         .align-btn-group button:hover:not(.active) { background-color: #5a6578; }
 
-        /* --- Party Table Styles --- */
-        #party-table-editor { border-collapse: collapse; table-layout: auto; }
-        #party-table-editor th, #party-table-editor td { padding: 0.5rem 0.75rem; border: 1px solid #4a5568; text-align: center; }
-        #party-table-editor th { background-color: #374151; font-weight: 600; font-size: 0.875rem; }
-        #party-table-editor td input[type="number"] { width: 4rem; background-color: #4a5568; color: white; border: 1px solid #718096; border-radius: 0.25rem; text-align: center; padding: 0.25rem; touch-action: manipulation; }
+        /* --- Party & Player Table Styles --- */
+        #party-table-editor, #player-comp-table { border-collapse: collapse; table-layout: auto; }
+        #party-table-editor th, #party-table-editor td,
+        #player-comp-table th, #player-comp-table td { padding: 0.5rem 0.75rem; border: 1px solid #4a5568; text-align: center; }
+        #party-table-editor th, #player-comp-table th { background-color: #374151; font-weight: 600; font-size: 0.875rem; }
+        #party-table-editor td input[type="number"],
+        #player-comp-table td input[type="number"] { width: 4rem; background-color: #4a5568; color: white; border: 1px solid #718096; border-radius: 0.25rem; text-align: center; padding: 0.25rem; touch-action: manipulation; }
         #party-table-editor td input[type="number"]::-webkit-inner-spin-button, 
-        #party-table-editor td input[type="number"]::-webkit-outer-spin-button { margin: 0; appearance: none; }
-        #party-table-editor td:first-child { font-weight: bold; background-color: #374151; }
+        #party-table-editor td input[type="number"]::-webkit-outer-spin-button,
+        #player-comp-table td input[type="number"]::-webkit-inner-spin-button,
+        #player-comp-table td input[type="number"]::-webkit-outer-spin-button { margin: 0; appearance: none; }
+        #party-table-editor td:first-child, #player-comp-table td:first-child { font-weight: bold; background-color: #374151; }
+        #player-comp-table input:read-only { background-color: #2d3748; border-color: #4a5568; color: #9ca3af; }
         
         #party-table-clone { border-collapse: collapse; margin-bottom: 1rem; background-color: rgba(45, 55, 72, 0.8); color: white; transform-origin: top left; }
         #party-table-clone th, #party-table-clone td { padding: 0.5rem 1rem; border: 1px solid #718096; text-align: center; }
@@ -209,7 +214,7 @@
         #temp-export-wrapper { padding: 1rem; width: fit-content; margin: auto; background-size: cover; background-position: center; }
         @media(min-width: 640px) { #temp-export-wrapper { padding: 1.5rem; } }
 
-        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle, .export-mode .delete-role-btn, .export-mode #add-role-btn { display: none !important; }
+        .export-mode .build-drag-handle, .export-mode .remove-build-btn, .export-mode .copy-build-btn, .export-mode .add-build-btn, .export-mode .paste-build-btn, .export-mode #export-btn, .export-mode .category-label, .export-mode .item-slot .quantity-input, .export-mode .role-section .role-header .flex, .export-mode #header-controls, .export-mode #action-buttons, .export-mode .save-build-btn, .export-mode .build-quantity-input, .export-mode .role-collapse-toggle, .export-mode .role-drag-handle, .export-mode .delete-role-btn, .export-mode #add-role-btn, .export-mode .no-export { display: none !important; }
         .export-mode, .export-mode .role-section, .export-mode .build-row, .export-mode .item-slot { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
         .export-mode .role-header { justify-content: center; } /* Center role title on export */
         .export-mode .role-title { cursor: default !important; } .export-mode .role-title:hover { background-color: transparent !important; }
@@ -255,6 +260,33 @@
                             <label for="comp-notes" class="text-lg sm:text-xl font-semibold mb-2 text-gray-300 block">Notes</label>
                             <textarea id="comp-notes" placeholder="Add additional notes here..." class="w-full bg-gray-800 text-gray-300 p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"></textarea>
                         </div>
+                        <div class="player-comp-section no-export">
+                            <label class="text-lg sm:text-xl font-semibold mb-2 text-gray-300 block">Player Comp</label>
+                            <div class="overflow-x-auto">
+                                <table id="player-comp-table" class="mx-auto">
+                                    <thead>
+                                        <tr>
+                                            <th>Party Size</th>
+                                            <th>Engages</th>
+                                            <th>Tanks</th>
+                                            <th>Healers</th>
+                                            <th>DPS</th>
+                                            <th>Supports</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="number" id="player-comp-size" min="10" max="30"></td>
+                                            <td><input type="number" id="player-comp-engages" readonly></td>
+                                            <td><input type="number" id="player-comp-tanks" readonly></td>
+                                            <td><input type="number" id="player-comp-healers" readonly></td>
+                                            <td><input type="number" id="player-comp-dps" readonly></td>
+                                            <td><input type="number" id="player-comp-supports" readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="tab-pane-appearance" class="tab-pane space-y-4">
@@ -265,11 +297,17 @@
                                 <button id="upload-logo-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm w-full">Upload Logo</button>
                                 <button id="remove-logo-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden w-full">Remove Logo</button>
                             </div>
-                            <div id="background-controls" class="flex flex-col items-center gap-2">
-                                <span class="text-gray-400 text-sm mb-2">Custom Background</span>
-                                <input type="file" id="background-upload-input" class="hidden" accept="image/*">
-                                <button id="upload-background-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm w-full">Set Background</button>
-                                <button id="remove-background-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden w-full">Remove BG</button>
+                            <div id="background-controls" class="flex flex-wrap items-center justify-center gap-4">
+                                <div class="flex flex-col items-center gap-2">
+                                    <span class="text-gray-400 text-sm mb-2">BG Image</span>
+                                    <input type="file" id="background-upload-input" class="hidden" accept="image/*">
+                                    <button id="upload-background-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm w-full">Set Image</button>
+                                    <button id="remove-background-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm hidden w-full">Remove</button>
+                                </div>
+                                <div class="flex flex-col items-center gap-2">
+                                     <span class="text-gray-400 text-sm mb-2">BG Color</span>
+                                     <input type="color" id="background-color-picker" value="#1a202c" class="style-control-group">
+                                </div>
                             </div>
                         </div>
                         
@@ -432,6 +470,31 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-wrapper hidden">
+        <div class="modal-content w-11/12 max-w-md p-6 relative">
+            <h2 id="confirm-modal-title" class="text-xl font-bold mb-4">Confirm Action</h2>
+            <p id="confirm-modal-message" class="text-gray-300 mb-6">Are you sure?</p>
+            <div class="mt-4 flex justify-end gap-2">
+                <button id="confirm-cancel-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                <button id="confirm-confirm-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prompt Modal -->
+    <div id="prompt-modal" class="modal-wrapper hidden">
+        <div class="modal-content w-11/12 max-w-md p-6 relative">
+            <h2 id="prompt-modal-title" class="text-xl font-bold mb-4">Enter Value</h2>
+            <p id="prompt-modal-message" class="text-sm text-gray-400 mb-2">Please provide a value:</p>
+            <input type="text" id="prompt-modal-input" class="modal-input">
+            <div class="mt-4 flex justify-end gap-2">
+                <button id="prompt-cancel-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                <button id="prompt-ok-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">OK</button>
+            </div>
+        </div>
+    </div>
+
     <div id="item-context-menu" class="hidden">
         <button data-action="edit-abilities">Edit Abilities</button><hr><button data-action="add-alt">Add/Change Alternative</button><button data-action="clear-alt" class="danger">Clear Alternative</button><hr><button data-action="clear-main" class="danger">Clear Main Item</button>
     </div>
@@ -458,13 +521,26 @@
                 { key: 'Food', label: 'Food' }, { key: 'Potion', label: 'Potion' }
             ];
 
-            // MODIFIED: Renamed ROLES to DEFAULT_ROLES for clarity
             const DEFAULT_ROLES = [
                 { id: 'engage', name: 'Engage', color: 'bg-purple-800' }, { id: 'tanks', name: 'Tanks', color: 'bg-blue-800' },
                 { id: 'support', name: 'Support', color: 'bg-yellow-800' }, { id: 'healer', name: 'Healer', color: 'bg-green-800' },
                 { id: 'dps', name: 'DPS', color: 'bg-red-800' }
             ];
             const BUILD_LIBRARY_STORAGE_KEY = 'albionBuildLibrary';
+            
+            const PLAYER_COMP_MAP = {
+                10: { engages: 1, tanks: 2, healers: 2, dps: 5, supports: 0 }, 11: { engages: 1, tanks: 2, healers: 2, dps: 5, supports: 1 },
+                12: { engages: 1, tanks: 2, healers: 2, dps: 6, supports: 1 }, 13: { engages: 1, tanks: 2, healers: 3, dps: 6, supports: 1 },
+                14: { engages: 1, tanks: 2, healers: 3, dps: 6, supports: 2 }, 15: { engages: 1, tanks: 2, healers: 3, dps: 7, supports: 2 },
+                16: { engages: 1, tanks: 2, healers: 3, dps: 7, supports: 3 }, 17: { engages: 1, tanks: 2, healers: 3, dps: 8, supports: 3 },
+                18: { engages: 1, tanks: 2, healers: 4, dps: 8, supports: 3 }, 19: { engages: 1, tanks: 3, healers: 4, dps: 8, supports: 3 },
+                20: { engages: 1, tanks: 3, healers: 4, dps: 8, supports: 4 }, 21: { engages: 2, tanks: 3, healers: 4, dps: 8, supports: 4 },
+                22: { engages: 2, tanks: 4, healers: 4, dps: 8, supports: 4 }, 23: { engages: 2, tanks: 4, healers: 5, dps: 8, supports: 4 },
+                24: { engages: 2, tanks: 4, healers: 5, dps: 8, supports: 5 }, 25: { engages: 2, tanks: 4, healers: 5, dps: 9, supports: 5 },
+                26: { engages: 2, tanks: 5, healers: 5, dps: 9, supports: 5 }, 27: { engages: 3, tanks: 5, healers: 5, dps: 9, supports: 5 },
+                28: { engages: 3, tanks: 5, healers: 6, dps: 9, supports: 5 }, 29: { engages: 3, tanks: 5, healers: 6, dps: 9, supports: 6 },
+                30: { engages: 3, tanks: 5, healers: 6, dps: 10, supports: 6 },
+            };
 
             /* ----------------- STATE VARIABLES ---------------- */
             let activeSlot = null;
@@ -477,11 +553,12 @@
             let isSelectingAlternative = false;
             let activeBuildRowForSave = null;
             let activeRoleForLoad = null;
-            
-            // ADDED: State variable for current roles
             let currentRoles = [];
+            let confirmCallback = null;
+            let promptCallback = null;
 
             // Style state
+            let backgroundColor = '#1a202c';
             let titleFontSize = '36';
             let titleColor = '#E2E8F0';
             let titleAlign = 'center';
@@ -518,6 +595,7 @@
             const backgroundUploadInput = document.getElementById('background-upload-input');
             const uploadBackgroundBtn = document.getElementById('upload-background-btn');
             const removeBackgroundBtn = document.getElementById('remove-background-btn');
+            const backgroundColorPicker = document.getElementById('background-color-picker');
             const contextMenu = document.getElementById('item-context-menu');
             const toast = document.getElementById('toast');
             const saveBtn = document.getElementById('save-btn');
@@ -526,6 +604,8 @@
             const abilityInput = document.getElementById('ability-input');
             const abilitySaveBtn = document.getElementById('ability-save-btn');
             const abilityCancelBtn = document.getElementById('ability-cancel-btn');
+            const confirmModal = document.getElementById('confirm-modal');
+            const promptModal = document.getElementById('prompt-modal');
 
             const titleFontSizeSlider = document.getElementById('title-font-size');
             const titleFontSizeValue = document.getElementById('title-font-size-value');
@@ -538,7 +618,6 @@
             const notesPositionSelect = document.getElementById('notes-position-select');
             const tabButtonsContainer = document.querySelector('.tab-buttons');
             
-            // ADDED: New button DOM elements
             const clearAllBtn = document.getElementById('clear-all-btn');
             const addRoleBtn = document.getElementById('add-role-btn');
 
@@ -551,9 +630,16 @@
             const partyTableScaleSlider = document.getElementById('party-table-scale');
             const partyTableScaleValue = document.getElementById('party-table-scale-value');
 
+            // Player Comp DOM elements
+            const playerCompSizeInput = document.getElementById('player-comp-size');
+            const playerCompEngagesInput = document.getElementById('player-comp-engages');
+            const playerCompTanksInput = document.getElementById('player-comp-tanks');
+            const playerCompHealersInput = document.getElementById('player-comp-healers');
+            const playerCompDpsInput = document.getElementById('player-comp-dps');
+            const playerCompSupportsInput = document.getElementById('player-comp-supports');
+
             /* ----------------- ROLE & BUILD FUNCTIONS ---------------- */
             
-            // ADDED: Function to render all roles from the currentRoles state
             function renderRoles() {
                 rolesContainer.innerHTML = '';
                 currentRoles.forEach(role => {
@@ -568,7 +654,6 @@
                 section.className = 'role-section';
                 section.draggable = true;
                 
-                // MODIFIED: Added delete button and data-role-id for renaming
                 section.innerHTML = `
                     <div class="role-header">
                         <span class="role-drag-handle" title="Drag to reorder role">⠿</span>
@@ -593,7 +678,7 @@
                 section.addEventListener('touchmove', handleRoleTouchMove, { passive: false });
                 section.addEventListener('touchend', handleRoleTouchEnd);
 
-                return section; // MODIFIED: Return the created element
+                return section;
             }
 
             function createBuildRow(buildData = { slots: [] }) {
@@ -831,12 +916,11 @@
                 const searchTerm = itemSearch.value.toLowerCase();
                 items.filter(item => item.toLowerCase().includes(searchTerm)).forEach(itemFilename => {
                     const itemDiv = document.createElement('div');
-                    // --- FAKE IMAGE PATH: Replace with actual image path logic if needed ---
-                    // Using a placeholder background color for demonstration as image paths are likely incorrect.
+                    // This uses a placeholder path. For a real application, ensure images are in this directory structure.
                     const imagePath = `./images/${category}/${itemFilename}`; 
                     itemDiv.className = 'cursor-pointer p-1 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center flex-col';
                     itemDiv.innerHTML = `<img src="${imagePath}" alt="${itemFilename}" class="w-16 h-16 object-contain" style="background-color: #4a5568;"><span class="text-xs text-center mt-1 text-gray-300 break-words w-full">${itemFilename.replace('.png', '')}</span>`;
-                    itemDiv.addEventListener('click', () => selectItem(imagePath, itemFilename)); // Changed to pass imagePath
+                    itemDiv.addEventListener('click', () => selectItem(imagePath, itemFilename));
                     // Handle image loading errors gracefully
                     itemDiv.querySelector('img').onerror = function() { this.style.visibility = 'hidden'; /* Hide broken image icon */ };
                     modalGrid.appendChild(itemDiv);
@@ -868,6 +952,35 @@
                     activeSlot.style.borderColor = 'transparent';
                 }
                 closeModal();
+            }
+            
+            /* ----------------- CUSTOM CONFIRM/PROMPT MODAL FUNCTIONS ---------------- */
+            function showConfirmModal(title, message, onConfirm) {
+                confirmModal.querySelector('#confirm-modal-title').textContent = title;
+                confirmModal.querySelector('#confirm-modal-message').textContent = message;
+                confirmCallback = onConfirm;
+                confirmModal.classList.remove('hidden');
+            }
+
+            function hideConfirmModal() {
+                confirmModal.classList.add('hidden');
+                confirmCallback = null;
+            }
+
+            function showPromptModal(title, message, defaultValue, onConfirm) {
+                promptModal.querySelector('#prompt-modal-title').textContent = title;
+                promptModal.querySelector('#prompt-modal-message').textContent = message;
+                const input = promptModal.querySelector('#prompt-modal-input');
+                input.value = defaultValue;
+                promptCallback = onConfirm;
+                promptModal.classList.remove('hidden');
+                input.focus();
+                input.select();
+            }
+
+            function hidePromptModal() {
+                promptModal.classList.add('hidden');
+                promptCallback = null;
             }
 
             /* ----------------- ACTION HANDLERS ---------------- */
@@ -902,7 +1015,18 @@
                     logoPreview.classList.add('hidden'); removeLogoBtn.classList.add('hidden'); logoPreview.src = ''; 
                 } 
             }
-            function applyBackground() { if (backgroundImageSrc) { compContainer.style.backgroundImage = `url(${backgroundImageSrc})`; compContainer.style.backgroundSize = 'cover'; compContainer.style.backgroundPosition = 'center'; removeBackgroundBtn.classList.remove('hidden'); } else { compContainer.style.backgroundImage = 'none'; removeBackgroundBtn.classList.add('hidden'); } }
+            function applyBackground() { 
+                compContainer.style.backgroundColor = backgroundColor;
+                if (backgroundImageSrc) { 
+                    compContainer.style.backgroundImage = `url(${backgroundImageSrc})`; 
+                    compContainer.style.backgroundSize = 'cover'; 
+                    compContainer.style.backgroundPosition = 'center'; 
+                    removeBackgroundBtn.classList.remove('hidden'); 
+                } else { 
+                    compContainer.style.backgroundImage = 'none'; 
+                    removeBackgroundBtn.classList.add('hidden'); 
+                } 
+            }
 
             /* ----------------- BUILD LIBRARY (localStorage) FUNCTIONS ---------------- */
             function getBuildLibrary() { return JSON.parse(localStorage.getItem(BUILD_LIBRARY_STORAGE_KEY) || '{}'); }
@@ -989,17 +1113,15 @@
                     healers: parseInt(row.querySelector('[data-key="healers"]').value) || 0, dps: parseInt(row.querySelector('[data-key="dps"]').value) || 0,
                 }));
                 
-                // MODIFIED: Save the custom roles array ('currentRoles')
                 const roleOrder = Array.from(rolesContainer.children).map(roleSection => roleSection.id);
-                // Update currentRoles array to match the dragged order
                 currentRoles = roleOrder.map(id => currentRoles.find(r => r.id === id));
                 
                 const compositionData = {
-                    schemaVersion: 2, // ADDED: Schema version for future-proofing
+                    schemaVersion: 2,
                     title: compTitleInput.value, notes: compNotesInput.value, logoSrc: logoImageSrc, backgroundImageSrc: backgroundImageSrc,
-                    styles: { titleFontSize, titleColor, titleAlign, notesFontSize, notesColor, notesAlign, notesPosition },
+                    styles: { backgroundColor, titleFontSize, titleColor, titleAlign, notesFontSize, notesColor, notesAlign, notesPosition },
                     partyTableSettings: { isEnabled: isPartyTableEnabled, position: partyTablePosition, scale: partyTableScale, data: partyTableData },
-                    roles: currentRoles, // MODIFIED: Save the entire roles array
+                    roles: currentRoles,
                     roleStates: {},
                     builds: {}
                 };
@@ -1024,6 +1146,7 @@
                         logoImageSrc = loadedData.logoSrc || null; backgroundImageSrc = loadedData.backgroundImageSrc || null;
 
                         const styles = loadedData.styles || {};
+                        backgroundColor = styles.backgroundColor || '#1a202c';
                         titleFontSize = styles.titleFontSize || '36'; titleColor = styles.titleColor || '#E2E8F0'; titleAlign = styles.titleAlign || 'center';
                         notesFontSize = styles.notesFontSize || '16'; notesColor = styles.notesColor || '#CBD5E0'; notesAlign = styles.notesAlign || 'left'; notesPosition = styles.notesPosition || 'above_full';
 
@@ -1034,22 +1157,19 @@
                         } else { initializePartyTable(); }
                         renderPartyTable(); applyCurrentStylesToEditor(); updateLogoTitleDisplay(); applyBackground();
 
-                        // MODIFIED: Load custom roles from file, or use defaults for old files
                         if (loadedData.schemaVersion === 2 && loadedData.roles) {
                             currentRoles = loadedData.roles;
                         } else {
-                            // Fallback for old save files
                             currentRoles = JSON.parse(JSON.stringify(DEFAULT_ROLES));
                         }
                         
-                        renderRoles(); // Render the roles from the loaded data
+                        renderRoles();
 
                         document.querySelectorAll('.role-section').forEach(roleSection => {
                             const roleId = roleSection.id; 
                             const buildsContainer = roleSection.querySelector('.builds-container'); 
                             buildsContainer.innerHTML = '';
                             
-                            // MODIFIED: Path to builds data changed in save structure
                             const roleBuilds = loadedData.builds ? loadedData.builds[roleId] : loadedData.roles[roleId];
                             
                             if (roleBuilds && Array.isArray(roleBuilds) && roleBuilds.length > 0) { 
@@ -1068,6 +1188,8 @@
             }
 
             function applyCurrentStylesToEditor() {
+                backgroundColorPicker.value = backgroundColor;
+
                 compTitleInput.style.fontSize = `${titleFontSize}px`; compTitleInput.style.color = titleColor; compTitleInput.style.textAlign = titleAlign;
                 titleFontSizeSlider.value = titleFontSize; titleFontSizeValue.textContent = `${titleFontSize}px`; titleColorPicker.value = titleColor;
                 updateAlignmentButtons(titleAlignGroup, titleAlign);
@@ -1098,7 +1220,6 @@
                 else if (target.closest('.item-slot') && !target.classList.contains('quantity-input')) { isSelectingAlternative = false; openModal(target.closest('.item-slot')); }
                 else if (target.closest('.role-collapse-toggle')) { roleSection.classList.toggle('collapsed'); target.textContent = roleSection.classList.contains('collapsed') ? '►' : '▼'; }
                 
-                // --- ADDED: Role Management Click Listeners ---
                 else if (target.matches('.role-title')) {
                     const roleId = target.dataset.roleId;
                     const originalText = target.textContent;
@@ -1136,14 +1257,19 @@
                     });
                 }
                 else if (target.closest('.delete-role-btn')) {
-                    if (confirm(`Are you sure you want to delete the "${roleSection.querySelector('.role-title').textContent}" role?`)) {
-                        currentRoles = currentRoles.filter(role => role.id !== roleSection.id);
-                        roleSection.remove();
-                    }
+                    const roleName = roleSection.querySelector('.role-title').textContent;
+                    showConfirmModal(
+                        `Delete Role`,
+                        `Are you sure you want to delete the "${roleName}" role?`,
+                        () => {
+                            currentRoles = currentRoles.filter(role => role.id !== roleSection.id);
+                            roleSection.remove();
+                        }
+                    );
                 }
             });
 
-            rolesContainer.addEventListener('dragover', handleRoleDragOver); // Keep for desktop role dragging
+            rolesContainer.addEventListener('dragover', handleRoleDragOver);
 
             contextMenu.addEventListener('contextmenu', e => e.preventDefault());
             rolesContainer.addEventListener('contextmenu', e => {
@@ -1174,7 +1300,25 @@
             document.getElementById('save-build-confirm-btn').addEventListener('click', () => { const buildNameInput = document.getElementById('save-build-name'); const newCategoryInput = document.getElementById('save-build-new-category'); const existingCategorySelect = document.getElementById('save-build-category-select'); const buildName = buildNameInput.value.trim(); const category = newCategoryInput.value.trim() || existingCategorySelect.value; if (!buildName) { showToast("Please enter a build name."); return; } if (!category) { showToast("Please select or create a category."); return; } saveBuildToLibrary(category, buildName, getBuildDataFromRow(activeBuildRowForSave)); saveBuildModal.classList.add('hidden'); });
             document.getElementById('save-build-cancel-btn').addEventListener('click', () => saveBuildModal.classList.add('hidden'));
             document.getElementById('load-build-close-btn').addEventListener('click', () => loadBuildModal.classList.add('hidden'));
-            document.getElementById('load-build-library-content').addEventListener('click', e => { const loadButton = e.target.closest('.load-saved-build-btn'); const deleteButton = e.target.closest('.delete-build-btn'); if (loadButton) { const buildsContainer = document.querySelector(`#${activeRoleForLoad} .builds-container`); buildsContainer.appendChild(createBuildRow(JSON.parse(loadButton.dataset.buildJson))); loadBuildModal.classList.add('hidden'); } else if (deleteButton) { if (confirm(`Delete build "${deleteButton.dataset.name}"?`)) deleteBuildFromLibrary(deleteButton.dataset.category, deleteButton.dataset.name); } });
+            document.getElementById('load-build-library-content').addEventListener('click', e => { 
+                const loadButton = e.target.closest('.load-saved-build-btn'); 
+                const deleteButton = e.target.closest('.delete-build-btn'); 
+                if (loadButton) { 
+                    const buildsContainer = document.querySelector(`#${activeRoleForLoad} .builds-container`); 
+                    buildsContainer.appendChild(createBuildRow(JSON.parse(loadButton.dataset.buildJson))); 
+                    loadBuildModal.classList.add('hidden'); 
+                } else if (deleteButton) { 
+                    const buildName = deleteButton.dataset.name;
+                    const category = deleteButton.dataset.category;
+                    showConfirmModal(
+                        `Delete Build`,
+                        `Are you sure you want to delete the build "${buildName}"?`,
+                        () => {
+                            deleteBuildFromLibrary(category, buildName);
+                        }
+                    );
+                } 
+            });
 
             uploadCustomBtn.addEventListener('click', () => customImageUpload.click());
             customImageUpload.addEventListener('change', (e) => { const file = e.target.files[0]; if (file && activeSlot) { const reader = new FileReader(); reader.onload = (event) => selectItem(event.target.result, file.name); reader.readAsDataURL(file); customImageUpload.value = ''; } });
@@ -1184,33 +1328,53 @@
             uploadBackgroundBtn.addEventListener('click', () => backgroundUploadInput.click());
             removeBackgroundBtn.addEventListener('click', () => { backgroundImageSrc = null; backgroundUploadInput.value = ''; applyBackground(); });
             backgroundUploadInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { backgroundImageSrc = event.target.result; applyBackground(); }; reader.readAsDataURL(file); } });
+            backgroundColorPicker.addEventListener('input', (e) => { backgroundColor = e.target.value; applyBackground(); });
+
 
             saveBtn.addEventListener('click', saveComposition);
             loadBtn.addEventListener('click', () => loadFileInput.click());
             loadFileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) { loadComposition(e.target.files[0]); e.target.value = null; } });
             
-            // --- ADDED: Listeners for new buttons ---
             clearAllBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to clear the entire composition? This cannot be undone.')) {
-                    initializeApp();
-                    showToast('Composition cleared.');
-                }
+                showConfirmModal(
+                    'Clear Composition',
+                    'Are you sure you want to clear the entire composition? This action cannot be undone.',
+                    () => {
+                        initializeApp();
+                        showToast('Composition cleared.');
+                    }
+                );
             });
             
             addRoleBtn.addEventListener('click', () => {
-                const newRoleName = prompt("Enter the name for the new role:", "New Role");
-                if (newRoleName && newRoleName.trim() !== '') {
-                    const newRole = {
-                        id: 'custom_' + Date.now(),
-                        name: newRoleName.trim(),
-                        color: 'bg-gray-600' // A neutral color for custom roles
-                    };
-                    currentRoles.push(newRole);
-                    const roleSection = createRoleSection(newRole);
-                    rolesContainer.appendChild(roleSection);
-                    roleSection.querySelector('.builds-container').appendChild(createBuildRow());
-                }
+                showPromptModal(
+                    'Add New Role',
+                    'Enter the name for the new role:',
+                    'New Role',
+                    (newRoleName) => {
+                        if (newRoleName && newRoleName.trim() !== '') {
+                            const newRole = {
+                                id: 'custom_' + Date.now(),
+                                name: newRoleName.trim(),
+                                color: 'bg-gray-600'
+                            };
+                            currentRoles.push(newRole);
+                            const roleSection = createRoleSection(newRole);
+                            rolesContainer.appendChild(roleSection);
+                            roleSection.querySelector('.builds-container').appendChild(createBuildRow());
+                        }
+                    }
+                );
             });
+
+            // Confirmation & Prompt Modal Listeners
+            confirmModal.querySelector('#confirm-confirm-btn').addEventListener('click', () => { if (typeof confirmCallback === 'function') { confirmCallback(); } hideConfirmModal(); });
+            confirmModal.querySelector('#confirm-cancel-btn').addEventListener('click', hideConfirmModal);
+            confirmModal.addEventListener('click', e => { if (e.target === confirmModal) hideConfirmModal(); });
+            promptModal.querySelector('#prompt-ok-btn').addEventListener('click', () => { const value = promptModal.querySelector('#prompt-modal-input').value; if (typeof promptCallback === 'function') { promptCallback(value); } hidePromptModal(); });
+            promptModal.querySelector('#prompt-cancel-btn').addEventListener('click', hidePromptModal);
+            promptModal.addEventListener('click', e => { if (e.target === promptModal) hidePromptModal(); });
+            promptModal.querySelector('#prompt-modal-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); promptModal.querySelector('#prompt-ok-btn').click(); } if (e.key === 'Escape') { hidePromptModal(); } });
 
             tabButtonsContainer.addEventListener('click', e => {
                 const clickedTabButton = e.target.closest('.tab-btn'); if (!clickedTabButton) return;
@@ -1236,13 +1400,32 @@
                 const input = e.target; const key = input.dataset.key; const index = input.closest('tr').dataset.index;
                 if (key && index && partyTableData[index]) { partyTableData[index][key] = parseInt(input.value) || 0; }
             });
+            
+            // Player Comp Listener
+            playerCompSizeInput.addEventListener('input', (e) => {
+                const size = parseInt(e.target.value);
+                const comp = PLAYER_COMP_MAP[size];
+                if (comp) {
+                    playerCompEngagesInput.value = comp.engages;
+                    playerCompTanksInput.value = comp.tanks;
+                    playerCompHealersInput.value = comp.healers;
+                    playerCompDpsInput.value = comp.dps;
+                    playerCompSupportsInput.value = comp.supports;
+                } else {
+                    playerCompEngagesInput.value = '';
+                    playerCompTanksInput.value = '';
+                    playerCompHealersInput.value = '';
+                    playerCompDpsInput.value = '';
+                    playerCompSupportsInput.value = '';
+                }
+            });
 
             // --- EXPORT FUNCTION ---
             exportBtn.addEventListener('click', () => {
                 const tempExportContainer = document.createElement('div'); tempExportContainer.id = 'temp-export-wrapper';
                 document.body.appendChild(tempExportContainer); document.body.classList.add('export-mode');
                 if (backgroundImageSrc) { tempExportContainer.style.backgroundImage = `url(${backgroundImageSrc})`; }
-
+                
                 let titleOrLogoClone;
                 if (logoImageSrc) { titleOrLogoClone = document.createElement('img'); titleOrLogoClone.id = 'logo-image-clone'; titleOrLogoClone.src = logoImageSrc; } 
                 else { titleOrLogoClone = document.createElement('div'); titleOrLogoClone.id = 'comp-title-clone'; titleOrLogoClone.textContent = compTitleInput.value || compTitleInput.placeholder; titleOrLogoClone.style.fontSize = `${titleFontSize}px`; titleOrLogoClone.style.color = titleColor; titleOrLogoClone.style.textAlign = titleAlign; }
@@ -1262,7 +1445,6 @@
                 if (partyTablePosition === 'col2_top' && partyTableClone) column2.appendChild(partyTableClone);
                 if (notesPosition === 'col2_top' && notesClone) column2.appendChild(notesClone);
 
-                // --- MODIFIED: Dynamic column splitting for export ---
                 const orderedRoles = Array.from(rolesContainer.querySelectorAll('.role-section'));
                 const midpoint = Math.ceil(orderedRoles.length / 2);
                 orderedRoles.forEach((roleElement, index) => {
@@ -1281,19 +1463,19 @@
                 if (partyTablePosition === 'below_full' && partyTableClone) tempExportContainer.appendChild(partyTableClone);
                 if (notesPosition === 'below_full' && notesClone) tempExportContainer.appendChild(notesClone);
 
-                html2canvas(tempExportContainer, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#1a202c' })
+                html2canvas(tempExportContainer, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: backgroundColor })
                     .then(canvas => { const link = document.createElement('a'); link.download = `${(compTitleInput.value || 'composition').replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`; link.href = canvas.toDataURL(); link.click(); })
                     .finally(() => { tempExportContainer.remove(); document.body.classList.remove('export-mode'); });
             });
 
             /* ----------------- INITIALIZATION ---------------- */
             function initializeApp() {
-                // MODIFIED: This function now resets the entire state
                 // Reset text and visual styles
                 compTitleInput.value = '';
                 compNotesInput.value = '';
                 logoImageSrc = null;
                 backgroundImageSrc = null;
+                backgroundColor = '#1a202c';
                 updateLogoTitleDisplay();
                 applyBackground();
 
@@ -1303,9 +1485,18 @@
 
                 document.querySelectorAll('.role-section').forEach(roleSection => {
                     const container = roleSection.querySelector('.builds-container');
-                    container.innerHTML = ''; // Clear existing builds
+                    container.innerHTML = '';
                     container.appendChild(createBuildRow());
                 });
+
+                // Reset Player Comp fields
+                playerCompSizeInput.value = '';
+                playerCompEngagesInput.value = '';
+                playerCompTanksInput.value = '';
+                playerCompHealersInput.value = '';
+                playerCompDpsInput.value = '';
+                playerCompSupportsInput.value = '';
+
 
                 initializePartyTable();
                 applyCurrentStylesToEditor();
@@ -1316,3 +1507,4 @@
     </script>
 </body>
 </html>
+
